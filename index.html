@@ -161,14 +161,14 @@
                 <div>
                     <label class="text-[9px] font-black uppercase text-zinc-500 mb-2 block">Context</label>
                     <div class="flex bg-zinc-900 p-1.5 rounded-2xl border border-white/5">
-                        <button onclick="setSetupType('cat')" id="setup-cat-btn" class="flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase bg-zinc-800 shadow-lg">Category</button>
+                        <button onclick="setSetupType('cat')" id="setup-cat-btn" class="flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase bg-zinc-800 text-white shadow-lg">Category</button>
                         <button onclick="setSetupType('acc')" id="setup-acc-btn" class="flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase text-zinc-500">Account</button>
                     </div>
                 </div>
                 <div id="cat-type-select">
                     <label class="text-[9px] font-black uppercase text-zinc-500 mb-2 block">Behavior</label>
                     <div class="flex bg-zinc-900 p-1.5 rounded-2xl border border-white/5">
-                        <button onclick="setSetupBehavior('expense')" id="setup-exp-btn" class="flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase bg-zinc-800 shadow-lg">Expense</button>
+                        <button onclick="setSetupBehavior('expense')" id="setup-exp-btn" class="flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase bg-zinc-800 text-white shadow-lg">Expense</button>
                         <button onclick="setSetupBehavior('income')" id="setup-inc-btn" class="flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase text-zinc-500">Income</button>
                     </div>
                 </div>
@@ -180,6 +180,21 @@
                     <button onclick="toggleModal('entity-modal', false)" class="flex-1 py-4 text-[9px] font-black uppercase tracking-widest text-zinc-500">Cancel</button>
                     <button onclick="finalizeEntitySetup()" class="flex-1 bg-white text-black rounded-2xl py-4 text-[9px] font-black uppercase tracking-widest">Create</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAPPING MODAL -->
+    <div id="mapping-modal" class="fixed inset-0 bg-black/98 backdrop-blur-xl z-[80] flex items-center justify-center hidden p-6">
+        <div class="glass w-full max-w-md rounded-[3rem] p-8 animate-slide-up">
+            <h3 class="text-xl font-bold mb-2">CSV Field Mapping</h3>
+            <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mb-6">Match your file columns to Khorcha fields</p>
+            <div id="mapping-fields" class="space-y-4 mb-8">
+                <!-- Dropdowns injected here -->
+            </div>
+            <div class="flex gap-3">
+                <button onclick="toggleModal('mapping-modal', false)" class="flex-1 py-4 text-[9px] font-black uppercase text-zinc-500">Cancel</button>
+                <button onclick="finalizeMappingImport()" class="flex-1 bg-white text-black rounded-2xl py-4 text-[9px] font-black uppercase">Import Data</button>
             </div>
         </div>
     </div>
@@ -198,17 +213,17 @@
     </div>
 
     <!-- HIDDEN INPUT FOR UPLOAD -->
-    <input type="file" id="csv-upload-field" class="hidden" accept=".csv" onchange="handleCSVImport(event)">
+    <input type="file" id="csv-upload-field" class="hidden" accept=".csv" onchange="handleCSVSelect(event)">
 
     <script>
         let state = {
-            transactions: JSON.parse(localStorage.getItem('k_v7_trans')) || [],
-            categories: JSON.parse(localStorage.getItem('k_v7_cats')) || [
+            transactions: JSON.parse(localStorage.getItem('k_v8_trans')) || [],
+            categories: JSON.parse(localStorage.getItem('k_v8_cats')) || [
                 { id: '1', name: 'Food', type: 'expense' },
                 { id: '2', name: 'Transport', type: 'expense' },
                 { id: '3', name: 'Salary', type: 'income' }
             ],
-            accounts: JSON.parse(localStorage.getItem('k_v7_accs')) || [
+            accounts: JSON.parse(localStorage.getItem('k_v8_accs')) || [
                 { id: '1', name: 'Cash' },
                 { id: '2', name: 'Bank' }
             ],
@@ -220,7 +235,9 @@
             fullCalcValue: '0',
             transType: 'expense',
             setupContext: 'cat',
-            setupBehavior: 'expense'
+            setupBehavior: 'expense',
+            csvHeaders: [],
+            csvData: []
         };
 
         window.onload = () => { renderView(); updateHeaderDate(); lucide.createIcons(); document.getElementById('t-date').valueAsDate = new Date(); };
@@ -375,7 +392,7 @@
             const entry = { id: state.editingId || Date.now(), amount: Math.abs(parseFloat(amt)), type: state.transType, category: document.getElementById('t-cat').value, account: document.getElementById('t-acc').value, date: document.getElementById('t-date').value, note: document.getElementById('t-note').value };
             if(state.editingId) state.transactions = state.transactions.map(x => x.id === state.editingId ? entry : x);
             else state.transactions.unshift(entry);
-            localStorage.setItem('k_v7_trans', JSON.stringify(state.transactions)); toggleModal('transaction-modal', false); renderView();
+            saveAll(); toggleModal('transaction-modal', false); renderView();
         }
 
         // --- ENTITY SETUP ---
@@ -385,74 +402,118 @@
             const name = document.getElementById('setup-name').value.trim(); if(!name) return;
             if(state.setupContext === 'cat') state.categories.push({ id: Date.now().toString(), name, type: state.setupBehavior });
             else state.accounts.push({ id: Date.now().toString(), name });
-            localStorage.setItem(`k_v7_${state.setupContext}s`, JSON.stringify(state.setupContext === 'cat' ? state.categories : state.accounts));
-            toggleModal('entity-modal', false); document.getElementById('setup-name').value = ''; renderView();
+            saveAll(); toggleModal('entity-modal', false); document.getElementById('setup-name').value = ''; renderView();
         }
 
-        function deleteEntity(type, id) { if(type === 'cat') state.categories = state.categories.filter(c => c.id !== id); else state.accounts = state.accounts.filter(a => a.id !== id); localStorage.setItem(`k_v7_${type}s`, JSON.stringify(type === 'cat' ? state.categories : state.accounts)); renderView(); }
+        function deleteEntity(type, id) { if(type === 'cat') state.categories = state.categories.filter(c => c.id !== id); else state.accounts = state.accounts.filter(a => a.id !== id); saveAll(); renderView(); }
         function finalizePurge() { localStorage.clear(); location.reload(); }
         function toggleDashboard(mode) { state.dashboardMode = mode; renderView(); }
         function setStatFilter(mode) { state.statFilter = mode; renderView(); }
         function changeMonth(dir) { state.viewDate.setMonth(state.viewDate.getMonth() + dir); renderView(); }
         function getPalette(i) { return ['#fb7185', '#34d399', '#60a5fa', '#fbbf24', '#a78bfa', '#2dd4bf', '#f472b6'][i % 7]; }
 
-        function exportCSV() {
-            const h = ['Date','Type','Category','Account','Amount','Note'];
-            const r = state.transactions.map(t => [t.date,t.type,t.category,t.account,t.amount,`"${t.note}"`]);
-            const c = [h, ...r].map(e => e.join(",")).join("\n");
-            const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([c], { type: 'text/csv' })); a.download = 'khorcha_backup.csv'; a.click();
+        function saveAll() {
+            localStorage.setItem('k_v8_trans', JSON.stringify(state.transactions));
+            localStorage.setItem('k_v8_cats', JSON.stringify(state.categories));
+            localStorage.setItem('k_v8_accs', JSON.stringify(state.accounts));
         }
 
-        function handleCSVImport(e) {
+        // --- CSV SMART MAPPING ---
+        function handleCSVSelect(e) {
             const file = e.target.files[0]; if(!file) return;
             const reader = new FileReader();
             reader.onload = (evt) => {
                 const lines = evt.target.result.split('\n').filter(l => l.trim());
                 if(lines.length < 2) return;
                 
-                const header = lines[0].split(',');
-                const dataLines = lines.slice(1);
-
-                const imported = dataLines.map(line => {
-                    const c = line.split(','); if(c.length < 5) return null;
-                    return { 
-                        id: Date.now() + Math.random(), 
-                        date: c[0], 
-                        type: c[1].toLowerCase().includes('inc') ? 'income' : 'expense', 
-                        category: c[2].trim(), 
-                        account: c[3].trim(), 
-                        amount: parseFloat(c[4]) || 0, 
-                        note: c[5]?.replace(/"/g, '') || '' 
-                    };
-                }).filter(x => x);
-
-                // --- SMART AUTO-ADD LOGIC ---
-                const existingCatNames = state.categories.map(c => c.name.toLowerCase());
-                const existingAccNames = state.accounts.map(a => a.name.toLowerCase());
-
-                imported.forEach(t => {
-                    // Check categories
-                    if (!existingCatNames.includes(t.category.toLowerCase())) {
-                        state.categories.push({ id: Date.now() + Math.random(), name: t.category, type: t.type });
-                        existingCatNames.push(t.category.toLowerCase());
-                    }
-                    // Check accounts
-                    if (!existingAccNames.includes(t.account.toLowerCase())) {
-                        state.accounts.push({ id: Date.now() + Math.random(), name: t.account });
-                        existingAccNames.push(t.account.toLowerCase());
-                    }
-                });
-
-                state.transactions = [...imported, ...state.transactions];
+                state.csvHeaders = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+                state.csvData = lines.slice(1).map(l => l.split(','));
                 
-                // Save everything to localStorage
-                localStorage.setItem('k_v7_trans', JSON.stringify(state.transactions));
-                localStorage.setItem('k_v7_cats', JSON.stringify(state.categories));
-                localStorage.setItem('k_v7_accs', JSON.stringify(state.accounts));
-                
-                renderView();
+                showMappingModal();
             };
             reader.readAsText(file);
+        }
+
+        function showMappingModal() {
+            const fields = [
+                { id: 'map-date', label: 'Transaction Date' },
+                { id: 'map-amt', label: 'Amount (Value)' },
+                { id: 'map-cat', label: 'Category' },
+                { id: 'map-acc', label: 'Account' },
+                { id: 'map-type', label: 'Type (Income/Expense)' },
+                { id: 'map-note', label: 'Memo/Note' }
+            ];
+
+            const container = document.getElementById('mapping-fields');
+            container.innerHTML = fields.map(f => `
+                <div>
+                    <label class="text-[9px] font-black uppercase text-zinc-500 mb-1.5 block">${f.label}</label>
+                    <select id="${f.id}" class="w-full bg-zinc-900 border border-white/5 p-3.5 rounded-2xl text-[11px] font-bold">
+                        <option value="">-- Ignore --</option>
+                        ${state.csvHeaders.map((h, i) => `<option value="${i}">${h}</option>`).join('')}
+                    </select>
+                </div>
+            `).join('');
+
+            toggleModal('mapping-modal', true);
+        }
+
+        function finalizeMappingImport() {
+            const map = {
+                date: document.getElementById('map-date').value,
+                amt: document.getElementById('map-amt').value,
+                cat: document.getElementById('map-cat').value,
+                acc: document.getElementById('map-acc').value,
+                type: document.getElementById('map-type').value,
+                note: document.getElementById('map-note').value
+            };
+
+            const imported = state.csvData.map((row, idx) => {
+                if(row.length < state.csvHeaders.length) return null;
+                
+                const rawAmt = map.amt !== "" ? row[map.amt] : "0";
+                const amt = Math.abs(parseFloat(rawAmt.replace(/[^-0-9.]/g, '')) || 0);
+                
+                let type = 'expense';
+                if(map.type !== "" && row[map.type]) {
+                    type = row[map.type].toLowerCase().includes('inc') ? 'income' : 'expense';
+                } else if(parseFloat(rawAmt) > 0) {
+                    type = 'income';
+                }
+
+                const catName = map.cat !== "" ? row[map.cat].trim() : 'Uncategorized';
+                const accName = map.acc !== "" ? row[map.acc].trim() : 'Cash';
+
+                // --- SMART AUTO-ADD ---
+                if (!state.categories.some(c => c.name.toLowerCase() === catName.toLowerCase())) {
+                    state.categories.push({ id: Date.now() + Math.random(), name: catName, type: type });
+                }
+                if (!state.accounts.some(a => a.name.toLowerCase() === accName.toLowerCase())) {
+                    state.accounts.push({ id: Date.now() + Math.random(), name: accName });
+                }
+
+                return {
+                    id: Date.now() + Math.random(),
+                    date: map.date !== "" ? row[map.date] : new Date().toISOString().split('T')[0],
+                    type: type,
+                    category: catName,
+                    account: accName,
+                    amount: amt,
+                    note: map.note !== "" ? row[map.note].replace(/"/g, '') : 'Imported'
+                };
+            }).filter(x => x);
+
+            state.transactions = [...imported, ...state.transactions];
+            saveAll();
+            toggleModal('mapping-modal', false);
+            renderView();
+        }
+
+        function exportCSV() {
+            const h = ['Date','Type','Category','Account','Amount','Note'];
+            const r = state.transactions.map(t => [t.date,t.type,t.category,t.account,t.amount,`"${t.note}"`]);
+            const c = [h, ...r].map(e => e.join(",")).join("\n");
+            const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([c], { type: 'text/csv' })); a.download = 'khorcha_backup.csv'; a.click();
         }
     </script>
 </body>
