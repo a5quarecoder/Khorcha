@@ -65,7 +65,7 @@
         <!-- App Header -->
         <header class="flex justify-between items-center mb-8">
             <div>
-                <h1 class="text-2xl font-extrabold tracking-tight">Khorcha</h1>
+                <h1 class="text-2xl font-extrabold tracking-tight text-white">Khorcha</h1>
                 <p id="header-date" class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest"></p>
             </div>
             <div class="flex items-center gap-3">
@@ -79,27 +79,29 @@
         <main id="main-content" class="pb-10"></main>
 
         <!-- Navigation -->
-        <nav class="fixed bottom-8 left-1/2 -translate-x-1/2 w-[90%] max-w-sm glass rounded-[2.5rem] p-2 flex justify-between items-center z-50 shadow-2xl border-white/10">
-            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item active flex-1 py-3.5 rounded-full flex flex-col items-center gap-1 transition-all text-zinc-500">
-                <i data-lucide="layout-grid" class="w-5 h-5"></i>
-                <span class="text-[8px] font-black uppercase">Home</span>
+        <nav class="fixed bottom-8 left-1/2 -translate-x-1/2 w-[95%] max-w-lg glass rounded-[2.5rem] p-2 flex justify-between items-center z-50 shadow-2xl border-white/10">
+            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item active flex-1 py-3 rounded-2xl flex flex-col items-center gap-1 transition-all text-zinc-500">
+                <i data-lucide="layout-grid" class="w-4 h-4"></i>
+                <span class="text-[7px] font-black uppercase">Home</span>
             </button>
-            <button onclick="switchTab('stats')" id="nav-stats" class="nav-item flex-1 py-3.5 rounded-full flex flex-col items-center gap-1 transition-all text-zinc-500">
-                <i data-lucide="bar-chart-big" class="w-5 h-5"></i>
-                <span class="text-[8px] font-black uppercase">Stats</span>
+            <button onclick="switchTab('stats')" id="nav-stats" class="nav-item flex-1 py-3 rounded-2xl flex flex-col items-center gap-1 transition-all text-zinc-500">
+                <i data-lucide="bar-chart-big" class="w-4 h-4"></i>
+                <span class="text-[7px] font-black uppercase">Stats</span>
             </button>
+            
             <button onclick="openTransactionModal()" class="flex-1 flex justify-center -translate-y-6">
-                <div class="w-14 h-14 bg-white text-black rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform ring-4 ring-black">
-                    <i data-lucide="plus" class="w-8 h-8"></i>
+                <div class="w-12 h-12 bg-white text-black rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform ring-4 ring-black">
+                    <i data-lucide="plus" class="w-7 h-7"></i>
                 </div>
             </button>
-            <button onclick="switchTab('calculator')" id="nav-calculator" class="nav-item flex-1 py-3.5 rounded-full flex flex-col items-center gap-1 transition-all text-zinc-500">
-                <i data-lucide="calculator" class="w-5 h-5"></i>
-                <span class="text-[8px] font-black uppercase">Calc</span>
+
+            <button onclick="switchTab('notes')" id="nav-notes" class="nav-item flex-1 py-3 rounded-2xl flex flex-col items-center gap-1 transition-all text-zinc-500">
+                <i data-lucide="sticky-note" class="w-4 h-4"></i>
+                <span class="text-[7px] font-black uppercase">Notes</span>
             </button>
-            <button onclick="switchTab('settings')" id="nav-settings" class="nav-item flex-1 py-3.5 rounded-full flex flex-col items-center gap-1 transition-all text-zinc-500">
-                <i data-lucide="sliders-horizontal" class="w-5 h-5"></i>
-                <span class="text-[8px] font-black uppercase">Setup</span>
+            <button onclick="switchTab('settings')" id="nav-settings" class="nav-item flex-1 py-3 rounded-2xl flex flex-col items-center gap-1 transition-all text-zinc-500">
+                <i data-lucide="settings" class="w-4 h-4"></i>
+                <span class="text-[7px] font-black uppercase">Setup</span>
             </button>
         </nav>
     </div>
@@ -108,7 +110,7 @@
     <div id="transaction-modal" class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[60] flex items-end md:items-center justify-center hidden">
         <div class="w-full max-w-lg rounded-t-[3rem] md:rounded-[3rem] p-8 animate-slide-up bg-[#0A0A0A] border-t border-white/5">
             <div class="flex justify-between items-center mb-8">
-                <h3 id="modal-title" class="text-xl font-bold tracking-tight">Record Entry</h3>
+                <h3 id="modal-title" class="text-xl font-bold tracking-tight text-white">Record Entry</h3>
                 <button onclick="toggleModal('transaction-modal', false)" class="p-3 bg-zinc-900 rounded-2xl text-zinc-400"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div class="space-y-6">
@@ -119,32 +121,32 @@
                 <div class="text-center py-10 bg-gradient-to-b from-white/5 to-transparent rounded-[2.5rem] border border-white/5 shadow-inner">
                     <div class="flex items-center justify-center gap-3">
                         <span class="text-2xl font-bold text-zinc-600">৳</span>
-                        <div id="quick-calc-display" class="text-6xl font-black font-mono tracking-tighter">0</div>
+                        <div id="quick-calc-display" class="text-6xl font-black font-mono tracking-tighter text-white">0</div>
                     </div>
                 </div>
                 <div class="grid grid-cols-4 gap-3">
-                    <button class="calc-btn" onclick="qCalc('7')">7</button>
-                    <button class="calc-btn" onclick="qCalc('8')">8</button>
-                    <button class="calc-btn" onclick="qCalc('9')">9</button>
+                    <button class="calc-btn text-white" onclick="qCalc('7')">7</button>
+                    <button class="calc-btn text-white" onclick="qCalc('8')">8</button>
+                    <button class="calc-btn text-white" onclick="qCalc('9')">9</button>
                     <button class="calc-btn calc-btn-op" onclick="qCalc('/')">÷</button>
-                    <button class="calc-btn" onclick="qCalc('4')">4</button>
-                    <button class="calc-btn" onclick="qCalc('5')">5</button>
-                    <button class="calc-btn" onclick="qCalc('6')">6</button>
+                    <button class="calc-btn text-white" onclick="qCalc('4')">4</button>
+                    <button class="calc-btn text-white" onclick="qCalc('5')">5</button>
+                    <button class="calc-btn text-white" onclick="qCalc('6')">6</button>
                     <button class="calc-btn calc-btn-op" onclick="qCalc('*')">×</button>
-                    <button class="calc-btn" onclick="qCalc('1')">1</button>
-                    <button class="calc-btn" onclick="qCalc('2')">2</button>
-                    <button class="calc-btn" onclick="qCalc('3')">3</button>
+                    <button class="calc-btn text-white" onclick="qCalc('1')">1</button>
+                    <button class="calc-btn text-white" onclick="qCalc('2')">2</button>
+                    <button class="calc-btn text-white" onclick="qCalc('3')">3</button>
                     <button class="calc-btn calc-btn-op" onclick="qCalc('-')">-</button>
-                    <button class="calc-btn" onclick="qCalc('0')">0</button>
-                    <button class="calc-btn" onclick="qCalc('.')">.</button>
+                    <button class="calc-btn text-white" onclick="qCalc('0')">0</button>
+                    <button class="calc-btn text-white" onclick="qCalc('.')">.</button>
                     <button class="calc-btn bg-rose-500/10 text-rose-500" onclick="qClear()">C</button>
                     <button class="calc-btn calc-btn-op" onclick="qCalc('+')">+</button>
                 </div>
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-2 gap-3 text-white">
                     <select id="t-cat" class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 text-xs font-bold"></select>
                     <select id="t-acc" class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 text-xs font-bold"></select>
                 </div>
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-2 gap-3 text-white">
                     <input type="date" id="t-date" class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 text-xs font-bold">
                     <input type="text" id="t-note" placeholder="Memo..." class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 text-xs font-bold">
                 </div>
@@ -156,7 +158,7 @@
     <!-- ENTITY SETUP MODAL -->
     <div id="entity-modal" class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[70] flex items-center justify-center hidden p-6">
         <div class="glass w-full max-w-sm rounded-[3rem] p-8 animate-slide-up">
-            <h3 id="entity-modal-title" class="text-xl font-bold mb-6">Create New</h3>
+            <h3 id="entity-modal-title" class="text-xl font-bold mb-6 text-white text-center">Create New</h3>
             <div class="space-y-6">
                 <div>
                     <label class="text-[9px] font-black uppercase text-zinc-500 mb-2 block">Context</label>
@@ -174,7 +176,7 @@
                 </div>
                 <div>
                     <label class="text-[9px] font-black uppercase text-zinc-500 mb-2 block">Display Name</label>
-                    <input type="text" id="setup-name" placeholder="e.g. Health, Freelance, Savings" class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 text-xs font-bold">
+                    <input type="text" id="setup-name" placeholder="e.g. Health, Freelance, Savings" class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 text-xs font-bold text-white">
                 </div>
                 <div class="flex gap-3 pt-4">
                     <button onclick="toggleModal('entity-modal', false)" class="flex-1 py-4 text-[9px] font-black uppercase tracking-widest text-zinc-500">Cancel</button>
@@ -187,11 +189,9 @@
     <!-- MAPPING MODAL -->
     <div id="mapping-modal" class="fixed inset-0 bg-black/98 backdrop-blur-xl z-[80] flex items-center justify-center hidden p-6">
         <div class="glass w-full max-w-md rounded-[3rem] p-8 animate-slide-up">
-            <h3 class="text-xl font-bold mb-2">CSV Field Mapping</h3>
+            <h3 class="text-xl font-bold mb-2 text-white">CSV Field Mapping</h3>
             <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mb-6">Match your file columns to Khorcha fields</p>
-            <div id="mapping-fields" class="space-y-4 mb-8">
-                <!-- Dropdowns injected here -->
-            </div>
+            <div id="mapping-fields" class="space-y-4 mb-8 text-white"></div>
             <div class="flex gap-3">
                 <button onclick="toggleModal('mapping-modal', false)" class="flex-1 py-4 text-[9px] font-black uppercase text-zinc-500">Cancel</button>
                 <button onclick="finalizeMappingImport()" class="flex-1 bg-white text-black rounded-2xl py-4 text-[9px] font-black uppercase">Import Data</button>
@@ -203,11 +203,11 @@
     <div id="purge-modal" class="fixed inset-0 bg-black/98 z-[100] flex items-center justify-center hidden p-6">
         <div class="glass w-full max-w-xs rounded-[3rem] p-10 text-center">
             <div class="w-20 h-20 bg-rose-500/10 rounded-full flex items-center justify-center mx-auto mb-6"><i data-lucide="alert-triangle" class="w-10 h-10 text-rose-500"></i></div>
-            <h3 class="text-xl font-bold mb-3">Wipe All Data?</h3>
+            <h3 class="text-xl font-bold mb-3 text-white">Wipe All Data?</h3>
             <p class="text-[10px] text-zinc-500 uppercase leading-relaxed font-bold tracking-widest">Everything will be permanently deleted.</p>
             <div class="mt-10 flex flex-col gap-3">
-                <button onclick="toggleModal('purge-modal', false)" class="w-full py-4 text-[10px] font-black uppercase tracking-widest">Cancel</button>
-                <button onclick="finalizePurge()" class="w-full py-4 bg-rose-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest">Delete Everything</button>
+                <button onclick="toggleModal('purge-modal', false)" class="w-full py-4 text-[10px] font-black uppercase tracking-widest text-white">Cancel</button>
+                <button onclick="finalizePurge()" class="w-full bg-rose-600 text-white rounded-2xl py-4 text-[10px] font-black uppercase tracking-widest">Delete Everything</button>
             </div>
         </div>
     </div>
@@ -227,6 +227,7 @@
                 { id: '1', name: 'Cash' },
                 { id: '2', name: 'Bank' }
             ],
+            notes: JSON.parse(localStorage.getItem('k_v8_notes')) || [],
             viewDate: new Date(),
             dashboardMode: 'monthly',
             currentTab: 'dashboard',
@@ -259,7 +260,8 @@
             switch(state.currentTab) {
                 case 'dashboard': renderDashboard(container); break;
                 case 'stats': renderStats(container); break;
-                case 'calculator': renderCalculator(container); break;
+                case 'notes': renderNotes(container); break;
+                case 'calculator': renderCalculator(container); break; // Accessible via Setup or hidden if needed
                 case 'settings': renderSettings(container); break;
             }
             lucide.createIcons();
@@ -271,7 +273,6 @@
             const filtered = state.transactions.filter(t => state.dashboardMode === 'all' || (new Date(t.date).getMonth() === m && new Date(t.date).getFullYear() === y));
             let periodInc = filtered.filter(t => t.type === 'income').reduce((s, t) => s + (parseFloat(t.amount) || 0), 0);
             let periodExp = filtered.filter(t => t.type === 'expense').reduce((s, t) => s + (parseFloat(t.amount) || 0), 0);
-
             let totalBalance = state.transactions.reduce((s, t) => {
                 const val = parseFloat(t.amount) || 0;
                 return t.type === 'income' ? s + val : s - val;
@@ -284,14 +285,12 @@
                             <button onclick="toggleDashboard('monthly')" class="px-4 py-1.5 rounded-full text-[8px] font-black uppercase ${state.dashboardMode === 'monthly' ? 'bg-white text-black' : 'text-zinc-500'}">Monthly</button>
                             <button onclick="toggleDashboard('all')" class="px-4 py-1.5 rounded-full text-[8px] font-black uppercase ${state.dashboardMode === 'all' ? 'bg-white text-black' : 'text-zinc-500'}">All</button>
                         </div>
-                        ${state.dashboardMode === 'monthly' ? `<div class="flex items-center gap-4"><button onclick="changeMonth(-1)" class="p-1.5"><i data-lucide="chevron-left" class="w-4 h-4"></i></button><span class="text-[9px] font-black uppercase">${state.viewDate.toLocaleString('default', { month: 'short', year: 'numeric' })}</span><button onclick="changeMonth(1)" class="p-1.5"><i data-lucide="chevron-right" class="w-4 h-4"></i></button></div>` : ''}
+                        ${state.dashboardMode === 'monthly' ? `<div class="flex items-center gap-4"><button onclick="changeMonth(-1)" class="p-1.5"><i data-lucide="chevron-left" class="w-4 h-4 text-white"></i></button><span class="text-[9px] font-black uppercase text-white">${state.viewDate.toLocaleString('default', { month: 'short', year: 'numeric' })}</span><button onclick="changeMonth(1)" class="p-1.5"><i data-lucide="chevron-right" class="w-4 h-4 text-white"></i></button></div>` : ''}
                     </div>
                     <div class="text-center mb-10">
                         <p class="text-zinc-500 text-[9px] font-black uppercase tracking-[0.2em] mb-2">Net Cashflow</p>
-                        <h2 class="text-5xl font-black tracking-tighter">${formatBDT(periodInc - periodExp)}</h2>
-                        <div class="mt-2 text-[10px] font-bold text-zinc-600 uppercase tracking-widest">
-                            Total Balance: ${formatBDT(totalBalance)}
-                        </div>
+                        <h2 class="text-5xl font-black tracking-tighter text-white">${formatBDT(periodInc - periodExp)}</h2>
+                        <div class="mt-2 text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Total Balance: ${formatBDT(totalBalance)}</div>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div class="bg-emerald-500/5 p-5 rounded-3xl border border-emerald-500/10"><p class="text-[8px] text-emerald-500/60 font-black mb-1.5 uppercase">Inflow</p><p class="text-emerald-400 font-black text-lg">+${formatBDT(periodInc)}</p></div>
@@ -305,161 +304,101 @@
         function renderGroupedList(list) {
             const groups = {}; list.forEach(t => { if(!groups[t.date]) groups[t.date] = []; groups[t.date].push(t); });
             const sortedDates = Object.keys(groups).sort((a,b) => new Date(b) - new Date(a));
-            if(!sortedDates.length) return `<div class="py-20 text-center opacity-30"><p class="text-[10px] font-black uppercase tracking-widest">No entries found</p></div>`;
+            if(!sortedDates.length) return `<div class="py-20 text-center opacity-30 text-white"><p class="text-[10px] font-black uppercase tracking-widest">No entries found</p></div>`;
             return sortedDates.map(date => {
                 const daySum = groups[date].reduce((s, t) => s + (t.type === 'income' ? parseFloat(t.amount) : -parseFloat(t.amount)), 0);
                 return `<div class="space-y-3 animate-slide-up"><div class="flex justify-between items-center px-1"><span class="text-[10px] font-black text-zinc-600 uppercase tracking-widest">${new Date(date).toLocaleDateString(undefined, {day:'numeric', month:'short', weekday:'short'})}</span><span class="text-[10px] font-black ${daySum >= 0 ? 'text-emerald-500' : 'text-rose-500'}">${daySum >= 0 ? '+' : ''}${formatBDT(daySum)}</span></div>
-                    <div class="space-y-2">${groups[date].map(t => `<div onclick="editTransaction(${t.id})" class="glass p-5 rounded-3xl flex items-center justify-between group active:scale-[0.98] transition-all cursor-pointer"><div class="flex items-center gap-4"><div class="w-11 h-11 rounded-2xl bg-zinc-900 border border-white/5 flex items-center justify-center"><i data-lucide="${t.type === 'income' ? 'plus-circle' : 'minus-circle'}" class="w-5 h-5 ${t.type === 'income' ? 'text-emerald-500' : 'text-rose-500'}"></i></div><div><p class="text-[11px] font-black uppercase tracking-wider">${t.category}</p><p class="text-[9px] text-zinc-500 font-bold mt-0.5">${t.account} · ${t.note || 'No memo'}</p></div></div><div class="text-right"><p class="text-sm font-black ${t.type === 'income' ? 'text-emerald-400' : 'text-rose-400'}">${t.type === 'income' ? '+' : '-'}${Number(t.amount).toLocaleString()}</p></div></div>`).join('')}</div></div>`;
+                    <div class="space-y-2">${groups[date].map(t => `<div onclick="editTransaction(${t.id})" class="glass p-5 rounded-3xl flex items-center justify-between group active:scale-[0.98] transition-all cursor-pointer"><div class="flex items-center gap-4"><div class="w-11 h-11 rounded-2xl bg-zinc-900 border border-white/5 flex items-center justify-center"><i data-lucide="${t.type === 'income' ? 'plus-circle' : 'minus-circle'}" class="w-5 h-5 ${t.type === 'income' ? 'text-emerald-500' : 'text-rose-500'}"></i></div><div><p class="text-[11px] font-black uppercase tracking-wider text-white">${t.category}</p><p class="text-[9px] text-zinc-500 font-bold mt-0.5">${t.account} · ${t.note || 'No memo'}</p></div></div><div class="text-right"><p class="text-sm font-black ${t.type === 'income' ? 'text-emerald-400' : 'text-rose-400'}">${t.type === 'income' ? '+' : '-'}${Number(t.amount).toLocaleString()}</p></div></div>`).join('')}</div></div>`;
             }).join('');
         }
 
         // --- STATS ---
         function renderStats(el) {
             const m = state.viewDate.getMonth(), y = state.viewDate.getFullYear();
-            
-            // Current and Previous Month Logic
             const filtered = state.transactions.filter(t => state.statFilter === 'all' || (new Date(t.date).getMonth() === m && new Date(t.date).getFullYear() === y));
-            const prevFiltered = state.transactions.filter(t => {
-                const d = new Date(t.date);
-                const prevM = m === 0 ? 11 : m - 1;
-                const prevY = m === 0 ? y - 1 : y;
-                return d.getMonth() === prevM && d.getFullYear() === prevY;
-            });
-
-            // Spending Calculations
             const currExp = filtered.filter(t => t.type === 'expense').reduce((s,t) => s + parseFloat(t.amount), 0);
-            const prevExp = prevFiltered.filter(t => t.type === 'expense').reduce((s,t) => s + parseFloat(t.amount), 0);
             const currInc = filtered.filter(t => t.type === 'income').reduce((s,t) => s + parseFloat(t.amount), 0);
-            
-            // MoM Difference
-            const momDiff = prevExp === 0 ? 0 : ((currExp - prevExp) / prevExp) * 100;
-            const savingsRate = currInc === 0 ? 0 : ((currInc - currExp) / currInc) * 100;
-            const avgDaily = currExp / 30;
-
             const expData = {}; filtered.filter(t => t.type === 'expense').forEach(t => { expData[t.category] = (expData[t.category] || 0) + parseFloat(t.amount); });
             const sortedExp = Object.entries(expData).sort((a,b) => b[1]-a[1]);
 
             el.innerHTML = `
                 <div class="space-y-6 animate-slide-up pb-10">
-                    <div class="flex justify-between items-center px-1">
-                        <h2 class="text-2xl font-black tracking-tighter">Insights</h2>
+                    <div class="flex justify-between items-center px-1"><h2 class="text-2xl font-black tracking-tighter text-white">Insights</h2>
                         <div class="flex bg-zinc-900 p-1 rounded-2xl border border-white/5">
                             <button onclick="setStatFilter('monthly')" class="px-4 py-1.5 rounded-xl text-[8px] font-black uppercase ${state.statFilter === 'monthly' ? 'bg-zinc-800 text-white shadow-lg' : 'text-zinc-600'}">Month</button>
                             <button onclick="setStatFilter('all')" class="px-4 py-1.5 rounded-xl text-[8px] font-black uppercase ${state.statFilter === 'all' ? 'bg-zinc-800 text-white shadow-lg' : 'text-zinc-600'}">All</button>
                         </div>
                     </div>
-
-                    <!-- Main Doughnut & Highlights -->
-                    <div class="glass p-8 rounded-[3rem] text-center">
-                        <div class="h-56 mb-8"><canvas id="mainChart"></canvas></div>
-                        <div class="grid grid-cols-3 gap-2">
-                            <div>
-                                <p class="text-[7px] font-black text-zinc-600 uppercase mb-1">MoM Change</p>
-                                <p class="text-[10px] font-black ${momDiff > 0 ? 'text-rose-500' : 'text-emerald-500'}">${momDiff > 0 ? '+' : ''}${momDiff.toFixed(1)}%</p>
-                            </div>
-                            <div class="border-x border-white/5">
-                                <p class="text-[7px] font-black text-zinc-600 uppercase mb-1">Savings Rate</p>
-                                <p class="text-[10px] font-black text-emerald-400">${savingsRate.toFixed(1)}%</p>
-                            </div>
-                            <div>
-                                <p class="text-[7px] font-black text-zinc-600 uppercase mb-1">Daily Avg</p>
-                                <p class="text-[10px] font-black text-white">৳${Math.round(avgDaily)}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Cashflow Bar Comparison -->
-                    <div class="glass p-8 rounded-[3rem]">
-                        <p class="text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-6">Cashflow Distribution</p>
-                        <div class="h-40"><canvas id="barChart"></canvas></div>
-                    </div>
-
-                    <!-- Trending Chart -->
-                    <div class="glass p-8 rounded-[3rem]">
-                        <p class="text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-6">6-Month Trend</p>
-                        <div class="h-40"><canvas id="trendChart"></canvas></div>
-                    </div>
-
-                    <!-- Category Breakdown -->
-                    <div class="space-y-3 mt-4">
-                        <p class="text-[9px] font-black text-zinc-500 uppercase px-1">Top Categories</p>
-                        ${sortedExp.map(([cat, val], idx) => `
-                            <div class="glass p-5 rounded-3xl flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-1.5 h-1.5 rounded-full" style="background: ${getPalette(idx)}"></div>
-                                    <div class="flex flex-col">
-                                        <span class="text-[11px] font-black uppercase tracking-wider text-zinc-400">${cat}</span>
-                                        <span class="text-[8px] text-zinc-600 font-bold">${((val/currExp)*100).toFixed(1)}% of total</span>
-                                    </div>
-                                </div>
-                                <span class="text-xs font-black">${formatBDT(val)}</span>
-                            </div>
-                        `).join('')}
-                    </div>
+                    <div class="glass p-8 rounded-[3rem] text-center"><div class="h-56 mb-8"><canvas id="mainChart"></canvas></div></div>
+                    <div class="glass p-8 rounded-[3rem]"><p class="text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-6">Cashflow Distribution</p><div class="h-40"><canvas id="barChart"></canvas></div></div>
+                    <div class="space-y-3 mt-4 text-white">${sortedExp.map(([cat, val], idx) => `<div class="glass p-5 rounded-3xl flex items-center justify-between"><div class="flex items-center gap-3"><div class="w-1.5 h-1.5 rounded-full" style="background: ${getPalette(idx)}"></div><span class="text-[11px] font-black uppercase tracking-wider text-zinc-400">${cat}</span></div><span class="text-xs font-black">${formatBDT(val)}</span></div>`).join('')}</div>
                 </div>`;
 
             setTimeout(() => {
-                // Doughnut
                 if(sortedExp.length) new Chart(document.getElementById('mainChart').getContext('2d'), { type: 'doughnut', data: { labels: Object.keys(expData), datasets: [{ data: Object.values(expData), backgroundColor: Object.keys(expData).map((_, i) => getPalette(i)), borderWidth: 0, hoverOffset: 15 }] }, options: { cutout: '85%', plugins: { legend: { display: false } } } });
-
-                // Bar Chart
-                new Chart(document.getElementById('barChart').getContext('2d'), { 
-                    type: 'bar', 
-                    data: { 
-                        labels: ['Inflow', 'Outflow'], 
-                        datasets: [{ 
-                            data: [currInc, currExp], 
-                            backgroundColor: ['#34d399', '#fb7185'], 
-                            borderRadius: 12,
-                            barThickness: 40
-                        }] 
-                    }, 
-                    options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false }, ticks: { color: '#525252', font: { size: 9, weight: '800' } } } } } 
-                });
-
-                // 6 Month Trend
-                const trendData = calculateTrendData();
-                new Chart(document.getElementById('trendChart').getContext('2d'), { 
-                    type: 'line', 
-                    data: { 
-                        labels: trendData.labels, 
-                        datasets: [{ 
-                            data: trendData.values, 
-                            borderColor: '#ffffff', 
-                            borderWidth: 2, 
-                            tension: 0.4, 
-                            pointRadius: 0, 
-                            fill: true, 
-                            backgroundColor: 'rgba(255,255,255,0.03)' 
-                        }] 
-                    }, 
-                    options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false }, ticks: { color: '#525252', font: { size: 9, weight: '800' } } } } } 
-                });
+                new Chart(document.getElementById('barChart').getContext('2d'), { type: 'bar', data: { labels: ['Inflow', 'Outflow'], datasets: [{ data: [currInc, currExp], backgroundColor: ['#34d399', '#fb7185'], borderRadius: 12 }] }, options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false }, ticks: { color: '#525252' } } } } });
             }, 100);
         }
 
-        function calculateTrendData() {
-            const labels = [];
-            const values = [];
-            const now = new Date();
-            for(let i = 5; i >= 0; i--) {
-                const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-                const m = d.getMonth(), y = d.getFullYear();
-                labels.push(d.toLocaleString('default', { month: 'short' }));
-                const monthTotal = state.transactions.filter(t => t.type === 'expense' && new Date(t.date).getMonth() === m && new Date(t.date).getFullYear() === y).reduce((s,t) => s + parseFloat(t.amount), 0);
-                values.push(monthTotal);
-            }
-            return { labels, values };
+        // --- NOTES VIEW ---
+        function renderNotes(el) {
+            el.innerHTML = `
+                <div class="space-y-6 animate-slide-up">
+                    <div class="flex justify-between items-center px-1">
+                        <h2 class="text-2xl font-black tracking-tighter text-white">Financial Notes</h2>
+                        <button onclick="addNote()" class="p-3 glass rounded-2xl text-emerald-400 hover:scale-105 transition-all">
+                            <i data-lucide="plus-square" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+                    <div class="space-y-4">
+                        ${state.notes.length ? state.notes.map(n => `
+                            <div class="glass p-6 rounded-[2rem] relative group">
+                                <textarea onchange="updateNote('${n.id}', this.value)" 
+                                    class="w-full bg-transparent text-sm text-zinc-300 font-medium resize-none min-h-[100px] border-none" 
+                                    placeholder="Write a reminder or goal...">${n.text}</textarea>
+                                <div class="flex justify-between items-center mt-4 pt-4 border-t border-white/5">
+                                    <span class="text-[8px] font-black text-zinc-600 uppercase tracking-widest">${n.date}</span>
+                                    <button onclick="deleteNote('${n.id}')" class="text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity p-2">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('') : '<div class="py-20 text-center opacity-30 text-white"><i data-lucide="edit-3" class="w-12 h-12 mx-auto mb-4 opacity-10"></i><p class="text-[10px] font-black uppercase tracking-widest">Your memo board is empty</p></div>'}
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        function addNote() {
+            state.notes.unshift({ id: Date.now().toString(), text: '', date: new Date().toLocaleDateString() });
+            saveAll();
+            renderView();
+        }
+
+        function updateNote(id, val) {
+            const n = state.notes.find(n => n.id === id);
+            if(n) n.text = val;
+            saveAll();
+        }
+
+        function deleteNote(id) {
+            state.notes = state.notes.filter(n => n.id !== id);
+            saveAll();
+            renderView();
         }
 
         // --- CALCULATOR ---
         function renderCalculator(el) {
-            el.innerHTML = `<div class="glass rounded-[3rem] p-8 shadow-2xl animate-slide-up"><div class="bg-black/40 p-8 rounded-[2rem] mb-8 text-right border border-white/5 h-36 flex flex-col justify-end"><div id="full-calc-display" class="text-5xl font-black font-mono tracking-tighter">${state.fullCalcValue}</div></div>
-                <div class="grid grid-cols-4 gap-4"><button class="calc-btn bg-zinc-800/50" onclick="fCalc('AC')">AC</button><button class="calc-btn bg-zinc-800/50" onclick="fCalc('DEL')">DEL</button><button class="calc-btn bg-zinc-800/50" onclick="fCalc('%')">%</button><button class="calc-btn calc-btn-op" onclick="fCalc('/')">÷</button>
+            el.innerHTML = `<div class="glass rounded-[3rem] p-8 shadow-2xl animate-slide-up">
+                <div class="bg-black/40 p-8 rounded-[2rem] mb-8 text-right border border-white/5 h-36 flex flex-col justify-end"><div id="full-calc-display" class="text-5xl font-black font-mono tracking-tighter text-white">${state.fullCalcValue}</div></div>
+                <div class="grid grid-cols-4 gap-4 text-white">
+                    <button class="calc-btn bg-zinc-800/50" onclick="fCalc('AC')">AC</button><button class="calc-btn bg-zinc-800/50" onclick="fCalc('DEL')">DEL</button><button class="calc-btn bg-zinc-800/50" onclick="fCalc('%')">%</button><button class="calc-btn calc-btn-op" onclick="fCalc('/')">÷</button>
                     <button class="calc-btn" onclick="fCalc('7')">7</button><button class="calc-btn" onclick="fCalc('8')">8</button><button class="calc-btn" onclick="fCalc('9')">9</button><button class="calc-btn calc-btn-op" onclick="fCalc('*')">×</button>
                     <button class="calc-btn" onclick="fCalc('4')">4</button><button class="calc-btn" onclick="fCalc('5')">5</button><button class="calc-btn" onclick="fCalc('6')">6</button><button class="calc-btn calc-btn-op" onclick="fCalc('-')">-</button>
                     <button class="calc-btn" onclick="fCalc('1')">1</button><button class="calc-btn" onclick="fCalc('2')">2</button><button class="calc-btn" onclick="fCalc('3')">3</button><button class="calc-btn calc-btn-op" onclick="fCalc('+')">+</button>
-                    <button class="calc-btn col-span-2" onclick="fCalc('0')">0</button><button class="calc-btn" onclick="fCalc('.')">.</button><button class="calc-btn bg-white text-black" onclick="fCalc('=')">=</button></div></div>`;
+                    <button class="calc-btn col-span-2" onclick="fCalc('0')">0</button><button class="calc-btn" onclick="fCalc('.')">.</button><button class="calc-btn bg-white text-black" onclick="fCalc('=')">=</button>
+                </div></div>`;
         }
 
         function fCalc(val) {
@@ -475,56 +414,38 @@
             el.innerHTML = `
                 <div class="space-y-8 animate-slide-up pb-10">
                     <section class="glass p-8 rounded-[2.5rem]">
-                        <div class="flex justify-between items-center mb-6"><h3 class="text-[10px] font-black text-zinc-500 uppercase">Management</h3><button onclick="toggleModal('entity-modal', true)" class="bg-zinc-800 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest">+ New</button></div>
-                        <div class="grid grid-cols-2 gap-3">
+                        <div class="flex justify-between items-center mb-6"><h3 class="text-[10px] font-black text-zinc-500 uppercase">Management</h3><button onclick="toggleModal('entity-modal', true)" class="bg-zinc-800 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest text-white">+ New</button></div>
+                        <div class="grid grid-cols-2 gap-3 text-white">
                             <div class="space-y-2"><p class="text-[8px] font-black text-zinc-700 uppercase mb-3 ml-1">Categories</p>${state.categories.map(c => `<div class="bg-zinc-900 border border-white/5 p-3 rounded-2xl flex justify-between items-center"><span class="text-[9px] font-bold ${c.type==='income'?'text-emerald-500':'text-rose-500'}">${c.name}</span><button onclick="deleteEntity('cat', '${c.id}')"><i data-lucide="x" class="w-3 h-3 text-zinc-700"></i></button></div>`).join('')}</div>
-                            <div class="space-y-2"><p class="text-[8px] font-black text-zinc-700 uppercase mb-3 ml-1">Accounts</p>${state.accounts.map(a => `<div class="bg-zinc-900 border border-white/5 p-3 rounded-2xl flex justify-between items-center"><span class="text-[9px] font-bold">${a.name}</span><button onclick="deleteEntity('acc', '${a.id}')"><i data-lucide="x" class="w-3 h-3 text-zinc-700"></i></button></div>`).join('')}</div>
+                            <div class="space-y-2"><p class="text-[8px] font-black text-zinc-700 uppercase mb-3 ml-1">Accounts</p>${state.accounts.map(a => `<div class="bg-zinc-900 border border-white/5 p-3 rounded-2xl flex justify-between items-center"><span class="text-[9px] font-bold text-zinc-400">${a.name}</span><button onclick="deleteEntity('acc', '${a.id}')"><i data-lucide="x" class="w-3 h-3 text-zinc-700"></i></button></div>`).join('')}</div>
                         </div>
                     </section>
                     <section class="grid grid-cols-2 gap-4">
-                        <button onclick="exportCSV()" class="glass p-8 rounded-[2.5rem] flex flex-col items-center gap-3"><i data-lucide="download-cloud" class="w-6 h-6 text-zinc-500"></i><span class="text-[9px] font-black uppercase">Backup</span></button>
-                        <button onclick="document.getElementById('csv-upload-field').click()" class="glass p-8 rounded-[2.5rem] flex flex-col items-center gap-3"><i data-lucide="upload-cloud" class="w-6 h-6 text-zinc-500"></i><span class="text-[9px] font-black uppercase">Restore</span></button>
+                        <button onclick="exportCSV()" class="glass p-8 rounded-[2.5rem] flex flex-col items-center gap-3"><i data-lucide="download-cloud" class="w-6 h-6 text-zinc-500"></i><span class="text-[9px] font-black uppercase text-white">Backup</span></button>
+                        <button onclick="document.getElementById('csv-upload-field').click()" class="glass p-8 rounded-[2.5rem] flex flex-col items-center gap-3"><i data-lucide="upload-cloud" class="w-6 h-6 text-zinc-500"></i><span class="text-[9px] font-black uppercase text-white">Restore</span></button>
                     </section>
+                    <button onclick="switchTab('calculator')" class="w-full glass py-6 rounded-[2.5rem] text-[9px] font-black uppercase text-zinc-400">Launch Calculator Utility</button>
                     <button onclick="toggleModal('purge-modal', true)" class="w-full bg-rose-600/10 border border-rose-500/10 py-6 rounded-[2.5rem] text-rose-500 text-[10px] font-black uppercase">Danger: Purge Data</button>
                 </div>
             `;
             lucide.createIcons();
         }
 
-        // --- ACTIONS ---
+        // --- CORE ACTIONS ---
         function toggleModal(id, show) { document.getElementById(id).classList.toggle('hidden', !show); if(id === 'transaction-modal' && show) populateSelects(); }
         function setTransType(type) { state.transType = type; document.getElementById('btn-exp').className = `flex-1 py-3 rounded-xl text-xs font-black ${type==='expense'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; document.getElementById('btn-inc').className = `flex-1 py-3 rounded-xl text-xs font-black ${type==='income'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; populateSelects(); }
         function populateSelects() { document.getElementById('t-cat').innerHTML = state.categories.filter(c => c.type === state.transType).map(c => `<option value="${c.name}">${c.name}</option>`).join(''); document.getElementById('t-acc').innerHTML = state.accounts.map(a => `<option value="${a.name}">${a.name}</option>`).join(''); }
-
         function qCalc(val) { if(state.qCalcValue === '0' && !isNaN(val)) state.qCalcValue = val; else state.qCalcValue += val; document.getElementById('quick-calc-display').innerText = state.qCalcValue; }
         function qClear() { state.qCalcValue = '0'; document.getElementById('quick-calc-display').innerText = '0'; }
-
         function openTransactionModal() { state.editingId = null; qClear(); document.getElementById('modal-title').innerText = "Record Entry"; document.getElementById('t-note').value = ''; toggleModal('transaction-modal', true); setTransType('expense'); }
-        function editTransaction(id) {
-            const t = state.transactions.find(x => x.id === id); if(!t) return;
-            state.editingId = id; state.qCalcValue = t.amount.toString(); state.transType = t.type; toggleModal('transaction-modal', true);
-            document.getElementById('modal-title').innerText = "Edit Record"; document.getElementById('quick-calc-display').innerText = t.amount; document.getElementById('t-date').value = t.date; document.getElementById('t-note').value = t.note; setTransType(t.type); document.getElementById('t-cat').value = t.category; document.getElementById('t-acc').value = t.account;
-        }
+        function editTransaction(id) { const t = state.transactions.find(x => x.id === id); if(!t) return; state.editingId = id; state.qCalcValue = t.amount.toString(); state.transType = t.type; toggleModal('transaction-modal', true); document.getElementById('modal-title').innerText = "Edit Record"; document.getElementById('quick-calc-display').innerText = t.amount; document.getElementById('t-date').value = t.date; document.getElementById('t-note').value = t.note; setTransType(t.type); document.getElementById('t-cat').value = t.category; document.getElementById('t-acc').value = t.account; }
+        function saveTransaction() { let amt = 0; try { amt = eval(state.qCalcValue.replace(/[^-+*/.0-9]/g, '')); } catch(e) { return; } if(amt <= 0) return; const entry = { id: state.editingId || Date.now(), amount: Math.abs(parseFloat(amt)), type: state.transType, category: document.getElementById('t-cat').value, account: document.getElementById('t-acc').value, date: document.getElementById('t-date').value, note: document.getElementById('t-note').value }; if(state.editingId) state.transactions = state.transactions.map(x => x.id === state.editingId ? entry : x); else state.transactions.unshift(entry); saveAll(); toggleModal('transaction-modal', false); renderView(); }
+        function saveAll() { localStorage.setItem('k_v8_trans', JSON.stringify(state.transactions)); localStorage.setItem('k_v8_cats', JSON.stringify(state.categories)); localStorage.setItem('k_v8_accs', JSON.stringify(state.accounts)); localStorage.setItem('k_v8_notes', JSON.stringify(state.notes)); }
 
-        function saveTransaction() {
-            let amt = 0; try { amt = eval(state.qCalcValue.replace(/[^-+*/.0-9]/g, '')); } catch(e) { return; }
-            if(amt <= 0) return;
-            const entry = { id: state.editingId || Date.now(), amount: Math.abs(parseFloat(amt)), type: state.transType, category: document.getElementById('t-cat').value, account: document.getElementById('t-acc').value, date: document.getElementById('t-date').value, note: document.getElementById('t-note').value };
-            if(state.editingId) state.transactions = state.transactions.map(x => x.id === state.editingId ? entry : x);
-            else state.transactions.unshift(entry);
-            saveAll(); toggleModal('transaction-modal', false); renderView();
-        }
-
-        // --- ENTITY SETUP ---
-        function setSetupType(ctx) { state.setupContext = ctx; document.getElementById('setup-cat-btn').className = `flex-1 py-2.5 rounded-xl text-[9px] font-black ${ctx==='cat'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; document.getElementById('setup-acc-btn').className = `flex-1 py-2.5 rounded-xl text-[9px] font-black ${ctx==='acc'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; document.getElementById('cat-type-select').classList.toggle('hidden', ctx === 'acc'); }
-        function setSetupBehavior(type) { state.setupBehavior = type; document.getElementById('setup-exp-btn').className = `flex-1 py-2.5 rounded-xl text-[9px] font-black ${type==='expense'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; document.getElementById('setup-inc-btn').className = `flex-1 py-2.5 rounded-xl text-[9px] font-black ${type==='income'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; }
-        function finalizeEntitySetup() {
-            const name = document.getElementById('setup-name').value.trim(); if(!name) return;
-            if(state.setupContext === 'cat') state.categories.push({ id: Date.now().toString(), name, type: state.setupBehavior });
-            else state.accounts.push({ id: Date.now().toString(), name });
-            saveAll(); toggleModal('entity-modal', false); document.getElementById('setup-name').value = ''; renderView();
-        }
-
+        // --- SETUP MODAL HELPERS ---
+        function setSetupType(ctx) { state.setupContext = ctx; document.getElementById('setup-cat-btn').className = `flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase ${ctx==='cat'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; document.getElementById('setup-acc-btn').className = `flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase ${ctx==='acc'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; document.getElementById('cat-type-select').classList.toggle('hidden', ctx === 'acc'); }
+        function setSetupBehavior(type) { state.setupBehavior = type; document.getElementById('setup-exp-btn').className = `flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase ${type==='expense'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; document.getElementById('setup-inc-btn').className = `flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase ${type==='income'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; }
+        function finalizeEntitySetup() { const name = document.getElementById('setup-name').value.trim(); if(!name) return; if(state.setupContext === 'cat') state.categories.push({ id: Date.now().toString(), name, type: state.setupBehavior }); else state.accounts.push({ id: Date.now().toString(), name }); saveAll(); toggleModal('entity-modal', false); document.getElementById('setup-name').value = ''; renderView(); }
         function deleteEntity(type, id) { if(type === 'cat') state.categories = state.categories.filter(c => c.id !== id); else state.accounts = state.accounts.filter(a => a.id !== id); saveAll(); renderView(); }
         function finalizePurge() { localStorage.clear(); location.reload(); }
         function toggleDashboard(mode) { state.dashboardMode = mode; renderView(); }
@@ -532,109 +453,27 @@
         function changeMonth(dir) { state.viewDate.setMonth(state.viewDate.getMonth() + dir); renderView(); }
         function getPalette(i) { return ['#fb7185', '#34d399', '#60a5fa', '#fbbf24', '#a78bfa', '#2dd4bf', '#f472b6'][i % 7]; }
 
-        function saveAll() {
-            localStorage.setItem('k_v8_trans', JSON.stringify(state.transactions));
-            localStorage.setItem('k_v8_cats', JSON.stringify(state.categories));
-            localStorage.setItem('k_v8_accs', JSON.stringify(state.accounts));
-        }
-
-        // --- CSV SMART MAPPING ---
-        function handleCSVSelect(e) {
-            const file = e.target.files[0]; if(!file) return;
-            const reader = new FileReader();
-            reader.onload = (evt) => {
-                const lines = evt.target.result.split('\n').filter(l => l.trim());
-                if(lines.length < 2) return;
-                
-                state.csvHeaders = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
-                state.csvData = lines.slice(1).map(l => l.split(','));
-                
-                showMappingModal();
-            };
-            reader.readAsText(file);
-        }
-
-        function showMappingModal() {
-            const fields = [
-                { id: 'map-date', label: 'Transaction Date' },
-                { id: 'map-amt', label: 'Amount (Value)' },
-                { id: 'map-cat', label: 'Category' },
-                { id: 'map-acc', label: 'Account' },
-                { id: 'map-type', label: 'Type (Income/Expense)' },
-                { id: 'map-note', label: 'Memo/Note' }
-            ];
-
-            const container = document.getElementById('mapping-fields');
-            container.innerHTML = fields.map(f => `
-                <div>
-                    <label class="text-[9px] font-black uppercase text-zinc-500 mb-1.5 block">${f.label}</label>
-                    <select id="${f.id}" class="w-full bg-zinc-900 border border-white/5 p-3.5 rounded-2xl text-[11px] font-bold">
-                        <option value="">-- Ignore --</option>
-                        ${state.csvHeaders.map((h, i) => `<option value="${i}">${h}</option>`).join('')}
-                    </select>
-                </div>
-            `).join('');
-
-            toggleModal('mapping-modal', true);
-        }
-
+        // --- CSV HANDLING ---
+        function handleCSVSelect(e) { const file = e.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = (evt) => { const lines = evt.target.result.split('\n').filter(l => l.trim()); if(lines.length < 2) return; state.csvHeaders = lines[0].split(',').map(h => h.trim().replace(/"/g, '')); state.csvData = lines.slice(1).map(l => l.split(',')); showMappingModal(); }; reader.readAsText(file); }
+        function showMappingModal() { const fields = [{ id: 'map-date', label: 'Date' }, { id: 'map-amt', label: 'Amount' }, { id: 'map-cat', label: 'Category' }, { id: 'map-acc', label: 'Account' }, { id: 'map-type', label: 'Type' }, { id: 'map-note', label: 'Memo' }]; const container = document.getElementById('mapping-fields'); container.innerHTML = fields.map(f => `<div><label class="text-[9px] font-black uppercase text-zinc-500 mb-1.5 block">${f.label}</label><select id="${f.id}" class="w-full bg-zinc-900 border border-white/5 p-3.5 rounded-2xl text-[11px] font-bold"><option value="">-- Ignore --</option>${state.csvHeaders.map((h, i) => `<option value="${i}">${h}</option>`).join('')}</select></div>`).join(''); toggleModal('mapping-modal', true); }
         function finalizeMappingImport() {
-            const map = {
-                date: document.getElementById('map-date').value,
-                amt: document.getElementById('map-amt').value,
-                cat: document.getElementById('map-cat').value,
-                acc: document.getElementById('map-acc').value,
-                type: document.getElementById('map-type').value,
-                note: document.getElementById('map-note').value
-            };
-
-            const imported = state.csvData.map((row, idx) => {
+            const map = { date: document.getElementById('map-date').value, amt: document.getElementById('map-amt').value, cat: document.getElementById('map-cat').value, acc: document.getElementById('map-acc').value, type: document.getElementById('map-type').value, note: document.getElementById('map-note').value };
+            const imported = state.csvData.map(row => {
                 if(row.length < state.csvHeaders.length) return null;
-                
                 const rawAmt = map.amt !== "" ? row[map.amt] : "0";
                 const amt = Math.abs(parseFloat(rawAmt.replace(/[^-0-9.]/g, '')) || 0);
-                
                 let type = 'expense';
-                if(map.type !== "" && row[map.type]) {
-                    type = row[map.type].toLowerCase().includes('inc') ? 'income' : 'expense';
-                } else if(parseFloat(rawAmt) > 0) {
-                    type = 'income';
-                }
-
+                if(map.type !== "" && row[map.type]) { type = row[map.type].toLowerCase().includes('inc') ? 'income' : 'expense'; } else if(parseFloat(rawAmt) > 0) { type = 'income'; }
                 const catName = map.cat !== "" ? row[map.cat].trim() : 'Uncategorized';
                 const accName = map.acc !== "" ? row[map.acc].trim() : 'Cash';
-
-                // --- SMART AUTO-ADD ---
-                if (!state.categories.some(c => c.name.toLowerCase() === catName.toLowerCase())) {
-                    state.categories.push({ id: Date.now() + Math.random(), name: catName, type: type });
-                }
-                if (!state.accounts.some(a => a.name.toLowerCase() === accName.toLowerCase())) {
-                    state.accounts.push({ id: Date.now() + Math.random(), name: accName });
-                }
-
-                return {
-                    id: Date.now() + Math.random(),
-                    date: map.date !== "" ? row[map.date] : new Date().toISOString().split('T')[0],
-                    type: type,
-                    category: catName,
-                    account: accName,
-                    amount: amt,
-                    note: map.note !== "" ? row[map.note].replace(/"/g, '') : 'Imported'
-                };
+                if (!state.categories.some(c => c.name.toLowerCase() === catName.toLowerCase())) state.categories.push({ id: Date.now() + Math.random(), name: catName, type: type });
+                if (!state.accounts.some(a => a.name.toLowerCase() === accName.toLowerCase())) state.accounts.push({ id: Date.now() + Math.random(), name: accName });
+                return { id: Date.now() + Math.random(), date: map.date !== "" ? row[map.date] : new Date().toISOString().split('T')[0], type, category: catName, account: accName, amount: amt, note: map.note !== "" ? row[map.note].replace(/"/g, '') : 'Imported' };
             }).filter(x => x);
-
             state.transactions = [...imported, ...state.transactions];
-            saveAll();
-            toggleModal('mapping-modal', false);
-            renderView();
+            saveAll(); toggleModal('mapping-modal', false); renderView();
         }
-
-        function exportCSV() {
-            const h = ['Date','Type','Category','Account','Amount','Note'];
-            const r = state.transactions.map(t => [t.date,t.type,t.category,t.account,t.amount,`"${t.note}"`]);
-            const c = [h, ...r].map(e => e.join(",")).join("\n");
-            const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([c], { type: 'text/csv' })); a.download = 'khorcha_backup.csv'; a.click();
-        }
+        function exportCSV() { const h = ['Date','Type','Category','Account','Amount','Note']; const r = state.transactions.map(t => [t.date,t.type,t.category,t.account,t.amount,`"${t.note}"`]); const c = [h, ...r].map(e => e.join(",")).join("\n"); const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([c], { type: 'text/csv' })); a.download = 'khorcha_backup.csv'; a.click(); }
     </script>
 </body>
 </html>
