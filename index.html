@@ -251,9 +251,17 @@
         // --- DASHBOARD ---
         function renderDashboard(el) {
             const m = state.viewDate.getMonth(), y = state.viewDate.getFullYear();
+            
+            // Period specific calculations
             const filtered = state.transactions.filter(t => state.dashboardMode === 'all' || (new Date(t.date).getMonth() === m && new Date(t.date).getFullYear() === y));
-            let inc = filtered.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
-            let exp = filtered.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
+            let periodInc = filtered.filter(t => t.type === 'income').reduce((s, t) => s + (parseFloat(t.amount) || 0), 0);
+            let periodExp = filtered.filter(t => t.type === 'expense').reduce((s, t) => s + (parseFloat(t.amount) || 0), 0);
+
+            // True Net Balance (All Time)
+            let totalBalance = state.transactions.reduce((s, t) => {
+                const val = parseFloat(t.amount) || 0;
+                return t.type === 'income' ? s + val : s - val;
+            }, 0);
 
             el.innerHTML = `
                 <div class="glass rounded-[2.5rem] p-8 mb-8">
@@ -264,10 +272,16 @@
                         </div>
                         ${state.dashboardMode === 'monthly' ? `<div class="flex items-center gap-4"><button onclick="changeMonth(-1)" class="p-1.5"><i data-lucide="chevron-left" class="w-4 h-4"></i></button><span class="text-[9px] font-black uppercase">${state.viewDate.toLocaleString('default', { month: 'short', year: 'numeric' })}</span><button onclick="changeMonth(1)" class="p-1.5"><i data-lucide="chevron-right" class="w-4 h-4"></i></button></div>` : ''}
                     </div>
-                    <div class="text-center mb-10"><p class="text-zinc-500 text-[9px] font-black uppercase tracking-[0.2em] mb-2">Net Cashflow</p><h2 class="text-5xl font-black tracking-tighter">${formatBDT(inc - exp)}</h2></div>
+                    <div class="text-center mb-10">
+                        <p class="text-zinc-500 text-[9px] font-black uppercase tracking-[0.2em] mb-2">Net Cashflow</p>
+                        <h2 class="text-5xl font-black tracking-tighter">${formatBDT(periodInc - periodExp)}</h2>
+                        <div class="mt-2 text-[10px] font-bold text-zinc-600 uppercase tracking-widest">
+                            Total Balance: ${formatBDT(totalBalance)}
+                        </div>
+                    </div>
                     <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-emerald-500/5 p-5 rounded-3xl border border-emerald-500/10"><p class="text-[8px] text-emerald-500/60 font-black mb-1.5 uppercase">Inflow</p><p class="text-emerald-400 font-black text-lg">+${formatBDT(inc)}</p></div>
-                        <div class="bg-rose-500/5 p-5 rounded-3xl border border-rose-500/10"><p class="text-[8px] text-rose-500/60 font-black mb-1.5 uppercase">Outflow</p><p class="text-rose-400 font-black text-lg">-${formatBDT(exp)}</p></div>
+                        <div class="bg-emerald-500/5 p-5 rounded-3xl border border-emerald-500/10"><p class="text-[8px] text-emerald-500/60 font-black mb-1.5 uppercase">Inflow</p><p class="text-emerald-400 font-black text-lg">+${formatBDT(periodInc)}</p></div>
+                        <div class="bg-rose-500/5 p-5 rounded-3xl border border-rose-500/10"><p class="text-[8px] text-rose-500/60 font-black mb-1.5 uppercase">Outflow</p><p class="text-rose-400 font-black text-lg">-${formatBDT(periodExp)}</p></div>
                     </div>
                 </div>
                 <div class="space-y-8">${renderGroupedList(filtered)}</div>
@@ -279,7 +293,7 @@
             const sortedDates = Object.keys(groups).sort((a,b) => new Date(b) - new Date(a));
             if(!sortedDates.length) return `<div class="py-20 text-center opacity-30"><p class="text-[10px] font-black uppercase tracking-widest">No entries found</p></div>`;
             return sortedDates.map(date => {
-                const daySum = groups[date].reduce((s, t) => s + (t.type === 'income' ? t.amount : -t.amount), 0);
+                const daySum = groups[date].reduce((s, t) => s + (t.type === 'income' ? parseFloat(t.amount) : -parseFloat(t.amount)), 0);
                 return `<div class="space-y-3"><div class="flex justify-between items-center px-1"><span class="text-[10px] font-black text-zinc-600 uppercase tracking-widest">${new Date(date).toLocaleDateString(undefined, {day:'numeric', month:'short', weekday:'short'})}</span><span class="text-[10px] font-black ${daySum >= 0 ? 'text-emerald-500' : 'text-rose-500'}">${daySum >= 0 ? '+' : ''}${formatBDT(daySum)}</span></div>
                     <div class="space-y-2">${groups[date].map(t => `<div onclick="editTransaction(${t.id})" class="glass p-5 rounded-3xl flex items-center justify-between group active:scale-[0.98] transition-all cursor-pointer"><div class="flex items-center gap-4"><div class="w-11 h-11 rounded-2xl bg-zinc-900 border border-white/5 flex items-center justify-center"><i data-lucide="${t.type === 'income' ? 'plus-circle' : 'minus-circle'}" class="w-5 h-5 ${t.type === 'income' ? 'text-emerald-500' : 'text-rose-500'}"></i></div><div><p class="text-[11px] font-black uppercase tracking-wider">${t.category}</p><p class="text-[9px] text-zinc-500 font-bold mt-0.5">${t.account} · ${t.note || 'No memo'}</p></div></div><div class="text-right"><p class="text-sm font-black ${t.type === 'income' ? 'text-emerald-400' : 'text-rose-400'}">${t.type === 'income' ? '+' : '-'}${Number(t.amount).toLocaleString()}</p></div></div>`).join('')}</div></div>`;
             }).join('');
@@ -289,7 +303,7 @@
         function renderStats(el) {
             const m = state.viewDate.getMonth(), y = state.viewDate.getFullYear();
             const filtered = state.transactions.filter(t => state.statFilter === 'all' || (new Date(t.date).getMonth() === m && new Date(t.date).getFullYear() === y));
-            const expData = {}; filtered.filter(t => t.type === 'expense').forEach(t => { expData[t.category] = (expData[t.category] || 0) + t.amount; });
+            const expData = {}; filtered.filter(t => t.type === 'expense').forEach(t => { expData[t.category] = (expData[t.category] || 0) + parseFloat(t.amount); });
             const sortedExp = Object.entries(expData).sort((a,b) => b[1]-a[1]);
 
             el.innerHTML = `<div class="space-y-6 animate-slide-up"><div class="flex justify-between items-center px-1"><h2 class="text-2xl font-black tracking-tighter">Insights</h2><div class="flex bg-zinc-900 p-1 rounded-2xl border border-white/5"><button onclick="setStatFilter('monthly')" class="px-4 py-1.5 rounded-xl text-[8px] font-black uppercase ${state.statFilter === 'monthly' ? 'bg-zinc-800 text-white shadow-lg' : 'text-zinc-600'}">Month</button><button onclick="setStatFilter('all')" class="px-4 py-1.5 rounded-xl text-[8px] font-black uppercase ${state.statFilter === 'all' ? 'bg-zinc-800 text-white shadow-lg' : 'text-zinc-600'}">All</button></div></div>
@@ -393,13 +407,50 @@
             const file = e.target.files[0]; if(!file) return;
             const reader = new FileReader();
             reader.onload = (evt) => {
-                const lines = evt.target.result.split('\n').filter(l => l.trim()).slice(1);
-                const imported = lines.map(line => {
+                const lines = evt.target.result.split('\n').filter(l => l.trim());
+                if(lines.length < 2) return;
+                
+                const header = lines[0].split(',');
+                const dataLines = lines.slice(1);
+
+                const imported = dataLines.map(line => {
                     const c = line.split(','); if(c.length < 5) return null;
-                    return { id: Date.now() + Math.random(), date: c[0], type: c[1], category: c[2], account: c[3], amount: parseFloat(c[4]), note: c[5]?.replace(/"/g, '') || '' };
+                    return { 
+                        id: Date.now() + Math.random(), 
+                        date: c[0], 
+                        type: c[1].toLowerCase().includes('inc') ? 'income' : 'expense', 
+                        category: c[2].trim(), 
+                        account: c[3].trim(), 
+                        amount: parseFloat(c[4]) || 0, 
+                        note: c[5]?.replace(/"/g, '') || '' 
+                    };
                 }).filter(x => x);
+
+                // --- SMART AUTO-ADD LOGIC ---
+                const existingCatNames = state.categories.map(c => c.name.toLowerCase());
+                const existingAccNames = state.accounts.map(a => a.name.toLowerCase());
+
+                imported.forEach(t => {
+                    // Check categories
+                    if (!existingCatNames.includes(t.category.toLowerCase())) {
+                        state.categories.push({ id: Date.now() + Math.random(), name: t.category, type: t.type });
+                        existingCatNames.push(t.category.toLowerCase());
+                    }
+                    // Check accounts
+                    if (!existingAccNames.includes(t.account.toLowerCase())) {
+                        state.accounts.push({ id: Date.now() + Math.random(), name: t.account });
+                        existingAccNames.push(t.account.toLowerCase());
+                    }
+                });
+
                 state.transactions = [...imported, ...state.transactions];
-                localStorage.setItem('k_v7_trans', JSON.stringify(state.transactions)); renderView();
+                
+                // Save everything to localStorage
+                localStorage.setItem('k_v7_trans', JSON.stringify(state.transactions));
+                localStorage.setItem('k_v7_cats', JSON.stringify(state.categories));
+                localStorage.setItem('k_v7_accs', JSON.stringify(state.accounts));
+                
+                renderView();
             };
             reader.readAsText(file);
         }
