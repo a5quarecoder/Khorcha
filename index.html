@@ -99,6 +99,18 @@
         .folder-open .folder-chevron {
             transform: rotate(180deg);
         }
+
+        /* Budget Progress */
+        .progress-bar {
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255,255,255,0.05);
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            transition: width 0.5s ease;
+        }
     </style>
 </head>
 <body class="min-h-screen">
@@ -117,6 +129,10 @@
                     <button onclick="switchTab('dashboard')" id="pc-nav-dashboard" class="nav-item active w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-zinc-500 hover:text-white transition-all">
                         <i data-lucide="layout-grid" class="w-5 h-5"></i>
                         <span class="text-sm font-bold">Dashboard</span>
+                    </button>
+                    <button onclick="switchTab('budget')" id="pc-nav-budget" class="nav-item w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-zinc-500 hover:text-white transition-all">
+                        <i data-lucide="pie-chart" class="w-5 h-5"></i>
+                        <span class="text-sm font-bold">Budget</span>
                     </button>
                     <button onclick="switchTab('stats')" id="pc-nav-stats" class="nav-item w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-zinc-500 hover:text-white transition-all">
                         <i data-lucide="bar-chart-big" class="w-5 h-5"></i>
@@ -175,9 +191,9 @@
                 <i data-lucide="layout-grid" class="w-4 h-4"></i>
                 <span class="text-[7px] font-black uppercase">Home</span>
             </button>
-            <button onclick="switchTab('stats')" id="nav-stats" class="nav-item flex-1 py-3 rounded-2xl flex flex-col items-center gap-1 transition-all text-zinc-500">
-                <i data-lucide="bar-chart-big" class="w-4 h-4"></i>
-                <span class="text-[7px] font-black uppercase">Stats</span>
+            <button onclick="switchTab('budget')" id="nav-budget" class="nav-item flex-1 py-3 rounded-2xl flex flex-col items-center gap-1 transition-all text-zinc-500">
+                <i data-lucide="pie-chart" class="w-4 h-4"></i>
+                <span class="text-[7px] font-black uppercase">Budget</span>
             </button>
             <button onclick="openTransactionModal()" class="flex-1 flex justify-center -translate-y-6">
                 <div class="w-12 h-12 bg-white text-black rounded-full flex items-center justify-center shadow-xl ring-4 ring-black">
@@ -292,7 +308,7 @@
     <div id="purge-modal" class="fixed inset-0 bg-black/98 z-[100] flex items-center justify-center hidden p-6">
         <div class="glass w-full max-w-xs rounded-[3rem] p-10 text-center text-white">
             <div class="w-20 h-20 bg-rose-500/10 rounded-full flex items-center justify-center mx-auto mb-6"><i data-lucide="alert-triangle" class="w-10 h-10 text-rose-500"></i></div>
-            <h3 class="text-xl font-bold mb-3">Wipe All Data?</h3>
+            <h3 class="text-xl font-bold mb-3 text-white">Wipe All Data?</h3>
             <p class="text-[10px] text-zinc-500 uppercase leading-relaxed font-bold tracking-widest">Permanent deletion.</p>
             <div class="mt-10 flex flex-col gap-3">
                 <button onclick="toggleModal('purge-modal', false)" class="w-full py-4 text-[10px] font-black uppercase tracking-widest text-white">Cancel</button>
@@ -315,6 +331,7 @@
                 { id: '1', name: 'Cash' },
                 { id: '2', name: 'Bank' }
             ],
+            budgets: JSON.parse(localStorage.getItem('k_v8_budgets')) || {}, // Key: month-year, Value: { catId: amount }
             notes: JSON.parse(localStorage.getItem('k_v8_notes')) || [],
             viewDate: new Date(),
             dashboardMode: 'monthly',
@@ -363,6 +380,7 @@
             container.innerHTML = '';
             switch(state.currentTab) {
                 case 'dashboard': renderDashboard(container); break;
+                case 'budget': renderBudget(container); break;
                 case 'stats': renderStats(container); break;
                 case 'notes': renderNotes(container); break;
                 case 'calculator': renderCalculator(container); break;
@@ -402,6 +420,115 @@
                 </div>
                 <div class="grid grid-cols-1 gap-8">${renderGroupedList(filtered)}</div>
             `;
+        }
+
+        // --- BUDGET VIEW (EVERYDOLLAR INSPIRED) ---
+        function renderBudget(el) {
+            const m = state.viewDate.getMonth(), y = state.viewDate.getFullYear();
+            const monthKey = `${m}-${y}`;
+            const monthBudgets = state.budgets[monthKey] || {};
+            const monthName = state.viewDate.toLocaleString('default', { month: 'long', year: 'numeric' });
+
+            // Calculate Planned vs Spent
+            const currentMonthTrans = state.transactions.filter(t => new Date(t.date).getMonth() === m && new Date(t.date).getFullYear() === y);
+            
+            const incomeCats = state.categories.filter(c => c.type === 'income');
+            const expenseCats = state.categories.filter(c => c.type === 'expense');
+
+            let totalPlannedIncome = incomeCats.reduce((s, c) => s + (parseFloat(monthBudgets[c.id]) || 0), 0);
+            let totalPlannedExpense = expenseCats.reduce((s, c) => s + (parseFloat(monthBudgets[c.id]) || 0), 0);
+            const remainingToBudget = totalPlannedIncome - totalPlannedExpense;
+
+            el.innerHTML = `
+                <div class="space-y-8 animate-slide-up pb-20">
+                    <!-- Budget Header -->
+                    <div class="glass rounded-[2.5rem] p-8">
+                        <div class="flex justify-between items-center mb-8">
+                            <h2 class="text-2xl font-black tracking-tighter text-white">Monthly Budget</h2>
+                            <div class="flex items-center gap-4">
+                                <button onclick="changeMonth(-1)" class="p-1.5 text-white"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+                                <span class="text-[9px] font-black uppercase text-white">${monthName}</span>
+                                <button onclick="changeMonth(1)" class="p-1.5 text-white"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center">
+                            <p class="text-zinc-500 text-[9px] font-black uppercase tracking-[0.2em] mb-2">Remaining to Budget</p>
+                            <h2 class="text-4xl font-black tracking-tighter ${remainingToBudget === 0 ? 'text-emerald-400' : 'text-white'}">
+                                ${formatBDT(remainingToBudget)}
+                            </h2>
+                            <p class="text-[8px] text-zinc-500 uppercase mt-2 font-bold tracking-widest">
+                                ${remainingToBudget === 0 ? "It's an EveryDollar Budget!" : "Budget every Taka to Zero."}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Income Section -->
+                    <div class="space-y-4">
+                        <h3 class="text-[10px] font-black uppercase tracking-widest text-zinc-500 px-1">Planned Income</h3>
+                        <div class="space-y-3">
+                            ${incomeCats.map(c => renderBudgetItem(c, monthBudgets[c.id], currentMonthTrans)).join('')}
+                        </div>
+                    </div>
+
+                    <!-- Expense Section -->
+                    <div class="space-y-4">
+                        <h3 class="text-[10px] font-black uppercase tracking-widest text-zinc-500 px-1">Planned Expenses</h3>
+                        <div class="space-y-3">
+                            ${expenseCats.map(c => renderBudgetItem(c, monthBudgets[c.id], currentMonthTrans)).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        function renderBudgetItem(cat, planned, trans) {
+            const spent = trans.filter(t => t.category === cat.name).reduce((s, t) => s + (parseFloat(t.amount) || 0), 0);
+            const plannedVal = parseFloat(planned) || 0;
+            const remaining = plannedVal - spent;
+            const progress = plannedVal > 0 ? Math.min((spent / plannedVal) * 100, 100) : 0;
+            const color = cat.type === 'income' ? 'bg-emerald-400' : (spent > plannedVal ? 'bg-rose-400' : 'bg-white');
+
+            return `
+                <div class="glass p-6 rounded-[2rem]">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-xs font-black uppercase tracking-wider text-white">${cat.name}</p>
+                            <p class="text-[9px] text-zinc-500 font-bold uppercase mt-1">Remaining: ${formatBDT(remaining)}</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="flex items-center gap-2 bg-black/40 px-3 py-1.5 rounded-xl border border-white/5">
+                                <span class="text-[8px] font-black text-zinc-600 uppercase">৳</span>
+                                <input type="number" 
+                                    value="${planned || ''}" 
+                                    placeholder="0"
+                                    onchange="updateBudget('${cat.id}', this.value)"
+                                    class="bg-transparent text-xs font-black text-white w-20 text-right outline-none">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-bar mb-1">
+                        <div class="progress-fill ${color}" style="width: ${progress}%"></div>
+                    </div>
+                    <div class="flex justify-between items-center text-[8px] font-black uppercase tracking-widest text-zinc-600">
+                        <span>Spent: ${formatBDT(spent)}</span>
+                        <span>Planned: ${formatBDT(plannedVal)}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateBudget(catId, value) {
+            const m = state.viewDate.getMonth(), y = state.viewDate.getFullYear();
+            const monthKey = `${m}-${y}`;
+            if(!state.budgets[monthKey]) state.budgets[monthKey] = {};
+            state.budgets[monthKey][catId] = value;
+            saveAll();
+            // Don't re-render fully to avoid losing focus on input during typing if triggered by onchange
+            // Actually renderView is fine here since it's onchange.
+            renderView();
         }
 
         function renderGroupedList(list) {
@@ -546,7 +673,7 @@
 
         function toggleFolder(id) { document.getElementById(`folder-${id}`).classList.toggle('folder-open'); }
 
-        // --- CORE FUNCTIONS (RESTORED FROM PREVIOUS VERSION) ---
+        // --- CORE FUNCTIONS ---
         function toggleModal(id, show) { document.getElementById(id).classList.toggle('hidden', !show); if(id === 'transaction-modal' && show) populateSelects(); }
         function setTransType(type) { state.transType = type; document.getElementById('btn-exp').className = `flex-1 py-3 rounded-xl text-xs font-black ${type==='expense'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; document.getElementById('btn-inc').className = `flex-1 py-3 rounded-xl text-xs font-black ${type==='income'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; populateSelects(); }
         function populateSelects() { document.getElementById('t-cat').innerHTML = state.categories.filter(c => c.type === state.transType).map(c => `<option value="${c.name}">${c.name}</option>`).join(''); document.getElementById('t-acc').innerHTML = state.accounts.map(a => `<option value="${a.name}">${a.name}</option>`).join(''); }
@@ -555,7 +682,7 @@
         function openTransactionModal() { state.editingId = null; qClear(); document.getElementById('modal-title').innerText = "Record Entry"; document.getElementById('t-note').value = ''; toggleModal('transaction-modal', true); setTransType('expense'); }
         function editTransaction(id) { const t = state.transactions.find(x => x.id === id); if(!t) return; state.editingId = id; state.qCalcValue = t.amount.toString(); state.transType = t.type; toggleModal('transaction-modal', true); document.getElementById('modal-title').innerText = "Edit Record"; document.getElementById('quick-calc-display').innerText = t.amount; document.getElementById('t-date').value = t.date; document.getElementById('t-note').value = t.note; setTransType(t.type); document.getElementById('t-cat').value = t.category; document.getElementById('t-acc').value = t.account; }
         function saveTransaction() { let amt = 0; try { amt = eval(state.qCalcValue.replace(/[^-+*/.0-9]/g, '')); } catch(e) { return; } if(amt <= 0) return; const entry = { id: state.editingId || Date.now(), amount: Math.abs(parseFloat(amt)), type: state.transType, category: document.getElementById('t-cat').value, account: document.getElementById('t-acc').value, date: document.getElementById('t-date').value, note: document.getElementById('t-note').value }; if(state.editingId) state.transactions = state.transactions.map(x => x.id === state.editingId ? entry : x); else state.transactions.unshift(entry); saveAll(); toggleModal('transaction-modal', false); renderView(); }
-        function saveAll() { localStorage.setItem('k_v8_trans', JSON.stringify(state.transactions)); localStorage.setItem('k_v8_cats', JSON.stringify(state.categories)); localStorage.setItem('k_v8_accs', JSON.stringify(state.accounts)); localStorage.setItem('k_v8_notes', JSON.stringify(state.notes)); }
+        function saveAll() { localStorage.setItem('k_v8_trans', JSON.stringify(state.transactions)); localStorage.setItem('k_v8_cats', JSON.stringify(state.categories)); localStorage.setItem('k_v8_accs', JSON.stringify(state.accounts)); localStorage.setItem('k_v8_notes', JSON.stringify(state.notes)); localStorage.setItem('k_v8_budgets', JSON.stringify(state.budgets)); }
         function addNote() { state.notes.unshift({ id: Date.now().toString(), text: '', date: new Date().toLocaleDateString() }); saveAll(); renderView(); }
         function updateNote(id, val) { const n = state.notes.find(n => n.id === id); if(n) n.text = val; saveAll(); }
         function deleteNote(id) { state.notes = state.notes.filter(n => n.id !== id); saveAll(); renderView(); }
