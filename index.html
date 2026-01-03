@@ -32,35 +32,11 @@
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        /* Responsive Navigation Logic */
+        /* Active State logic */
         .nav-item.active {
             color: white;
             background: rgba(255, 255, 255, 0.08);
             box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-        }
-
-        /* Sidebar for PC */
-        @media (min-width: 768px) {
-            .app-grid {
-                display: grid;
-                grid-template-columns: 280px 1fr;
-                min-height: 100vh;
-            }
-            .sidebar {
-                position: sticky;
-                top: 0;
-                height: 100vh;
-                border-right: 1px solid rgba(255, 255, 255, 0.05);
-                z-index: 40;
-            }
-            .mobile-nav { display: none; }
-        }
-
-        /* Bottom Nav for Mobile */
-        @media (max-width: 767px) {
-            .app-grid { display: flex; flex-direction: column; min-height: 100vh; }
-            .sidebar { display: none; }
-            .mobile-nav { display: flex; }
         }
 
         .calc-btn {
@@ -83,6 +59,7 @@
         .animate-slide-up { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         canvas { max-width: 100% !important; }
 
+        /* Folder Toggle Animation */
         .folder-content {
             transition: all 0.3s ease-in-out;
             max-height: 0;
@@ -116,10 +93,11 @@
 </head>
 <body class="min-h-screen">
 
-    <div id="app" class="app-grid">
+    <!-- Responsive Layout Wrapper -->
+    <div id="app" class="flex flex-col md:grid md:grid-cols-[280px_1fr] min-h-screen">
         
-        <!-- SIDEBAR (PC) -->
-        <aside class="sidebar glass p-8 flex flex-col justify-between">
+        <!-- SIDEBAR (PC ONLY) -->
+        <aside class="hidden md:flex glass p-8 flex-col justify-between sticky top-0 h-screen border-r border-white/5 z-40">
             <div>
                 <div class="mb-12">
                     <h1 class="text-3xl font-extrabold tracking-tighter text-white">Khorcha</h1>
@@ -168,10 +146,10 @@
             </div>
         </aside>
 
-        <!-- MAIN CONTENT AREA -->
+        <!-- MAIN CONTENT (DYNAMIC WIDTH) -->
         <div class="flex-1 overflow-y-auto noscroll pb-32 md:pb-12">
             <div class="max-w-5xl mx-auto px-4 md:px-10 pt-8 md:pt-16">
-                <!-- Mobile Header -->
+                <!-- Mobile Only Top Header -->
                 <header class="flex md:hidden justify-between items-center mb-6">
                     <div>
                         <h1 class="text-2xl font-extrabold tracking-tight text-white">Khorcha</h1>
@@ -186,8 +164,8 @@
             </div>
         </div>
 
-        <!-- MOBILE NAVIGATION (FIXED BOTTOM) -->
-        <nav class="mobile-nav fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-lg glass rounded-[2.5rem] p-1.5 justify-between items-center z-50 shadow-2xl border-white/10">
+        <!-- MOBILE NAVIGATION (BOTTOM BAR) -->
+        <nav class="flex md:hidden mobile-nav fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-lg glass rounded-[2.5rem] p-1.5 justify-between items-center z-50 shadow-2xl border-white/10">
             <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item active flex-1 py-3 rounded-2xl flex flex-col items-center gap-1 transition-all text-zinc-500">
                 <i data-lucide="layout-grid" class="w-4 h-4"></i>
                 <span class="text-[7px] font-black uppercase">Home</span>
@@ -212,6 +190,7 @@
         </nav>
     </div>
 
+    <!-- MODALS AND OVERLAYS -->
     <!-- TRANSACTION MODAL -->
     <div id="transaction-modal" class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[60] flex items-end md:items-center justify-center hidden p-0 md:p-4">
         <div class="w-full max-w-lg rounded-t-[2.5rem] md:rounded-[3rem] p-6 md:p-8 animate-slide-up bg-[#0A0A0A] border-t md:border border-white/5">
@@ -365,9 +344,12 @@
         function switchTab(tab) {
             state.currentTab = tab;
             renderView();
+            // Update Mobile Nav
             document.querySelectorAll('.mobile-nav .nav-item').forEach(el => el.classList.remove('active', 'text-white'));
             const activeMobileNav = document.getElementById(`nav-${tab}`);
             if(activeMobileNav) activeMobileNav.classList.add('active', 'text-white');
+            
+            // Update PC Sidebar
             document.querySelectorAll('.sidebar .nav-item').forEach(el => el.classList.remove('active', 'text-white'));
             const activePcNav = document.getElementById(`pc-nav-${tab}`);
             if(activePcNav) activePcNav.classList.add('active', 'text-white');
@@ -445,8 +427,18 @@
                             <p class="text-[8px] text-zinc-500 uppercase mt-2 font-bold tracking-widest">${remainingToBudget === 0 ? "Perfectly Budgeted!" : "Give every Taka a job."}</p>
                         </div>
                     </div>
-                    <div class="space-y-4"><h3 class="text-[10px] font-black uppercase tracking-widest text-zinc-500 px-1">Planned Income</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-4">${incomeCats.map(c => renderBudgetItem(c, monthBudgets[c.id], currentMonthTrans)).join('')}</div></div>
-                    <div class="space-y-4"><h3 class="text-[10px] font-black uppercase tracking-widest text-zinc-500 px-1">Planned Expenses</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-4">${expenseCats.map(c => renderBudgetItem(c, monthBudgets[c.id], currentMonthTrans)).join('')}</div></div>
+                    <div class="space-y-4 md:space-y-6">
+                        <h3 class="text-[10px] font-black uppercase tracking-widest text-zinc-500 px-1">Planned Income</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                            ${incomeCats.map(c => renderBudgetItem(c, monthBudgets[c.id], currentMonthTrans)).join('')}
+                        </div>
+                    </div>
+                    <div class="space-y-4 md:space-y-6">
+                        <h3 class="text-[10px] font-black uppercase tracking-widest text-zinc-500 px-1">Planned Expenses</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                            ${expenseCats.map(c => renderBudgetItem(c, monthBudgets[c.id], currentMonthTrans)).join('')}
+                        </div>
+                    </div>
                 </div>
             `;
             lucide.createIcons();
