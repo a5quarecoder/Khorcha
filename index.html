@@ -3,387 +3,541 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduWallet - Student Budget Pro</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Khorcha - BDT Money Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- React and ReactDOM CDNs -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <!-- Babel for JSX transpilation in the browser -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        
+        :root {
+            --bg-color: #050505;
+            --card-bg: rgba(20, 20, 23, 0.7);
+            --accent: #ffffff;
+            --rose: #fb7185;
+            --emerald: #34d399;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-color);
+            color: #fafafa;
+            -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
+        }
+
+        .glass {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-item.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        .calc-btn {
+            @apply h-14 md:h-16 rounded-2xl flex items-center justify-center text-lg font-bold transition-all active:scale-90 select-none;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .calc-btn:hover { background: rgba(255, 255, 255, 0.08); }
+        .calc-btn-op { background: rgba(255, 255, 255, 0.1); color: var(--emerald); }
+
+        .noscroll::-webkit-scrollbar { display: none; }
+        input, select, textarea { outline: none !important; }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .animate-slide-up { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        canvas { max-width: 100% !important; }
+
+        /* Folder Toggle Animation */
+        .folder-content {
+            transition: all 0.3s ease-in-out;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+        }
+        .folder-open .folder-content {
+            max-height: 1000px;
+            opacity: 1;
+            padding-top: 1rem;
+        }
+        .folder-chevron {
+            transition: transform 0.3s ease;
+        }
+        .folder-open .folder-chevron {
+            transform: rotate(180deg);
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900">
-    <div id="root"></div>
+<body class="min-h-screen pb-28">
 
-    <script type="text/babel">
-        const { useState, useMemo, useEffect } = React;
+    <div id="app" class="max-w-xl mx-auto px-5 pt-10">
+        <header class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-2xl font-extrabold tracking-tight text-white">Khorcha</h1>
+                <p id="header-date" class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest"></p>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-zinc-800 to-zinc-900 border border-zinc-700 flex items-center justify-center overflow-hidden">
+                    <i data-lucide="user" class="w-5 h-5 text-zinc-500"></i>
+                </div>
+            </div>
+        </header>
 
-        // Custom Icon Components (Replacements for Lucide)
-        const Icon = ({ name, size = 24, className = "" }) => {
-            const icons = {
-                dashboard: <path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z" />,
-                history: <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />,
-                budget: <path d="M21.21 15.89A10 10 0 118 2.83M22 12A10 10 0 0012 2v10z" />,
-                settings: <path d="M12.22 2h-.44a2 2 0 00-2 2v.18a2 2 0 01-1 1.73l-.43.25a2 2 0 01-2 0l-.15-.08a2 2 0 00-2.73.73l-.22.38a2 2 0 00.73 2.73l.15.1a2 2 0 011 1.72v.51a2 2 0 01-1 1.74l-.15.09a2 2 0 00-.73 2.73l.22.38a2 2 0 002.73.73l.15-.08a2 2 0 012 0l.43.25a2 2 0 011 1.73V20a2 2 0 002 2h.44a2 2 0 002-2v-.18a2 2 0 011-1.73l.43-.25a2 2 0 012 0l.15.08a2 2 0 002.73-.73l.22-.39a2 2 0 00-.73-2.73l-.15-.1a2 2 0 01-1-1.74v-.5a2 2 0 011-1.74l.15-.09a2 2 0 00.73-2.73l-.22-.38a2 2 0 00-2.73-.73l-.15.08a2 2 0 01-2 0l-.43-.25a2 2 0 01-1-1.73V4a2 2 0 00-2-2z" />,
-                wallet: <path d="M20 12V8H6a2 2 0 01-2-2c0-1.1.9-2 2-2h12v4M4 6v12a2 2 0 002 2h14v-4" />,
-                plus: <path d="M12 5v14M5 12h14" />,
-                up: <path d="M7 17L17 7M7 7h10v10" />,
-                down: <path d="M7 7l10 10M17 7H7v10" />,
-                trash: <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />,
-                chevron: <path d="M9 18l6-6-6-6" />,
-                card: (
-                  <React.Fragment>
-                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
-                    <path d="M1 10h22" />
-                  </React.Fragment>
-                ),
-                grad: <path d="M22 10L12 5 2 10l10 5 10-5zM6 12v5c0 2 2.7 3 6 3s6-1 6-3v-5" />,
-                logout: <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" />
-            };
-            return (
-                <svg 
-                    width={size} 
-                    height={size} 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    strokeWidth="2" 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    className={className}
-                >
-                    {icons[name]}
-                </svg>
-            );
-        };
+        <main id="main-content" class="pb-10"></main>
 
-        const App = () => {
-            const [view, setView] = useState('dashboard');
-            const [balance, setBalance] = useState(1250.00);
-            const [transactions, setTransactions] = useState([
-                { id: 1, title: 'Monthly Stipend', amount: 800, type: 'income', category: 'Grant', date: '2023-10-01' },
-                { id: 2, title: 'Starbucks Study Session', amount: -6.50, type: 'expense', category: 'Food', date: '2023-10-02' },
-                { id: 3, title: 'Textbooks', amount: -120, type: 'expense', category: 'Education', date: '2023-10-03' },
-                { id: 4, title: 'Part-time Shift', amount: 150, type: 'income', category: 'Job', date: '2023-10-04' },
-            ]);
+        <nav class="fixed bottom-8 left-1/2 -translate-x-1/2 w-[95%] max-w-lg glass rounded-[2.5rem] p-2 flex justify-between items-center z-50 shadow-2xl border-white/10">
+            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item active flex-1 py-3 rounded-2xl flex flex-col items-center gap-1 transition-all text-zinc-500">
+                <i data-lucide="layout-grid" class="w-4 h-4"></i>
+                <span class="text-[7px] font-black uppercase">Home</span>
+            </button>
+            <button onclick="switchTab('stats')" id="nav-stats" class="nav-item flex-1 py-3 rounded-2xl flex flex-col items-center gap-1 transition-all text-zinc-500">
+                <i data-lucide="bar-chart-big" class="w-4 h-4"></i>
+                <span class="text-[7px] font-black uppercase">Stats</span>
+            </button>
+            
+            <button onclick="openTransactionModal()" class="flex-1 flex justify-center -translate-y-6">
+                <div class="w-12 h-12 bg-white text-black rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform ring-4 ring-black">
+                    <i data-lucide="plus" class="w-7 h-7"></i>
+                </div>
+            </button>
 
-            const [isModalOpen, setIsModalOpen] = useState(false);
-            const [formData, setFormData] = useState({ title: '', amount: '', type: 'expense', category: 'General' });
+            <button onclick="switchTab('notes')" id="nav-notes" class="nav-item flex-1 py-3 rounded-2xl flex flex-col items-center gap-1 transition-all text-zinc-500">
+                <i data-lucide="sticky-note" class="w-4 h-4"></i>
+                <span class="text-[7px] font-black uppercase">Notes</span>
+            </button>
+            <button onclick="switchTab('settings')" id="nav-settings" class="nav-item flex-1 py-3 rounded-2xl flex flex-col items-center gap-1 transition-all text-zinc-500">
+                <i data-lucide="settings" class="w-4 h-4"></i>
+                <span class="text-[7px] font-black uppercase">Setup</span>
+            </button>
+        </nav>
+    </div>
 
-            const totals = useMemo(() => {
-                const income = transactions.filter(t => t.type === 'income').reduce((acc, curr) => acc + curr.amount, 0);
-                const expenses = transactions.filter(t => t.type === 'expense').reduce((acc, curr) => acc + Math.abs(curr.amount), 0);
-                return { income, expenses, net: income - expenses };
-            }, [transactions]);
-
-            const categories = {
-                expense: ['Food', 'Rent', 'Education', 'Social', 'Transport', 'Subscriptions', 'General'],
-                income: ['Job', 'Grant', 'Allowance', 'Refund', 'Gifts']
-            };
-
-            const handleAddTransaction = (e) => {
-                e.preventDefault();
-                if (!formData.title || !formData.amount) return;
-
-                const newTx = {
-                    id: Date.now(),
-                    title: formData.title,
-                    amount: formData.type === 'expense' ? -Math.abs(parseFloat(formData.amount)) : Math.abs(parseFloat(formData.amount)),
-                    type: formData.type,
-                    category: formData.category,
-                    date: new Date().toISOString().split('T')[0]
-                };
-
-                setTransactions([newTx, ...transactions]);
-                setBalance(prev => prev + newTx.amount);
-                setIsModalOpen(false);
-                setFormData({ title: '', amount: '', type: 'expense', category: 'General' });
-            };
-
-            const deleteTransaction = (id) => {
-                const tx = transactions.find(t => t.id === id);
-                setBalance(prev => prev - tx.amount);
-                setTransactions(transactions.filter(t => t.id !== id));
-            };
-
-            const StatCard = ({ title, value, icon, color }) => (
-                <div className="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-4">
-                    <div className={`p-3 rounded-2xl ${color}`}>
-                        <Icon name={icon} size={24} className="text-white" />
-                    </div>
-                    <div>
-                        <p className="text-sm text-slate-500 font-medium">{title}</p>
-                        <p className="text-2xl font-bold text-slate-800">${Math.abs(value).toLocaleString()}</p>
+    <!-- TRANSACTION MODAL -->
+    <div id="transaction-modal" class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[60] flex items-end md:items-center justify-center hidden">
+        <div class="w-full max-w-lg rounded-t-[3rem] md:rounded-[3rem] p-8 animate-slide-up bg-[#0A0A0A] border-t border-white/5">
+            <div class="flex justify-between items-center mb-8">
+                <h3 id="modal-title" class="text-xl font-bold tracking-tight text-white">Record Entry</h3>
+                <button onclick="toggleModal('transaction-modal', false)" class="p-3 bg-zinc-900 rounded-2xl text-zinc-400"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="space-y-6">
+                <div class="flex bg-zinc-900 p-1.5 rounded-2xl">
+                    <button onclick="setTransType('expense')" id="btn-exp" class="flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest bg-zinc-800 text-white shadow-lg">Expense</button>
+                    <button onclick="setTransType('income')" id="btn-inc" class="flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest text-zinc-500">Income</button>
+                </div>
+                <div class="text-center py-10 bg-gradient-to-b from-white/5 to-transparent rounded-[2.5rem] border border-white/5 shadow-inner">
+                    <div class="flex items-center justify-center gap-3">
+                        <span class="text-2xl font-bold text-zinc-600">৳</span>
+                        <div id="quick-calc-display" class="text-6xl font-black font-mono tracking-tighter text-white">0</div>
                     </div>
                 </div>
-            );
-
-            return (
-                <div className="min-h-screen bg-slate-50 font-sans text-slate-900 pb-24 md:pb-0 md:pl-64">
-                    {/* Navigation */}
-                    <nav className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md border-t border-slate-200 px-6 py-3 flex justify-between items-center md:top-0 md:bottom-auto md:flex-col md:w-64 md:h-screen md:border-t-0 md:border-r md:px-4 md:py-8 z-50">
-                        <div className="hidden md:flex items-center gap-2 mb-12 px-4">
-                            <div className="bg-indigo-600 p-2 rounded-xl">
-                                <Icon name="grad" size={24} className="text-white" />
-                            </div>
-                            <span className="text-xl font-bold tracking-tight text-slate-900">EduWallet</span>
-                        </div>
-                        
-                        <div className="flex md:flex-col gap-8 md:gap-4 w-full justify-around md:justify-start">
-                            {[
-                                { id: 'dashboard', icon: 'dashboard', label: 'Home' },
-                                { id: 'transactions', icon: 'history', label: 'History' },
-                                { id: 'budget', icon: 'budget', label: 'Budget' },
-                                { id: 'settings', icon: 'settings', label: 'Profile' }
-                            ].map((item) => (
-                                <button
-                                    key={item.id}
-                                    onClick={() => setView(item.id)}
-                                    className={`flex flex-col md:flex-row items-center gap-3 px-4 py-3 rounded-2xl transition-all ${
-                                        view === item.id 
-                                            ? 'text-indigo-600 md:bg-indigo-50 font-semibold' 
-                                            : 'text-slate-400 hover:text-slate-600'
-                                    }`}
-                                >
-                                    <Icon name={item.icon} size={24} />
-                                    <span className="text-[10px] md:text-sm md:font-medium">{item.label}</span>
-                                </button>
-                            ))}
-                        </div>
-
-                        <div className="hidden md:block mt-auto w-full px-4">
-                            <button className="flex items-center gap-3 text-slate-400 hover:text-red-500 transition-colors py-3">
-                                <Icon name="logout" size={20} />
-                                <span className="font-medium">Sign Out</span>
-                            </button>
-                        </div>
-                    </nav>
-
-                    <main className="max-w-5xl mx-auto p-6 md:p-10">
-                        <header className="flex justify-between items-center mb-8">
-                            <div>
-                                <h1 className="text-3xl font-extrabold tracking-tight">
-                                    {view === 'dashboard' ? 'Welcome back, Alex!' : 
-                                     view === 'transactions' ? 'Transaction History' : 
-                                     view === 'budget' ? 'Budget Planner' : 'Settings'}
-                                </h1>
-                                <p className="text-slate-500 font-medium">October 2023 Overview</p>
-                            </div>
-                            <button 
-                                onClick={() => setIsModalOpen(true)}
-                                className="bg-indigo-600 hover:bg-indigo-700 text-white p-3 md:px-6 md:py-3 rounded-2xl md:rounded-xl shadow-lg shadow-indigo-100 transition-all flex items-center gap-2 group"
-                            >
-                                <Icon name="plus" size={20} className="group-hover:rotate-90 transition-transform" />
-                                <span className="hidden md:inline font-semibold">New Entry</span>
-                            </button>
-                        </header>
-
-                        {view === 'dashboard' && (
-                            <div className="space-y-8 animate-fade-in">
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    <StatCard title="Main Balance" value={balance} icon="wallet" color="bg-indigo-500" />
-                                    <StatCard title="Monthly Income" value={totals.income} icon="up" color="bg-emerald-500" />
-                                    <StatCard title="Monthly Spent" value={totals.expenses} icon="down" color="bg-rose-500" />
-                                </div>
-
-                                <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-                                    <div className="flex justify-between items-center mb-6">
-                                        <h2 className="text-xl font-bold">Safe-to-Spend</h2>
-                                        <span className="text-indigo-600 font-bold bg-indigo-50 px-3 py-1 rounded-full text-sm">Target: $20/day</span>
-                                    </div>
-                                    <div className="space-y-4">
-                                        <div className="w-full bg-slate-100 h-4 rounded-full overflow-hidden">
-                                            <div 
-                                                className="bg-indigo-500 h-full rounded-full transition-all duration-1000" 
-                                                style={{ width: `${Math.min((totals.expenses / (totals.income || 1)) * 100, 100)}%` }}
-                                            />
-                                        </div>
-                                        <div className="flex justify-between text-sm font-medium text-slate-500">
-                                            <span>Spent: ${totals.expenses.toFixed(0)}</span>
-                                            <span>Budget: ${totals.income.toFixed(0)}</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-4">
-                                    <div className="flex justify-between items-center px-1">
-                                        <h2 className="text-xl font-bold">Recent Activity</h2>
-                                        <button onClick={() => setView('transactions')} className="text-indigo-600 text-sm font-bold flex items-center gap-1">
-                                            See All <Icon name="chevron" size={16} />
-                                        </button>
-                                    </div>
-                                    
-                                    <div className="grid gap-3">
-                                        {transactions.slice(0, 5).map(tx => (
-                                            <div key={tx.id} className="bg-white p-4 rounded-2xl flex items-center justify-between border border-slate-100 hover:border-indigo-100 transition-colors group">
-                                                <div className="flex items-center gap-4">
-                                                    <div className={`p-3 rounded-xl ${tx.type === 'income' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
-                                                        {tx.type === 'income' ? <Icon name="up" size={20} /> : <Icon name="card" size={20} />}
-                                                    </div>
-                                                    <div>
-                                                        <p className="font-bold text-slate-800">{tx.title}</p>
-                                                        <p className="text-xs text-slate-400 font-medium uppercase tracking-wider">{tx.category} • {tx.date}</p>
-                                                    </div>
-                                                </div>
-                                                <div className="text-right flex items-center gap-4">
-                                                    <p className={`font-bold text-lg ${tx.type === 'income' ? 'text-emerald-600' : 'text-slate-800'}`}>
-                                                        {tx.type === 'income' ? '+' : '-'}${Math.abs(tx.amount).toFixed(2)}
-                                                    </p>
-                                                    <button 
-                                                        onClick={() => deleteTransaction(tx.id)}
-                                                        className="p-2 text-slate-300 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-all"
-                                                    >
-                                                        <Icon name="trash" size={18} />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {view === 'transactions' && (
-                            <div className="animate-fade-in">
-                                <div className="bg-white rounded-3xl border border-slate-100 overflow-hidden shadow-sm overflow-x-auto">
-                                    <table className="w-full text-left min-w-[500px]">
-                                        <thead className="bg-slate-50 border-b border-slate-100">
-                                            <tr>
-                                                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Date</th>
-                                                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Description</th>
-                                                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Category</th>
-                                                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest text-right">Amount</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-slate-100">
-                                            {transactions.map(tx => (
-                                                <tr key={tx.id} className="hover:bg-slate-50/50 transition-colors">
-                                                    <td className="px-6 py-4 text-sm text-slate-500 tabular-nums">{tx.date}</td>
-                                                    <td className="px-6 py-4 font-bold">{tx.title}</td>
-                                                    <td className="px-6 py-4">
-                                                        <span className="bg-slate-100 px-3 py-1 rounded-full text-xs font-bold text-slate-500">
-                                                            {tx.category}
-                                                        </span>
-                                                    </td>
-                                                    <td className={`px-6 py-4 text-right font-bold ${tx.type === 'income' ? 'text-emerald-600' : 'text-slate-800'}`}>
-                                                        {tx.type === 'income' ? '+' : '-'}${Math.abs(tx.amount).toFixed(2)}
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        )}
-
-                        {view === 'budget' && (
-                            <div className="p-12 text-center bg-white rounded-3xl border-2 border-dashed border-slate-200 animate-fade-in">
-                                <Icon name="budget" size={64} className="mx-auto text-slate-300 mb-4" />
-                                <h2 className="text-xl font-bold mb-2">Smart Budget Planning</h2>
-                                <p className="text-slate-500 max-w-sm mx-auto">This feature is being tuned for student life. Soon you'll be able to split your budget into Needs, Wants, and Savings automatically.</p>
-                            </div>
-                        )}
-
-                        {view === 'settings' && (
-                            <div className="p-12 text-center bg-white rounded-3xl border border-slate-100 animate-fade-in">
-                                <Icon name="settings" size={64} className="mx-auto text-slate-300 mb-4" />
-                                <h2 className="text-xl font-bold mb-2">Account Settings</h2>
-                                <p className="text-slate-500 max-w-sm mx-auto">Personalize your student profile, set currency preferences, and manage linked scholarship accounts.</p>
-                            </div>
-                        )}
-                    </main>
-
-                    {/* Modal */}
-                    {isModalOpen && (
-                        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-                            <div className="bg-white w-full max-w-md rounded-3xl p-8 shadow-2xl animate-fade-in">
-                                <h3 className="text-2xl font-bold mb-6">Add New Transaction</h3>
-                                <form onSubmit={handleAddTransaction} className="space-y-4">
-                                    <div>
-                                        <label className="block text-sm font-bold text-slate-500 mb-2">Description</label>
-                                        <input 
-                                            type="text" 
-                                            placeholder="e.g. Weekly Groceries"
-                                            className="w-full bg-slate-50 border-none rounded-2xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 transition-all outline-none"
-                                            value={formData.title}
-                                            onChange={e => setFormData({...formData, title: e.target.value})}
-                                            required
-                                        />
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-bold text-slate-500 mb-2">Amount ($)</label>
-                                            <input 
-                                                type="number" 
-                                                step="0.01"
-                                                placeholder="0.00"
-                                                className="w-full bg-slate-50 border-none rounded-2xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 transition-all outline-none"
-                                                value={formData.amount}
-                                                onChange={e => setFormData({...formData, amount: e.target.value})}
-                                                required
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-bold text-slate-500 mb-2">Type</label>
-                                            <select 
-                                                className="w-full bg-slate-50 border-none rounded-2xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 transition-all appearance-none outline-none"
-                                                value={formData.type}
-                                                onChange={e => setFormData({...formData, type: e.target.value, category: categories[e.target.value][0]})}
-                                            >
-                                                <option value="expense">Expense</option>
-                                                <option value="income">Income</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-bold text-slate-500 mb-2">Category</label>
-                                        <select 
-                                            className="w-full bg-slate-50 border-none rounded-2xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 transition-all appearance-none outline-none"
-                                            value={formData.category}
-                                            onChange={e => setFormData({...formData, category: e.target.value})}
-                                        >
-                                            {categories[formData.type].map(cat => (
-                                                <option key={cat} value={cat}>{cat}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-
-                                    <div className="flex gap-3 pt-4">
-                                        <button 
-                                            type="button"
-                                            onClick={() => setIsModalOpen(false)}
-                                            className="flex-1 bg-slate-100 text-slate-600 font-bold py-4 rounded-2xl hover:bg-slate-200 transition-colors"
-                                        >
-                                            Cancel
-                                        </button>
-                                        <button 
-                                            type="submit"
-                                            className="flex-1 bg-indigo-600 text-white font-bold py-4 rounded-2xl hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-all"
-                                        >
-                                            Save Entry
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    )}
+                <div class="grid grid-cols-4 gap-3">
+                    <button class="calc-btn text-white" onclick="qCalc('7')">7</button>
+                    <button class="calc-btn text-white" onclick="qCalc('8')">8</button>
+                    <button class="calc-btn text-white" onclick="qCalc('9')">9</button>
+                    <button class="calc-btn calc-btn-op" onclick="qCalc('/')">÷</button>
+                    <button class="calc-btn text-white" onclick="qCalc('4')">4</button>
+                    <button class="calc-btn text-white" onclick="qCalc('5')">5</button>
+                    <button class="calc-btn text-white" onclick="qCalc('6')">6</button>
+                    <button class="calc-btn calc-btn-op" onclick="qCalc('*')">×</button>
+                    <button class="calc-btn text-white" onclick="qCalc('1')">1</button>
+                    <button class="calc-btn text-white" onclick="qCalc('2')">2</button>
+                    <button class="calc-btn text-white" onclick="qCalc('3')">3</button>
+                    <button class="calc-btn calc-btn-op" onclick="qCalc('-')">-</button>
+                    <button class="calc-btn text-white" onclick="qCalc('0')">0</button>
+                    <button class="calc-btn text-white" onclick="qCalc('.')">.</button>
+                    <button class="calc-btn bg-rose-500/10 text-rose-500" onclick="qClear()">C</button>
+                    <button class="calc-btn calc-btn-op" onclick="qCalc('+')">+</button>
                 </div>
-            );
+                <div class="grid grid-cols-2 gap-3 text-white">
+                    <select id="t-cat" class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 text-xs font-bold"></select>
+                    <select id="t-acc" class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 text-xs font-bold"></select>
+                </div>
+                <div class="grid grid-cols-2 gap-3 text-white">
+                    <input type="date" id="t-date" class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 text-xs font-bold">
+                    <input type="text" id="t-note" placeholder="Memo..." class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 text-xs font-bold">
+                </div>
+                <button onclick="saveTransaction()" class="w-full bg-white text-black font-black py-5 rounded-[2rem] shadow-2xl hover:bg-zinc-200 transition-all uppercase tracking-[0.2em] text-xs mt-4">Confirm Record</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ENTITY SETUP MODAL -->
+    <div id="entity-modal" class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[70] flex items-center justify-center hidden p-6">
+        <div class="glass w-full max-w-sm rounded-[3rem] p-8 animate-slide-up text-white">
+            <h3 id="entity-modal-title" class="text-xl font-bold mb-6 text-center">Create New</h3>
+            <div class="space-y-6">
+                <div>
+                    <label class="text-[9px] font-black uppercase text-zinc-500 mb-2 block">Context</label>
+                    <div class="flex bg-zinc-900 p-1.5 rounded-2xl border border-white/5">
+                        <button onclick="setSetupType('cat')" id="setup-cat-btn" class="flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase bg-zinc-800 text-white shadow-lg">Category</button>
+                        <button onclick="setSetupType('acc')" id="setup-acc-btn" class="flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase text-zinc-500">Account</button>
+                    </div>
+                </div>
+                <div id="cat-type-select">
+                    <label class="text-[9px] font-black uppercase text-zinc-500 mb-2 block">Behavior</label>
+                    <div class="flex bg-zinc-900 p-1.5 rounded-2xl border border-white/5">
+                        <button onclick="setSetupBehavior('expense')" id="setup-exp-btn" class="flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase bg-zinc-800 text-white shadow-lg">Expense</button>
+                        <button onclick="setSetupBehavior('income')" id="setup-inc-btn" class="flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase text-zinc-500">Income</button>
+                    </div>
+                </div>
+                <div>
+                    <label class="text-[9px] font-black uppercase text-zinc-500 mb-2 block">Display Name</label>
+                    <input type="text" id="setup-name" placeholder="e.g. Health, Freelance, Savings" class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 text-xs font-bold text-white">
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button onclick="toggleModal('entity-modal', false)" class="flex-1 py-4 text-[9px] font-black uppercase tracking-widest text-zinc-500">Cancel</button>
+                    <button onclick="finalizeEntitySetup()" class="flex-1 bg-white text-black rounded-2xl py-4 text-[9px] font-black uppercase tracking-widest">Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAPPING MODAL -->
+    <div id="mapping-modal" class="fixed inset-0 bg-black/98 backdrop-blur-xl z-[80] flex items-center justify-center hidden p-6">
+        <div class="glass w-full max-w-md rounded-[3rem] p-8 animate-slide-up">
+            <h3 class="text-xl font-bold mb-2 text-white">CSV Field Mapping</h3>
+            <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mb-6">Match your file columns to Khorcha fields</p>
+            <div id="mapping-fields" class="space-y-4 mb-8 text-white"></div>
+            <div class="flex gap-3">
+                <button onclick="toggleModal('mapping-modal', false)" class="flex-1 py-4 text-[9px] font-black uppercase text-zinc-500">Cancel</button>
+                <button onclick="finalizeMappingImport()" class="flex-1 bg-white text-black rounded-2xl py-4 text-[9px] font-black uppercase">Import Data</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PURGE MODAL -->
+    <div id="purge-modal" class="fixed inset-0 bg-black/98 z-[100] flex items-center justify-center hidden p-6">
+        <div class="glass w-full max-w-xs rounded-[3rem] p-10 text-center text-white">
+            <div class="w-20 h-20 bg-rose-500/10 rounded-full flex items-center justify-center mx-auto mb-6"><i data-lucide="alert-triangle" class="w-10 h-10 text-rose-500"></i></div>
+            <h3 class="text-xl font-bold mb-3">Wipe All Data?</h3>
+            <p class="text-[10px] text-zinc-500 uppercase leading-relaxed font-bold tracking-widest">Everything will be permanently deleted.</p>
+            <div class="mt-10 flex flex-col gap-3">
+                <button onclick="toggleModal('purge-modal', false)" class="w-full py-4 text-[10px] font-black uppercase tracking-widest">Cancel</button>
+                <button onclick="finalizePurge()" class="w-full bg-rose-600 text-white rounded-2xl py-4 text-[10px] font-black uppercase tracking-widest">Delete Everything</button>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="csv-upload-field" class="hidden" accept=".csv" onchange="handleCSVSelect(event)">
+
+    <script>
+        let state = {
+            transactions: JSON.parse(localStorage.getItem('k_v8_trans')) || [],
+            categories: JSON.parse(localStorage.getItem('k_v8_cats')) || [
+                { id: '1', name: 'Food', type: 'expense' },
+                { id: '2', name: 'Transport', type: 'expense' },
+                { id: '3', name: 'Salary', type: 'income' }
+            ],
+            accounts: JSON.parse(localStorage.getItem('k_v8_accs')) || [
+                { id: '1', name: 'Cash' },
+                { id: '2', name: 'Bank' }
+            ],
+            notes: JSON.parse(localStorage.getItem('k_v8_notes')) || [],
+            viewDate: new Date(),
+            dashboardMode: 'monthly',
+            currentTab: 'dashboard',
+            statFilter: 'monthly',
+            qCalcValue: '0',
+            fullCalcValue: '0',
+            transType: 'expense',
+            setupContext: 'cat',
+            setupBehavior: 'expense',
+            csvHeaders: [],
+            csvData: []
         };
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
+        window.onload = () => { renderView(); updateHeaderDate(); lucide.createIcons(); document.getElementById('t-date').valueAsDate = new Date(); };
+
+        function updateHeaderDate() { document.getElementById('header-date').innerText = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); }
+        function formatBDT(num) { return '৳' + Number(Math.round(num)).toLocaleString('en-IN', { minimumFractionDigits: 0 }); }
+
+        function switchTab(tab) {
+            state.currentTab = tab;
+            renderView();
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active', 'text-white'));
+            const activeNav = document.getElementById(`nav-${tab}`);
+            if(activeNav) activeNav.classList.add('active', 'text-white');
+        }
+
+        function renderView() {
+            const container = document.getElementById('main-content');
+            container.innerHTML = '';
+            switch(state.currentTab) {
+                case 'dashboard': renderDashboard(container); break;
+                case 'stats': renderStats(container); break;
+                case 'notes': renderNotes(container); break;
+                case 'calculator': renderCalculator(container); break;
+                case 'settings': renderSettings(container); break;
+            }
+            lucide.createIcons();
+        }
+
+        // --- DASHBOARD ---
+        function renderDashboard(el) {
+            const m = state.viewDate.getMonth(), y = state.viewDate.getFullYear();
+            const filtered = state.transactions.filter(t => state.dashboardMode === 'all' || (new Date(t.date).getMonth() === m && new Date(t.date).getFullYear() === y));
+            let periodInc = filtered.filter(t => t.type === 'income').reduce((s, t) => s + (parseFloat(t.amount) || 0), 0);
+            let periodExp = filtered.filter(t => t.type === 'expense').reduce((s, t) => s + (parseFloat(t.amount) || 0), 0);
+            let totalBalance = state.transactions.reduce((s, t) => {
+                const val = parseFloat(t.amount) || 0;
+                return t.type === 'income' ? s + val : s - val;
+            }, 0);
+
+            el.innerHTML = `
+                <div class="glass rounded-[2.5rem] p-8 mb-8 animate-slide-up">
+                    <div class="flex justify-between items-center mb-10">
+                         <div class="flex bg-black/40 p-1 rounded-full border border-white/5">
+                            <button onclick="toggleDashboard('monthly')" class="px-4 py-1.5 rounded-full text-[8px] font-black uppercase ${state.dashboardMode === 'monthly' ? 'bg-white text-black' : 'text-zinc-500'}">Monthly</button>
+                            <button onclick="toggleDashboard('all')" class="px-4 py-1.5 rounded-full text-[8px] font-black uppercase ${state.dashboardMode === 'all' ? 'bg-white text-black' : 'text-zinc-500'}">All</button>
+                        </div>
+                        ${state.dashboardMode === 'monthly' ? `<div class="flex items-center gap-4"><button onclick="changeMonth(-1)" class="p-1.5"><i data-lucide="chevron-left" class="w-4 h-4 text-white"></i></button><span class="text-[9px] font-black uppercase text-white">${state.viewDate.toLocaleString('default', { month: 'short', year: 'numeric' })}</span><button onclick="changeMonth(1)" class="p-1.5"><i data-lucide="chevron-right" class="w-4 h-4 text-white"></i></button></div>` : ''}
+                    </div>
+                    <div class="text-center mb-10">
+                        <p class="text-zinc-500 text-[9px] font-black uppercase tracking-[0.2em] mb-2">Net Cashflow</p>
+                        <h2 class="text-5xl font-black tracking-tighter text-white">${formatBDT(periodInc - periodExp)}</h2>
+                        <div class="mt-2 text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Total Balance: ${formatBDT(totalBalance)}</div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-emerald-500/5 p-5 rounded-3xl border border-emerald-500/10"><p class="text-[8px] text-emerald-500/60 font-black mb-1.5 uppercase">Inflow</p><p class="text-emerald-400 font-black text-lg">+${formatBDT(periodInc)}</p></div>
+                        <div class="bg-rose-500/5 p-5 rounded-3xl border border-rose-500/10"><p class="text-[8px] text-rose-500/60 font-black mb-1.5 uppercase">Outflow</p><p class="text-rose-400 font-black text-lg">-${formatBDT(periodExp)}</p></div>
+                    </div>
+                </div>
+                <div class="space-y-8">${renderGroupedList(filtered)}</div>
+            `;
+        }
+
+        function renderGroupedList(list) {
+            const groups = {}; list.forEach(t => { if(!groups[t.date]) groups[t.date] = []; groups[t.date].push(t); });
+            const sortedDates = Object.keys(groups).sort((a,b) => new Date(b) - new Date(a));
+            if(!sortedDates.length) return `<div class="py-20 text-center opacity-30 text-white"><p class="text-[10px] font-black uppercase tracking-widest">No entries found</p></div>`;
+            return sortedDates.map(date => {
+                const daySum = groups[date].reduce((s, t) => s + (t.type === 'income' ? parseFloat(t.amount) : -parseFloat(t.amount)), 0);
+                return `<div class="space-y-3 animate-slide-up"><div class="flex justify-between items-center px-1"><span class="text-[10px] font-black text-zinc-600 uppercase tracking-widest">${new Date(date).toLocaleDateString(undefined, {day:'numeric', month:'short', weekday:'short'})}</span><span class="text-[10px] font-black ${daySum >= 0 ? 'text-emerald-500' : 'text-rose-500'}">${daySum >= 0 ? '+' : ''}${formatBDT(daySum)}</span></div>
+                    <div class="space-y-2">${groups[date].map(t => `<div onclick="editTransaction(${t.id})" class="glass p-5 rounded-3xl flex items-center justify-between group active:scale-[0.98] transition-all cursor-pointer"><div class="flex items-center gap-4"><div class="w-11 h-11 rounded-2xl bg-zinc-900 border border-white/5 flex items-center justify-center"><i data-lucide="${t.type === 'income' ? 'plus-circle' : 'minus-circle'}" class="w-5 h-5 ${t.type === 'income' ? 'text-emerald-500' : 'text-rose-500'}"></i></div><div><p class="text-[11px] font-black uppercase tracking-wider text-white">${t.category}</p><p class="text-[9px] text-zinc-500 font-bold mt-0.5">${t.account} · ${t.note || 'No memo'}</p></div></div><div class="text-right"><p class="text-sm font-black ${t.type === 'income' ? 'text-emerald-400' : 'text-rose-400'}">${t.type === 'income' ? '+' : '-'}${Number(t.amount).toLocaleString()}</p></div></div>`).join('')}</div></div>`;
+            }).join('');
+        }
+
+        // --- STATS ---
+        function renderStats(el) {
+            const m = state.viewDate.getMonth(), y = state.viewDate.getFullYear();
+            const filtered = state.transactions.filter(t => state.statFilter === 'all' || (new Date(t.date).getMonth() === m && new Date(t.date).getFullYear() === y));
+            const currExp = filtered.filter(t => t.type === 'expense').reduce((s,t) => s + parseFloat(t.amount), 0);
+            const currInc = filtered.filter(t => t.type === 'income').reduce((s,t) => s + parseFloat(t.amount), 0);
+            const expData = {}; filtered.filter(t => t.type === 'expense').forEach(t => { expData[t.category] = (expData[t.category] || 0) + parseFloat(t.amount); });
+            const sortedExp = Object.entries(expData).sort((a,b) => b[1]-a[1]);
+
+            el.innerHTML = `
+                <div class="space-y-6 animate-slide-up pb-10">
+                    <div class="flex justify-between items-center px-1"><h2 class="text-2xl font-black tracking-tighter text-white">Insights</h2>
+                        <div class="flex bg-zinc-900 p-1 rounded-2xl border border-white/5">
+                            <button onclick="setStatFilter('monthly')" class="px-4 py-1.5 rounded-xl text-[8px] font-black uppercase ${state.statFilter === 'monthly' ? 'bg-zinc-800 text-white shadow-lg' : 'text-zinc-600'}">Month</button>
+                            <button onclick="setStatFilter('all')" class="px-4 py-1.5 rounded-xl text-[8px] font-black uppercase ${state.statFilter === 'all' ? 'bg-zinc-800 text-white shadow-lg' : 'text-zinc-600'}">All</button>
+                        </div>
+                    </div>
+                    <div class="glass p-8 rounded-[3rem] text-center"><div class="h-56 mb-8"><canvas id="mainChart"></canvas></div></div>
+                    <div class="glass p-8 rounded-[3rem]"><p class="text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-6">Cashflow Distribution</p><div class="h-40"><canvas id="barChart"></canvas></div></div>
+                    <div class="space-y-3 mt-4 text-white">${sortedExp.map(([cat, val], idx) => `<div class="glass p-5 rounded-3xl flex items-center justify-between"><div class="flex items-center gap-3"><div class="w-1.5 h-1.5 rounded-full" style="background: ${getPalette(idx)}"></div><span class="text-[11px] font-black uppercase tracking-wider text-zinc-400">${cat}</span></div><span class="text-xs font-black">${formatBDT(val)}</span></div>`).join('')}</div>
+                </div>`;
+
+            setTimeout(() => {
+                if(sortedExp.length) new Chart(document.getElementById('mainChart').getContext('2d'), { type: 'doughnut', data: { labels: Object.keys(expData), datasets: [{ data: Object.values(expData), backgroundColor: Object.keys(expData).map((_, i) => getPalette(i)), borderWidth: 0, hoverOffset: 15 }] }, options: { cutout: '85%', plugins: { legend: { display: false } } } });
+                new Chart(document.getElementById('barChart').getContext('2d'), { type: 'bar', data: { labels: ['Inflow', 'Outflow'], datasets: [{ data: [currInc, currExp], backgroundColor: ['#34d399', '#fb7185'], borderRadius: 12 }] }, options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false }, ticks: { color: '#525252' } } } } });
+            }, 100);
+        }
+
+        // --- NOTES VIEW ---
+        function renderNotes(el) {
+            el.innerHTML = `
+                <div class="space-y-6 animate-slide-up">
+                    <div class="flex justify-between items-center px-1">
+                        <h2 class="text-2xl font-black tracking-tighter text-white">Financial Notes</h2>
+                        <button onclick="addNote()" class="p-3 glass rounded-2xl text-emerald-400 hover:scale-105 transition-all">
+                            <i data-lucide="plus-square" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+                    <div class="space-y-4">
+                        ${state.notes.length ? state.notes.map(n => `
+                            <div class="glass p-6 rounded-[2rem] relative group">
+                                <textarea onchange="updateNote('${n.id}', this.value)" 
+                                    class="w-full bg-transparent text-sm text-zinc-300 font-medium resize-none min-h-[100px] border-none" 
+                                    placeholder="Write a reminder or goal...">${n.text}</textarea>
+                                <div class="flex justify-between items-center mt-4 pt-4 border-t border-white/5">
+                                    <span class="text-[8px] font-black text-zinc-600 uppercase tracking-widest">${n.date}</span>
+                                    <button onclick="deleteNote('${n.id}')" class="text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity p-2">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('') : '<div class="py-20 text-center opacity-30 text-white"><i data-lucide="edit-3" class="w-12 h-12 mx-auto mb-4 opacity-10"></i><p class="text-[10px] font-black uppercase tracking-widest">Your memo board is empty</p></div>'}
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        function addNote() {
+            state.notes.unshift({ id: Date.now().toString(), text: '', date: new Date().toLocaleDateString() });
+            saveAll();
+            renderView();
+        }
+
+        function updateNote(id, val) {
+            const n = state.notes.find(n => n.id === id);
+            if(n) n.text = val;
+            saveAll();
+        }
+
+        function deleteNote(id) {
+            state.notes = state.notes.filter(n => n.id !== id);
+            saveAll();
+            renderView();
+        }
+
+        // --- SETTINGS (FOLDER LIST VERSION) ---
+        function renderSettings(el) {
+            el.innerHTML = `
+                <div class="space-y-8 animate-slide-up pb-10">
+                    <!-- Management Header -->
+                    <div class="flex justify-between items-center px-1">
+                        <h2 class="text-2xl font-black tracking-tighter text-white">Management</h2>
+                        <button onclick="toggleModal('entity-modal', true)" class="bg-zinc-800 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest text-white shadow-xl">+ Create New</button>
+                    </div>
+
+                    <!-- Folders Section -->
+                    <div class="space-y-4">
+                        ${renderFolder('Expense Categories', state.categories.filter(c => c.type === 'expense'), 'cat')}
+                        ${renderFolder('Income Categories', state.categories.filter(c => c.type === 'income'), 'cat')}
+                        ${renderFolder('My Accounts', state.accounts, 'acc')}
+                    </div>
+
+                    <!-- Backup & Tools -->
+                    <section class="grid grid-cols-2 gap-4">
+                        <button onclick="exportCSV()" class="glass p-8 rounded-[2.5rem] flex flex-col items-center gap-3">
+                            <i data-lucide="download-cloud" class="w-6 h-6 text-zinc-500"></i>
+                            <span class="text-[9px] font-black uppercase text-white">Backup CSV</span>
+                        </button>
+                        <button onclick="document.getElementById('csv-upload-field').click()" class="glass p-8 rounded-[2.5rem] flex flex-col items-center gap-3">
+                            <i data-lucide="upload-cloud" class="w-6 h-6 text-zinc-500"></i>
+                            <span class="text-[9px] font-black uppercase text-white">Restore CSV</span>
+                        </button>
+                    </section>
+
+                    <button onclick="switchTab('calculator')" class="w-full glass py-6 rounded-[2.5rem] text-[9px] font-black uppercase text-zinc-400">Launch Calculator Utility</button>
+                    <button onclick="toggleModal('purge-modal', true)" class="w-full bg-rose-600/10 border border-rose-500/10 py-6 rounded-[2.5rem] text-rose-500 text-[10px] font-black uppercase">Danger: Purge Application Data</button>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        function renderFolder(title, items, type) {
+            const count = items.length;
+            return `
+                <div class="glass rounded-[2rem] overflow-hidden" id="folder-${title.replace(/\s+/g, '')}">
+                    <button onclick="toggleFolder('${title.replace(/\s+/g, '')}')" 
+                        class="w-full flex items-center justify-between p-6 hover:bg-white/5 transition-colors">
+                        <div class="flex items-center gap-4">
+                            <i data-lucide="folder" class="w-5 h-5 text-zinc-500"></i>
+                            <div class="text-left">
+                                <p class="text-[11px] font-black uppercase tracking-wider text-white">${title}</p>
+                                <p class="text-[8px] text-zinc-600 font-bold uppercase">${count} Items</p>
+                            </div>
+                        </div>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-zinc-700 folder-chevron"></i>
+                    </button>
+                    <div class="folder-content">
+                        <div class="px-6 pb-6 space-y-2">
+                            ${items.map(item => `
+                                <div class="bg-zinc-900/50 border border-white/5 p-3.5 rounded-2xl flex justify-between items-center group">
+                                    <span class="text-[10px] font-bold text-zinc-400">${item.name}</span>
+                                    <button onclick="deleteEntity('${type}', '${item.id}')" 
+                                        class="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 hover:bg-rose-500/10 rounded-lg">
+                                        <i data-lucide="trash-2" class="w-3 h-3 text-rose-500"></i>
+                                    </button>
+                                </div>
+                            `).join('') || '<p class="text-[9px] text-center text-zinc-700 py-2 uppercase font-black">Empty Folder</p>'}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleFolder(id) {
+            const folder = document.getElementById(`folder-${id}`);
+            folder.classList.toggle('folder-open');
+        }
+
+        // --- CALCULATOR ---
+        function renderCalculator(el) {
+            el.innerHTML = `<div class="glass rounded-[3rem] p-8 shadow-2xl animate-slide-up">
+                <div class="bg-black/40 p-8 rounded-[2rem] mb-8 text-right border border-white/5 h-36 flex flex-col justify-end"><div id="full-calc-display" class="text-5xl font-black font-mono tracking-tighter text-white">${state.fullCalcValue}</div></div>
+                <div class="grid grid-cols-4 gap-4 text-white">
+                    <button class="calc-btn bg-zinc-800/50" onclick="fCalc('AC')">AC</button><button class="calc-btn bg-zinc-800/50" onclick="fCalc('DEL')">DEL</button><button class="calc-btn bg-zinc-800/50" onclick="fCalc('%')">%</button><button class="calc-btn calc-btn-op" onclick="fCalc('/')">÷</button>
+                    <button class="calc-btn" onclick="fCalc('7')">7</button><button class="calc-btn" onclick="fCalc('8')">8</button><button class="calc-btn" onclick="fCalc('9')">9</button><button class="calc-btn calc-btn-op" onclick="fCalc('*')">×</button>
+                    <button class="calc-btn" onclick="fCalc('4')">4</button><button class="calc-btn" onclick="fCalc('5')">5</button><button class="calc-btn" onclick="fCalc('6')">6</button><button class="calc-btn calc-btn-op" onclick="fCalc('-')">-</button>
+                    <button class="calc-btn" onclick="fCalc('1')">1</button><button class="calc-btn" onclick="fCalc('2')">2</button><button class="calc-btn" onclick="fCalc('3')">3</button><button class="calc-btn calc-btn-op" onclick="fCalc('+')">+</button>
+                    <button class="calc-btn col-span-2" onclick="fCalc('0')">0</button><button class="calc-btn" onclick="fCalc('.')">.</button><button class="calc-btn bg-white text-black" onclick="fCalc('=')">=</button>
+                </div></div>`;
+        }
+
+        function fCalc(val) {
+            if(val === 'AC') state.fullCalcValue = '0';
+            else if(val === 'DEL') state.fullCalcValue = state.fullCalcValue.length > 1 ? state.fullCalcValue.slice(0, -1) : '0';
+            else if(val === '=') { try { state.fullCalcValue = eval(state.fullCalcValue.replace('×', '*').replace('÷', '/')).toString(); } catch(e) { state.fullCalcValue = 'Error'; } }
+            else { if(state.fullCalcValue === '0' && !isNaN(val)) state.fullCalcValue = val; else state.fullCalcValue += val; }
+            document.getElementById('full-calc-display').innerText = state.fullCalcValue;
+        }
+
+        // --- CORE LOGIC ---
+        function toggleModal(id, show) { document.getElementById(id).classList.toggle('hidden', !show); if(id === 'transaction-modal' && show) populateSelects(); }
+        function setTransType(type) { state.transType = type; document.getElementById('btn-exp').className = `flex-1 py-3 rounded-xl text-xs font-black ${type==='expense'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; document.getElementById('btn-inc').className = `flex-1 py-3 rounded-xl text-xs font-black ${type==='income'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; populateSelects(); }
+        function populateSelects() { document.getElementById('t-cat').innerHTML = state.categories.filter(c => c.type === state.transType).map(c => `<option value="${c.name}">${c.name}</option>`).join(''); document.getElementById('t-acc').innerHTML = state.accounts.map(a => `<option value="${a.name}">${a.name}</option>`).join(''); }
+        function qCalc(val) { if(state.qCalcValue === '0' && !isNaN(val)) state.qCalcValue = val; else state.qCalcValue += val; document.getElementById('quick-calc-display').innerText = state.qCalcValue; }
+        function qClear() { state.qCalcValue = '0'; document.getElementById('quick-calc-display').innerText = '0'; }
+        function openTransactionModal() { state.editingId = null; qClear(); document.getElementById('modal-title').innerText = "Record Entry"; document.getElementById('t-note').value = ''; toggleModal('transaction-modal', true); setTransType('expense'); }
+        function editTransaction(id) { const t = state.transactions.find(x => x.id === id); if(!t) return; state.editingId = id; state.qCalcValue = t.amount.toString(); state.transType = t.type; toggleModal('transaction-modal', true); document.getElementById('modal-title').innerText = "Edit Record"; document.getElementById('quick-calc-display').innerText = t.amount; document.getElementById('t-date').value = t.date; document.getElementById('t-note').value = t.note; setTransType(t.type); document.getElementById('t-cat').value = t.category; document.getElementById('t-acc').value = t.account; }
+        function saveTransaction() { let amt = 0; try { amt = eval(state.qCalcValue.replace(/[^-+*/.0-9]/g, '')); } catch(e) { return; } if(amt <= 0) return; const entry = { id: state.editingId || Date.now(), amount: Math.abs(parseFloat(amt)), type: state.transType, category: document.getElementById('t-cat').value, account: document.getElementById('t-acc').value, date: document.getElementById('t-date').value, note: document.getElementById('t-note').value }; if(state.editingId) state.transactions = state.transactions.map(x => x.id === state.editingId ? entry : x); else state.transactions.unshift(entry); saveAll(); toggleModal('transaction-modal', false); renderView(); }
+        function saveAll() { localStorage.setItem('k_v8_trans', JSON.stringify(state.transactions)); localStorage.setItem('k_v8_cats', JSON.stringify(state.categories)); localStorage.setItem('k_v8_accs', JSON.stringify(state.accounts)); localStorage.setItem('k_v8_notes', JSON.stringify(state.notes)); }
+
+        function setSetupType(ctx) { state.setupContext = ctx; document.getElementById('setup-cat-btn').className = `flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase ${ctx==='cat'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; document.getElementById('setup-acc-btn').className = `flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase ${ctx==='acc'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; document.getElementById('cat-type-select').classList.toggle('hidden', ctx === 'acc'); }
+        function setSetupBehavior(type) { state.setupBehavior = type; document.getElementById('setup-exp-btn').className = `flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase ${type==='expense'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; document.getElementById('setup-inc-btn').className = `flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase ${type==='income'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; }
+        function finalizeEntitySetup() { const name = document.getElementById('setup-name').value.trim(); if(!name) return; if(state.setupContext === 'cat') state.categories.push({ id: Date.now().toString(), name, type: state.setupBehavior }); else state.accounts.push({ id: Date.now().toString(), name }); saveAll(); toggleModal('entity-modal', false); document.getElementById('setup-name').value = ''; renderView(); }
+        function deleteEntity(type, id) { if(type === 'cat') state.categories = state.categories.filter(c => c.id !== id); else state.accounts = state.accounts.filter(a => a.id !== id); saveAll(); renderView(); }
+        function finalizePurge() { localStorage.clear(); location.reload(); }
+        function toggleDashboard(mode) { state.dashboardMode = mode; renderView(); }
+        function setStatFilter(mode) { state.statFilter = mode; renderView(); }
+        function changeMonth(dir) { state.viewDate.setMonth(state.viewDate.getMonth() + dir); renderView(); }
+        function getPalette(i) { return ['#fb7185', '#34d399', '#60a5fa', '#fbbf24', '#a78bfa', '#2dd4bf', '#f472b6'][i % 7]; }
+
+        function handleCSVSelect(e) { const file = e.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = (evt) => { const lines = evt.target.result.split('\n').filter(l => l.trim()); if(lines.length < 2) return; state.csvHeaders = lines[0].split(',').map(h => h.trim().replace(/"/g, '')); state.csvData = lines.slice(1).map(l => l.split(',')); showMappingModal(); }; reader.readAsText(file); }
+        function showMappingModal() { const fields = [{ id: 'map-date', label: 'Date' }, { id: 'map-amt', label: 'Amount' }, { id: 'map-cat', label: 'Category' }, { id: 'map-acc', label: 'Account' }, { id: 'map-type', label: 'Type' }, { id: 'map-note', label: 'Memo' }]; const container = document.getElementById('mapping-fields'); container.innerHTML = fields.map(f => `<div><label class="text-[9px] font-black uppercase text-zinc-500 mb-1.5 block">${f.label}</label><select id="${f.id}" class="w-full bg-zinc-900 border border-white/5 p-3.5 rounded-2xl text-[11px] font-bold"><option value="">-- Ignore --</option>${state.csvHeaders.map((h, i) => `<option value="${i}">${h}</option>`).join('')}</select></div>`).join(''); toggleModal('mapping-modal', true); }
+        function finalizeMappingImport() {
+            const map = { date: document.getElementById('map-date').value, amt: document.getElementById('map-amt').value, cat: document.getElementById('map-cat').value, acc: document.getElementById('map-acc').value, type: document.getElementById('map-type').value, note: document.getElementById('map-note').value };
+            const imported = state.csvData.map(row => {
+                if(row.length < state.csvHeaders.length) return null;
+                const rawAmt = map.amt !== "" ? row[map.amt] : "0";
+                const amt = Math.abs(parseFloat(rawAmt.replace(/[^-0-9.]/g, '')) || 0);
+                let type = 'expense';
+                if(map.type !== "" && row[map.type]) { type = row[map.type].toLowerCase().includes('inc') ? 'income' : 'expense'; } else if(parseFloat(rawAmt) > 0) { type = 'income'; }
+                const catName = map.cat !== "" ? row[map.cat].trim() : 'Uncategorized';
+                const accName = map.acc !== "" ? row[map.acc].trim() : 'Cash';
+                if (!state.categories.some(c => c.name.toLowerCase() === catName.toLowerCase())) state.categories.push({ id: Date.now() + Math.random(), name: catName, type: type });
+                if (!state.accounts.some(a => a.name.toLowerCase() === accName.toLowerCase())) state.accounts.push({ id: Date.now() + Math.random(), name: accName });
+                return { id: Date.now() + Math.random(), date: map.date !== "" ? row[map.date] : new Date().toISOString().split('T')[0], type, category: catName, account: accName, amount: amt, note: map.note !== "" ? row[map.note].replace(/"/g, '') : 'Imported' };
+            }).filter(x => x);
+            state.transactions = [...imported, ...state.transactions];
+            saveAll(); toggleModal('mapping-modal', false); renderView();
+        }
+        function exportCSV() { const h = ['Date','Type','Category','Account','Amount','Note']; const r = state.transactions.map(t => [t.date,t.type,t.category,t.account,t.amount,`"${t.note}"`]); const c = [h, ...r].map(e => e.join(",")).join("\n"); const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([c], { type: 'text/csv' })); a.download = 'khorcha_backup.csv'; a.click(); }
     </script>
 </body>
 </html>
