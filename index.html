@@ -242,7 +242,7 @@
 
     <!-- ENTITY MODAL -->
     <div id="entity-modal" class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[70] flex items-center justify-center hidden p-6">
-        <div class="glass w-full max-w-sm rounded-[2.5rem] p-8 animate-slide-up text-white">
+        <div class="glass w-full max-sm rounded-[2.5rem] p-8 animate-slide-up text-white">
             <h3 id="entity-modal-title" class="text-xl font-bold mb-6 text-center">Create New</h3>
             <div class="space-y-6">
                 <div>
@@ -423,8 +423,8 @@
                         </div>
                         <div class="text-center">
                             <p class="text-zinc-500 text-[9px] font-black uppercase tracking-[0.2em] mb-2">Remaining to Budget</p>
-                            <h2 class="text-4xl font-black tracking-tighter ${remainingToBudget === 0 ? 'text-emerald-400' : 'text-white'}">${formatBDT(remainingToBudget)}</h2>
-                            <p class="text-[8px] text-zinc-500 uppercase mt-2 font-bold tracking-widest">${remainingToBudget === 0 ? "Perfectly Budgeted!" : "Give every Taka a job."}</p>
+                            <h2 id="budget-summary-val" class="text-4xl font-black tracking-tighter ${remainingToBudget === 0 ? 'text-emerald-400' : 'text-white'}">${formatBDT(remainingToBudget)}</h2>
+                            <p id="budget-summary-hint" class="text-[8px] text-zinc-500 uppercase mt-2 font-bold tracking-widest">${remainingToBudget === 0 ? "Perfectly Budgeted!" : "Give every Taka a job."}</p>
                         </div>
                     </div>
                     <div class="space-y-4 md:space-y-6">
@@ -454,11 +454,18 @@
             return `
                 <div class="glass p-5 md:p-6 rounded-[2rem]">
                     <div class="flex justify-between items-start mb-4">
-                        <div><p class="text-xs font-black uppercase tracking-wider text-white">${cat.name}</p><p class="text-[9px] text-zinc-500 font-bold uppercase mt-1">Remaining: ${formatBDT(remaining)}</p></div>
-                        <div class="bg-black/40 px-3 py-1.5 rounded-xl border border-white/5"><input type="number" value="${planned || ''}" placeholder="0" onchange="updateBudget('${cat.id}', this.value)" class="bg-transparent text-xs font-black text-white w-16 md:w-20 text-right outline-none"></div>
+                        <div><p class="text-xs font-black uppercase tracking-wider text-white">${cat.name}</p><p id="rem-val-${cat.id}" class="text-[9px] text-zinc-500 font-bold uppercase mt-1">Remaining: ${formatBDT(remaining)}</p></div>
+                        <div class="bg-black/40 px-3 py-1.5 rounded-xl border border-white/5">
+                            <input type="number" value="${planned || ''}" placeholder="0" 
+                                oninput="updateBudget('${cat.id}', this.value)" 
+                                class="bg-transparent text-xs font-black text-white w-16 md:w-20 text-right outline-none">
+                        </div>
                     </div>
-                    <div class="progress-bar mb-2"><div class="progress-fill ${color}" style="width: ${progress}%"></div></div>
-                    <div class="flex justify-between items-center text-[8px] font-black uppercase tracking-widest text-zinc-600"><span>Spent: ${formatBDT(spent)}</span><span>Planned: ${formatBDT(plannedVal)}</span></div>
+                    <div class="progress-bar mb-2"><div id="prog-val-${cat.id}" class="progress-fill ${color}" style="width: ${progress}%"></div></div>
+                    <div class="flex justify-between items-center text-[8px] font-black uppercase tracking-widest text-zinc-600">
+                        <span>Spent: ${formatBDT(spent)}</span>
+                        <span id="plan-val-${cat.id}">Planned: ${formatBDT(plannedVal)}</span>
+                    </div>
                 </div>
             `;
         }
@@ -469,7 +476,42 @@
             if(!state.budgets[monthKey]) state.budgets[monthKey] = {};
             state.budgets[monthKey][catId] = value;
             saveAll();
-            renderView();
+
+            // Perform targeted DOM updates to avoid re-rendering inputs
+            const monthBudgets = state.budgets[monthKey];
+            const trans = state.transactions.filter(t => new Date(t.date).getMonth() === m && new Date(t.date).getFullYear() === y);
+            
+            // Update Item UI
+            const cat = state.categories.find(c => c.id === catId);
+            if(cat) {
+                const spent = trans.filter(t => t.category === cat.name).reduce((s, t) => s + (parseFloat(t.amount) || 0), 0);
+                const plannedVal = parseFloat(value) || 0;
+                const remaining = plannedVal - spent;
+                const progress = plannedVal > 0 ? Math.min((spent / plannedVal) * 100, 100) : 0;
+                
+                const remEl = document.getElementById(`rem-val-${catId}`);
+                const progEl = document.getElementById(`prog-val-${catId}`);
+                const planEl = document.getElementById(`plan-val-${catId}`);
+                
+                if(remEl) remEl.innerText = `Remaining: ${formatBDT(remaining)}`;
+                if(progEl) progEl.style.width = progress + '%';
+                if(planEl) planEl.innerText = `Planned: ${formatBDT(plannedVal)}`;
+            }
+
+            // Update Summary UI
+            const incomeCats = state.categories.filter(c => c.type === 'income');
+            const expenseCats = state.categories.filter(c => c.type === 'expense');
+            let totalPlannedIncome = incomeCats.reduce((s, c) => s + (parseFloat(monthBudgets[c.id]) || 0), 0);
+            let totalPlannedExpense = expenseCats.reduce((s, c) => s + (parseFloat(monthBudgets[c.id]) || 0), 0);
+            const remainingToBudget = totalPlannedIncome - totalPlannedExpense;
+
+            const summaryVal = document.getElementById('budget-summary-val');
+            const summaryHint = document.getElementById('budget-summary-hint');
+            if(summaryVal) {
+                summaryVal.innerText = formatBDT(remainingToBudget);
+                summaryVal.className = `text-4xl font-black tracking-tighter ${remainingToBudget === 0 ? 'text-emerald-400' : 'text-white'}`;
+            }
+            if(summaryHint) summaryHint.innerText = remainingToBudget === 0 ? "Perfectly Budgeted!" : "Give every Taka a job.";
         }
 
         function renderGroupedList(list) {
