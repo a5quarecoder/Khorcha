@@ -41,7 +41,7 @@
         }
 
         .calc-btn {
-            @apply flex items-center justify-center rounded-2xl text-lg font-bold transition-all active:scale-95 select-none h-12 md:h-14;
+            @apply h-14 md:h-16 rounded-2xl flex items-center justify-center text-lg md:text-xl font-bold transition-all active:scale-90 select-none;
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
@@ -98,21 +98,21 @@
     <div id="app" class="flex flex-col md:grid md:grid-cols-[280px_1fr] lg:grid-cols-[300px_1fr] min-h-screen">
         
         <!-- SIDEBAR (PC ONLY) -->
-        <aside class="hidden md:flex glass p-6 lg:p-8 flex-col justify-between sticky top-0 h-screen border-r border-white/5 z-40">
+        <aside class="hidden md:flex glass p-8 flex-col justify-between sticky top-0 h-screen border-r border-white/5 z-40">
             <div>
-                <div class="mb-10">
-                    <h1 class="text-3xl lg:text-4xl font-extrabold tracking-tighter text-white">Khorcha</h1>
+                <div class="mb-12">
+                    <h1 class="text-4xl font-extrabold tracking-tighter text-white">Khorcha</h1>
                     <p id="pc-header-date" class="text-xs text-zinc-500 font-bold uppercase tracking-widest mt-2"></p>
                 </div>
                 
-                <nav class="space-y-2">
-                    <button onclick="switchTab('dashboard')" id="pc-nav-dashboard" class="nav-item active w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-zinc-400 hover:text-white transition-all">
-                        <i data-lucide="layout-grid" class="w-5 h-5"></i>
-                        <span class="text-sm font-bold">Dashboard</span>
+                <nav class="space-y-4">
+                    <button onclick="switchTab('dashboard')" id="pc-nav-dashboard" class="nav-item active w-full flex items-center gap-4 px-6 py-5 rounded-2xl text-zinc-500 hover:text-white transition-all">
+                        <i data-lucide="layout-grid" class="w-6 h-6"></i>
+                        <span class="text-base font-bold">Dashboard</span>
                     </button>
-                    <button onclick="switchTab('budget')" id="pc-nav-budget" class="nav-item w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-zinc-400 hover:text-white transition-all">
-                        <i data-lucide="pie-chart" class="w-5 h-5"></i>
-                        <span class="text-sm font-bold">Budget</span>
+                    <button onclick="switchTab('budget')" id="pc-nav-budget" class="nav-item w-full flex items-center gap-4 px-6 py-5 rounded-2xl text-zinc-500 hover:text-white transition-all">
+                        <i data-lucide="pie-chart" class="w-6 h-6"></i>
+                        <span class="text-base font-bold">Budget</span>
                     </button>
                     <button onclick="switchTab('stats')" id="pc-nav-stats" class="nav-item w-full flex items-center gap-4 px-6 py-5 rounded-2xl text-zinc-500 hover:text-white transition-all">
                         <i data-lucide="bar-chart-big" class="w-6 h-6"></i>
@@ -129,35 +129,35 @@
                 </nav>
             </div>
 
-            <div class="space-y-4">
-                <button onclick="openTransactionModal()" class="w-full bg-white text-black font-black py-5 rounded-2xl shadow-xl hover:scale-[1.02] transition-transform flex items-center justify-center gap-3">
-                    <i data-lucide="plus" class="w-5 h-5"></i>
-                    <span class="uppercase tracking-widest text-[11px]">New Entry</span>
+            <div class="space-y-6">
+                <button onclick="openTransactionModal()" class="w-full bg-white text-black font-black py-6 rounded-2xl shadow-xl hover:scale-[1.02] transition-transform flex items-center justify-center gap-3">
+                    <i data-lucide="plus" class="w-6 h-6"></i>
+                    <span class="uppercase tracking-widest text-xs">New Entry</span>
                 </button>
                 
-                <div class="flex items-center gap-3 p-4 glass rounded-2xl">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center">
-                        <i data-lucide="user" class="w-5 h-5 text-zinc-500"></i>
+                <div class="flex items-center gap-4 p-5 glass rounded-2xl">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center">
+                        <i data-lucide="user" class="w-6 h-6 text-zinc-500"></i>
                     </div>
                     <div>
-                        <p class="text-xs font-bold text-white">Local User</p>
-                        <p class="text-[9px] text-zinc-500 uppercase font-black">Offline Mode</p>
+                        <p class="text-sm font-bold text-white">Local User</p>
+                        <p class="text-[10px] text-zinc-500 uppercase font-black">Offline Mode</p>
                     </div>
                 </div>
             </div>
         </aside>
 
-        <!-- MAIN CONTENT AREA -->
-        <div class="flex-1 overflow-y-auto noscroll pb-24 md:pb-12 h-screen">
-            <div class="max-w-6xl mx-auto px-4 md:px-8 lg:px-12 pt-6 md:pt-12">
-                <!-- Mobile Top Header -->
-                <header class="flex md:hidden justify-between items-center mb-6">
+        <!-- MAIN CONTENT -->
+        <div class="flex-1 overflow-y-auto noscroll pb-32 md:pb-16">
+            <div class="max-w-6xl mx-auto px-5 md:px-12 pt-10 md:pt-20">
+                <!-- Mobile Only Top Header -->
+                <header class="flex md:hidden justify-between items-center mb-8">
                     <div>
-                        <h1 class="text-2xl font-extrabold tracking-tight text-white">Khorcha</h1>
-                        <p id="header-date" class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest"></p>
+                        <h1 class="text-3xl font-extrabold tracking-tight text-white">Khorcha</h1>
+                        <p id="header-date" class="text-xs text-zinc-500 font-bold uppercase tracking-widest"></p>
                     </div>
-                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-zinc-800 to-zinc-900 border border-zinc-700 flex items-center justify-center shadow-lg">
-                        <i data-lucide="user" class="w-5 h-5 text-zinc-500"></i>
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-zinc-800 to-zinc-900 border border-zinc-700 flex items-center justify-center shadow-lg">
+                        <i data-lucide="user" class="w-6 h-6 text-zinc-500"></i>
                     </div>
                 </header>
 
@@ -165,28 +165,28 @@
             </div>
         </div>
 
-        <!-- MOBILE NAVIGATION (FIXED BOTTOM) -->
+        <!-- MOBILE NAVIGATION -->
         <nav class="flex md:hidden mobile-nav fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-lg glass rounded-[2.5rem] p-1.5 justify-between items-center z-50 shadow-2xl border-white/10">
             <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item active flex-1 py-4 rounded-2xl flex flex-col items-center gap-1 transition-all text-zinc-500">
-                <i data-lucide="layout-grid" class="w-4 h-4"></i>
-                <span class="text-[8px] font-black uppercase">Home</span>
+                <i data-lucide="layout-grid" class="w-5 h-5"></i>
+                <span class="text-[9px] font-black uppercase">Home</span>
             </button>
             <button onclick="switchTab('budget')" id="nav-budget" class="nav-item flex-1 py-4 rounded-2xl flex flex-col items-center gap-1 transition-all text-zinc-500">
-                <i data-lucide="pie-chart" class="w-4 h-4"></i>
-                <span class="text-[8px] font-black uppercase">Budget</span>
+                <i data-lucide="pie-chart" class="w-5 h-5"></i>
+                <span class="text-[9px] font-black uppercase">Budget</span>
             </button>
             <button onclick="openTransactionModal()" class="flex-1 flex justify-center -translate-y-8">
-                <div class="w-14 h-14 bg-white text-black rounded-full flex items-center justify-center shadow-xl ring-4 ring-black scale-90 sm:scale-100">
+                <div class="w-14 h-14 bg-white text-black rounded-full flex items-center justify-center shadow-xl ring-4 ring-black">
                     <i data-lucide="plus" class="w-8 h-8"></i>
                 </div>
             </button>
             <button onclick="switchTab('notes')" id="nav-notes" class="nav-item flex-1 py-4 rounded-2xl flex flex-col items-center gap-1 transition-all text-zinc-500">
-                <i data-lucide="sticky-note" class="w-4 h-4"></i>
-                <span class="text-[8px] font-black uppercase">Notes</span>
+                <i data-lucide="sticky-note" class="w-5 h-5"></i>
+                <span class="text-[9px] font-black uppercase">Notes</span>
             </button>
             <button onclick="switchTab('settings')" id="nav-settings" class="nav-item flex-1 py-4 rounded-2xl flex flex-col items-center gap-1 transition-all text-zinc-500">
-                <i data-lucide="settings" class="w-4 h-4"></i>
-                <span class="text-[8px] font-black uppercase">Setup</span>
+                <i data-lucide="settings" class="w-5 h-5"></i>
+                <span class="text-[9px] font-black uppercase">Setup</span>
             </button>
         </nav>
     </div>
@@ -196,7 +196,7 @@
         <div class="w-full max-w-xl max-h-[98vh] flex flex-col rounded-t-[2.5rem] md:rounded-[3rem] animate-slide-up bg-[#0A0A0A] border-t md:border border-white/5">
             <div class="flex justify-between items-center p-6 md:p-10 text-white pb-2">
                 <h3 id="modal-title" class="text-xl md:text-2xl font-bold tracking-tight">Record Entry</h3>
-                <button onclick="toggleModal('transaction-modal', false)" class="p-2.5 bg-zinc-900 rounded-2xl text-zinc-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+                <button onclick="toggleModal('transaction-modal', false)" class="p-3 bg-zinc-900 rounded-2xl text-zinc-400 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
             </div>
             
             <div class="overflow-y-auto noscroll p-6 md:p-10 pt-2 flex-1">
@@ -213,44 +213,44 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-4 gap-2 md:gap-3">
-                        <button class="calc-btn text-white" onclick="qCalc('7')">7</button>
-                        <button class="calc-btn text-white" onclick="qCalc('8')">8</button>
-                        <button class="calc-btn text-white" onclick="qCalc('9')">9</button>
+                    <div class="grid grid-cols-4 gap-2 md:gap-3 text-white">
+                        <button class="calc-btn" onclick="qCalc('7')">7</button>
+                        <button class="calc-btn" onclick="qCalc('8')">8</button>
+                        <button class="calc-btn" onclick="qCalc('9')">9</button>
                         <button class="calc-btn calc-btn-op" onclick="qCalc('/')">÷</button>
-                        <button class="calc-btn text-white" onclick="qCalc('4')">4</button>
-                        <button class="calc-btn text-white" onclick="qCalc('5')">5</button>
-                        <button class="calc-btn text-white" onclick="qCalc('6')">6</button>
+                        <button class="calc-btn" onclick="qCalc('4')">4</button>
+                        <button class="calc-btn" onclick="qCalc('5')">5</button>
+                        <button class="calc-btn" onclick="qCalc('6')">6</button>
                         <button class="calc-btn calc-btn-op" onclick="qCalc('*')">×</button>
-                        <button class="calc-btn text-white" onclick="qCalc('1')">1</button>
-                        <button class="calc-btn text-white" onclick="qCalc('2')">2</button>
-                        <button class="calc-btn text-white" onclick="qCalc('3')">3</button>
+                        <button class="calc-btn" onclick="qCalc('1')">1</button>
+                        <button class="calc-btn" onclick="qCalc('2')">2</button>
+                        <button class="calc-btn" onclick="qCalc('3')">3</button>
                         <button class="calc-btn calc-btn-op" onclick="qCalc('-')">-</button>
-                        <button class="calc-btn text-white" onclick="qCalc('0')">0</button>
-                        <button class="calc-btn text-white" onclick="qCalc('.')">.</button>
+                        <button class="calc-btn" onclick="qCalc('0')">0</button>
+                        <button class="calc-btn" onclick="qCalc('.')">.</button>
                         <button class="calc-btn bg-rose-500/10 text-rose-500" onclick="qClear()">C</button>
                         <button class="calc-btn calc-btn-op" onclick="qCalc('+')">+</button>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4 text-white">
+                    <div class="grid grid-cols-2 gap-4 text-white text-sm">
                         <div class="space-y-1">
                             <label class="text-[10px] font-black uppercase text-zinc-500 px-1">Category</label>
-                            <select id="t-cat" class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 text-sm font-bold text-white"></select>
+                            <select id="t-cat" class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 font-bold text-white"></select>
                         </div>
                         <div class="space-y-1">
                             <label class="text-[10px] font-black uppercase text-zinc-500 px-1">Account</label>
-                            <select id="t-acc" class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 text-sm font-bold text-white"></select>
+                            <select id="t-acc" class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 font-bold text-white"></select>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4 text-white">
+                    <div class="grid grid-cols-2 gap-4 text-white text-sm">
                         <div class="space-y-1">
                             <label class="text-[10px] font-black uppercase text-zinc-500 px-1">Date</label>
-                            <input type="date" id="t-date" class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 text-sm font-bold text-white">
+                            <input type="date" id="t-date" class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 font-bold text-white">
                         </div>
                         <div class="space-y-1">
                             <label class="text-[10px] font-black uppercase text-zinc-500 px-1">Memo</label>
-                            <input type="text" id="t-note" placeholder="Memo..." class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 text-sm font-bold text-white">
+                            <input type="text" id="t-note" placeholder="Memo..." class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 font-bold text-white">
                         </div>
                     </div>
                 </div>
@@ -262,11 +262,11 @@
         </div>
     </div>
 
-    <!-- ENTITY SETUP MODAL -->
+    <!-- ENTITY MODAL -->
     <div id="entity-modal" class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[70] flex items-center justify-center hidden p-6">
         <div class="glass w-full max-w-sm rounded-[3rem] p-8 animate-slide-up text-white">
             <h3 id="entity-modal-title" class="text-xl font-bold mb-6 text-center text-white">Create New</h3>
-            <div class="space-y-6 text-white">
+            <div class="space-y-6 text-white text-sm">
                 <div>
                     <label class="text-[9px] font-black uppercase text-zinc-500 mb-2 block">Context</label>
                     <div class="flex bg-zinc-900 p-1.5 rounded-2xl border border-white/5">
@@ -285,16 +285,16 @@
                 <div id="debt-fields" class="hidden space-y-6">
                     <div>
                         <label class="text-[10px] font-black uppercase text-zinc-500 mb-2 block text-white">Starting Debt Amount</label>
-                        <input type="number" id="setup-initial-balance" placeholder="e.g. 50000" class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 text-xs font-bold text-white">
+                        <input type="number" id="setup-initial-balance" placeholder="e.g. 50000" class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 text-sm font-bold text-white">
                     </div>
                     <div>
                         <label class="text-[10px] font-black uppercase text-zinc-500 mb-2 block text-white">Receiving Account</label>
-                        <select id="setup-debt-account" class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-5 text-sm font-bold text-white"></select>
+                        <select id="setup-debt-account" class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 text-sm font-bold text-white"></select>
                     </div>
                 </div>
                 <div>
                     <label class="text-[9px] font-black uppercase text-zinc-500 mb-2 block">Display Name</label>
-                    <input type="text" id="setup-name" placeholder="Name..." class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 text-xs font-bold text-white">
+                    <input type="text" id="setup-name" placeholder="Name..." class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 text-sm font-bold text-white">
                 </div>
                 <div class="flex gap-3 pt-4">
                     <button onclick="toggleModal('entity-modal', false)" class="flex-1 py-4 text-[9px] font-black uppercase tracking-widest text-zinc-500">Cancel</button>
@@ -308,7 +308,7 @@
     <div id="mapping-modal" class="fixed inset-0 bg-black/98 backdrop-blur-xl z-[80] flex items-center justify-center hidden p-4 md:p-6">
         <div class="glass w-full max-w-md rounded-[3rem] p-6 md:p-8 animate-slide-up">
             <h3 class="text-xl font-bold mb-2 text-white">CSV Field Mapping</h3>
-            <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mb-6">Match your file columns</p>
+            <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mb-6 text-white">Match your file columns</p>
             <div id="mapping-fields" class="space-y-4 mb-8 text-white"></div>
             <div class="flex gap-3">
                 <button onclick="toggleModal('mapping-modal', false)" class="flex-1 py-4 text-[9px] font-black uppercase text-zinc-500">Cancel</button>
@@ -322,10 +322,10 @@
         <div class="glass w-full max-w-xs rounded-[3rem] p-10 text-center text-white">
             <div class="w-20 h-20 bg-rose-500/10 rounded-full flex items-center justify-center mx-auto mb-6"><i data-lucide="alert-triangle" class="w-10 h-10 text-rose-500"></i></div>
             <h3 class="text-xl font-bold mb-3 text-white text-center">Wipe All Data?</h3>
-            <p class="text-[10px] text-zinc-500 uppercase leading-relaxed font-bold tracking-widest text-center">Permanent deletion.</p>
-            <div class="mt-10 flex flex-col gap-3">
-                <button onclick="toggleModal('purge-modal', false)" class="w-full py-4 text-[10px] font-black uppercase tracking-widest text-white">Cancel</button>
-                <button onclick="finalizePurge()" class="w-full bg-rose-600 text-white rounded-2xl py-4 text-[10px] font-black uppercase tracking-widest text-white">Delete Everything</button>
+            <p class="text-[10px] text-zinc-500 uppercase leading-relaxed font-bold tracking-widest text-center text-white">Permanent deletion.</p>
+            <div class="mt-10 flex flex-col gap-3 text-white">
+                <button onclick="toggleModal('purge-modal', false)" class="w-full py-4 text-[10px] font-black uppercase tracking-widest">Cancel</button>
+                <button onclick="finalizePurge()" class="w-full bg-rose-600 text-white rounded-2xl py-4 text-[10px] font-black uppercase tracking-widest">Delete Everything</button>
             </div>
         </div>
     </div>
@@ -442,25 +442,25 @@
             }, 0);
 
             el.innerHTML = `
-                <div class="glass rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 mb-8 animate-slide-up">
-                    <div class="flex justify-between items-center mb-8">
-                         <div class="flex bg-black/40 p-1 rounded-full border border-white/5">
-                            <button onclick="toggleDashboard('monthly')" class="px-4 py-1.5 rounded-full text-[8px] font-black uppercase ${state.dashboardMode === 'monthly' ? 'bg-white text-black' : 'text-zinc-500'}">Monthly</button>
-                            <button onclick="toggleDashboard('all')" class="px-4 py-1.5 rounded-full text-[8px] font-black uppercase ${state.dashboardMode === 'all' ? 'bg-white text-black' : 'text-zinc-500'}">All</button>
+                <div class="glass rounded-[2.5rem] p-8 md:p-14 mb-10 animate-slide-up">
+                    <div class="flex justify-between items-center mb-12">
+                         <div class="flex bg-black/40 p-1.5 rounded-full border border-white/5">
+                            <button onclick="toggleDashboard('monthly')" class="px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest ${state.dashboardMode === 'monthly' ? 'bg-white text-black' : 'text-zinc-500'}">Monthly</button>
+                            <button onclick="toggleDashboard('all')" class="px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest ${state.dashboardMode === 'all' ? 'bg-white text-black' : 'text-zinc-500'}">All</button>
                         </div>
-                        ${state.dashboardMode === 'monthly' ? `<div class="flex items-center gap-3 md:gap-4"><button onclick="changeMonth(-1)" class="p-1 text-white"><i data-lucide="chevron-left" class="w-4 h-4 text-zinc-500"></i></button><span class="text-[9px] font-black uppercase text-white">${state.viewDate.toLocaleString('default', { month: 'short', year: 'numeric' })}</span><button onclick="changeMonth(1)" class="p-1 text-white"><i data-lucide="chevron-right" class="w-4 h-4 text-zinc-500"></i></button></div>` : ''}
+                        ${state.dashboardMode === 'monthly' ? `<div class="flex items-center gap-5 text-white"><button onclick="changeMonth(-1)" class="p-2"><i data-lucide="chevron-left" class="w-5 h-5 text-white"></i></button><span class="text-sm font-black uppercase">${state.viewDate.toLocaleString('default', { month: 'short', year: 'numeric' })}</span><button onclick="changeMonth(1)" class="p-2"><i data-lucide="chevron-right" class="w-5 h-5 text-white"></i></button></div>` : ''}
                     </div>
-                    <div class="text-center mb-10">
-                        <p class="text-zinc-500 text-[9px] font-black uppercase tracking-[0.2em] mb-2">Net Cashflow</p>
-                        <h2 class="text-4xl md:text-5xl font-black tracking-tighter text-white">${formatBDT(periodInc - periodExp)}</h2>
-                        <div class="mt-2 text-[10px] font-bold text-zinc-600 uppercase tracking-widest text-center">Actual Balance: ${formatBDT(totalBalance)}</div>
+                    <div class="text-center mb-14 text-white">
+                        <p class="text-zinc-500 text-xs font-black uppercase tracking-[0.3em] mb-3">Net Cashflow</p>
+                        <h2 class="text-5xl md:text-7xl font-black tracking-tighter">${formatBDT(periodInc - periodExp)}</h2>
+                        <div class="mt-4 text-xs font-bold text-zinc-600 uppercase tracking-widest">Actual Balance: ${formatBDT(totalBalance)}</div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 text-white">
-                        <div class="bg-emerald-500/5 p-5 md:p-6 rounded-3xl border border-emerald-500/10"><p class="text-[8px] text-emerald-500/60 font-black mb-1 uppercase">Inflow</p><p class="text-emerald-400 font-black text-xl">+${formatBDT(periodInc)}</p></div>
-                        <div class="bg-rose-500/5 p-5 md:p-6 rounded-3xl border border-rose-500/10"><p class="text-[8px] text-rose-500/60 font-black mb-1 uppercase">Outflow</p><p class="text-rose-400 font-black text-xl">-${formatBDT(periodExp)}</p></div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-white">
+                        <div class="bg-emerald-500/5 p-8 rounded-[2.5rem] border border-emerald-500/10"><p class="text-[10px] text-emerald-500/60 font-black mb-2 uppercase tracking-widest">Inflow</p><p class="text-emerald-400 font-black text-2xl lg:text-3xl">+${formatBDT(periodInc)}</p></div>
+                        <div class="bg-rose-500/5 p-8 rounded-[2.5rem] border border-rose-500/10"><p class="text-[10px] text-rose-500/60 font-black mb-2 uppercase tracking-widest">Outflow</p><p class="text-rose-400 font-black text-2xl lg:text-3xl">-${formatBDT(periodExp)}</p></div>
                     </div>
                 </div>
-                <div class="grid grid-cols-1 gap-6 md:gap-8">${renderGroupedList(filtered)}</div>
+                <div class="space-y-10">${renderGroupedList(filtered)}</div>
             `;
         }
 
@@ -469,7 +469,6 @@
             const monthKey = `${m}-${y}`;
             const monthBudgets = state.budgets[monthKey] || {};
             const monthName = state.viewDate.toLocaleString('default', { month: 'long', year: 'numeric' });
-            
             const currentMonthTrans = state.transactions.filter(t => new Date(t.date).getMonth() === m && new Date(t.date).getFullYear() === y);
             const incomeCats = state.categories.filter(c => c.type === 'income');
             const expenseCats = state.categories.filter(c => c.type === 'expense');
@@ -481,39 +480,21 @@
             const remainingToBudget = totalPlannedIncome - totalPlannedExpense - totalPlannedDebt;
 
             el.innerHTML = `
-                <div class="space-y-8 animate-slide-up pb-20 text-white">
-                    <div class="glass rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10">
-                        <div class="flex justify-between items-center mb-8">
-                            <h2 class="text-xl md:text-2xl font-black tracking-tighter text-white">Budget Planner</h2>
-                            <div class="flex items-center gap-3"><button onclick="changeMonth(-1)" class="p-1 text-white"><i data-lucide="chevron-left" class="w-4 h-4"></i></button><span class="text-[9px] font-black uppercase text-white">${monthName}</span><button onclick="changeMonth(1)" class="p-1 text-white"><i data-lucide="chevron-right" class="w-4 h-4"></i></button></div>
+                <div class="space-y-12 animate-slide-up pb-20 text-white">
+                    <div class="glass rounded-[3rem] p-10 md:p-16">
+                        <div class="flex justify-between items-center mb-10">
+                            <h2 class="text-2xl lg:text-3xl font-black tracking-tighter">Budget Planner</h2>
+                            <div class="flex items-center gap-4"><button onclick="changeMonth(-1)" class="p-2"><i data-lucide="chevron-left" class="w-5 h-5 text-white"></i></button><span class="text-sm font-black uppercase text-white">${monthName}</span><button onclick="changeMonth(1)" class="p-2"><i data-lucide="chevron-right" class="w-5 h-5 text-white"></i></button></div>
                         </div>
                         <div class="text-center">
-                            <p class="text-zinc-500 text-[9px] font-black uppercase tracking-[0.2em] mb-2">Remaining to Budget</p>
-                            <h2 id="budget-summary-val" class="text-4xl font-black tracking-tighter ${remainingToBudget === 0 ? 'text-emerald-400' : 'text-white'}">${formatBDT(remainingToBudget)}</h2>
-                            <p id="budget-summary-hint" class="text-[8px] text-zinc-500 uppercase mt-2 font-bold tracking-widest text-center">${remainingToBudget === 0 ? "It's an EveryDollar Budget!" : "Budget every Taka to zero."}</p>
+                            <p class="text-zinc-500 text-xs font-black uppercase tracking-[0.2em] mb-3">Remaining to Budget</p>
+                            <h2 id="budget-summary-val" class="text-5xl lg:text-7xl font-black tracking-tighter ${remainingToBudget === 0 ? 'text-emerald-400' : 'text-white'}">${formatBDT(remainingToBudget)}</h2>
+                            <p id="budget-summary-hint" class="text-[10px] text-zinc-500 uppercase mt-4 font-bold tracking-[0.2em]">${remainingToBudget === 0 ? "Every Taka has a job." : "Assign your funds to zero."}</p>
                         </div>
                     </div>
-
-                    <div class="space-y-4 md:space-y-6">
-                        <h3 class="text-[10px] font-black uppercase tracking-widest text-zinc-500 px-1">Planned Income</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                            ${incomeCats.map(c => renderBudgetItem(c, monthBudgets[c.id], currentMonthTrans)).join('')}
-                        </div>
-                    </div>
-
-                    <div class="space-y-4 md:space-y-6">
-                        <h3 class="text-[10px] font-black uppercase tracking-widest text-zinc-500 px-1">Debt Repayment</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                            ${debtCats.map(d => renderDebtBudgetItem(d, monthBudgets[d.id], state.transactions)).join('')}
-                        </div>
-                    </div>
-
-                    <div class="space-y-4 md:space-y-6">
-                        <h3 class="text-[10px] font-black uppercase tracking-widest text-zinc-500 px-1">Planned Expenses</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                            ${expenseCats.map(c => renderBudgetItem(c, monthBudgets[c.id], currentMonthTrans)).join('')}
-                        </div>
-                    </div>
+                    <div class="space-y-6"><h3 class="text-xs font-black uppercase tracking-widest text-zinc-500 px-1">Planned Income</h3><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">${incomeCats.map(c => renderBudgetItem(c, monthBudgets[c.id], currentMonthTrans)).join('')}</div></div>
+                    <div class="space-y-6"><h3 class="text-xs font-black uppercase tracking-widest text-zinc-500 px-1">Debt Repayment</h3><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">${debtCats.map(d => renderDebtBudgetItem(d, monthBudgets[d.id], state.transactions)).join('')}</div></div>
+                    <div class="space-y-6"><h3 class="text-xs font-black uppercase tracking-widest text-zinc-500 px-1">Planned Expenses</h3><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">${expenseCats.map(c => renderBudgetItem(c, monthBudgets[c.id], currentMonthTrans)).join('')}</div></div>
                 </div>
             `;
             lucide.createIcons();
@@ -524,43 +505,19 @@
             const actual = trans.filter(t => t.category === cat.name).reduce((s, t) => s + (parseFloat(t.amount) || 0), 0);
             const plannedVal = parseFloat(planned) || 0;
             const remaining = plannedVal - actual;
-            
-            // Labels based on Income vs Expense
             const actualLabel = isIncome ? "Received" : "Spent";
-            const diffLabel = isIncome 
-                ? (remaining > 0 ? "Left to Receive" : "Over Target") 
-                : (remaining >= 0 ? "Remaining" : "Overspent");
-            
+            const diffLabel = isIncome ? (remaining > 0 ? "Left" : "Surplus") : (remaining >= 0 ? "Left" : "Overspent");
             const progress = plannedVal > 0 ? Math.min((actual / plannedVal) * 100, 100) : 0;
-            
-            // Color Logic
-            let color = '';
-            if (isIncome) {
-                color = actual >= plannedVal ? 'bg-emerald-400' : 'bg-zinc-500';
-            } else {
-                color = actual > plannedVal ? 'bg-rose-400' : 'bg-white';
-            }
+            let color = isIncome ? (actual >= plannedVal ? 'bg-emerald-400' : 'bg-zinc-500') : (actual > plannedVal ? 'bg-rose-400' : 'bg-white');
 
             return `
-                <div class="glass p-5 md:p-6 rounded-[2rem]">
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <p class="text-xs font-black uppercase tracking-wider text-white">${cat.name}</p>
-                            <p id="rem-val-${cat.id}" class="text-[9px] font-bold uppercase mt-1 ${isIncome && remaining > 0 ? 'text-zinc-500' : (remaining < 0 ? 'text-emerald-400' : 'text-zinc-500')}">
-                                ${diffLabel}: ${formatBDT(Math.abs(remaining))}
-                            </p>
-                        </div>
-                        <div class="bg-black/40 px-3 py-1.5 rounded-xl border border-white/5">
-                            <input type="number" value="${planned || ''}" placeholder="0" 
-                                oninput="updateBudget('${cat.id}', this.value)" 
-                                class="bg-transparent text-xs font-black text-white w-16 md:w-20 text-right outline-none">
-                        </div>
+                <div class="glass p-8 rounded-[2.5rem]">
+                    <div class="flex justify-between items-start mb-6">
+                        <div><p class="text-sm font-black uppercase tracking-widest text-white">${cat.name}</p><p id="rem-val-${cat.id}" class="text-[10px] text-zinc-500 font-bold uppercase mt-2">${diffLabel}: ${formatBDT(Math.abs(remaining))}</p></div>
+                        <div class="bg-black/40 px-4 py-2 rounded-xl border border-white/5"><input type="number" value="${planned || ''}" placeholder="0" oninput="updateBudget('${cat.id}', this.value)" class="bg-transparent text-sm font-black text-white w-20 text-right outline-none"></div>
                     </div>
-                    <div class="progress-bar mb-2"><div id="prog-val-${cat.id}" class="progress-fill ${color}" style="width: ${progress}%"></div></div>
-                    <div class="flex justify-between items-center text-[8px] font-black uppercase tracking-widest text-zinc-600">
-                        <span>${actualLabel}: ${formatBDT(actual)}</span>
-                        <span id="plan-val-${cat.id}">Planned: ${formatBDT(plannedVal)}</span>
-                    </div>
+                    <div class="progress-bar mb-3"><div id="prog-val-${cat.id}" class="progress-fill ${color}" style="width: ${progress}%"></div></div>
+                    <div class="flex justify-between items-center text-[9px] font-black uppercase tracking-widest text-zinc-600"><span>${actualLabel}: ${formatBDT(actual)}</span><span id="plan-val-${cat.id}">Planned: ${formatBDT(plannedVal)}</span></div>
                 </div>
             `;
         }
@@ -569,15 +526,14 @@
             const totalPaidSoFar = allTrans.filter(t => t.category === debt.name && t.type === 'expense').reduce((s, t) => s + parseFloat(t.amount), 0);
             const remainingDebt = Math.max(0, parseFloat(debt.initialBalance) - totalPaidSoFar);
             const plannedVal = parseFloat(planned) || 0;
-            
             return `
-                <div class="glass p-5 md:p-6 rounded-[2rem]">
-                    <div class="flex justify-between items-start mb-4">
-                        <div><p class="text-xs font-black uppercase tracking-wider text-white">${debt.name}</p><p class="text-[9px] text-rose-400/60 font-bold uppercase mt-1">Owed: ${formatBDT(remainingDebt)}</p></div>
-                        <div class="bg-black/40 px-3 py-1.5 rounded-xl border border-white/5"><input type="number" value="${planned || ''}" placeholder="0" oninput="updateBudget('${debt.id}', this.value)" class="bg-transparent text-xs font-black text-white w-16 md:w-20 text-right outline-none"></div>
+                <div class="glass p-8 rounded-[2.5rem]">
+                    <div class="flex justify-between items-start mb-6">
+                        <div><p class="text-sm font-black uppercase tracking-widest text-white">${debt.name}</p><p class="text-[10px] text-rose-400/60 font-bold uppercase mt-2">Owed: ${formatBDT(remainingDebt)}</p></div>
+                        <div class="bg-black/40 px-4 py-2 rounded-xl border border-white/5"><input type="number" value="${planned || ''}" placeholder="0" oninput="updateBudget('${debt.id}', this.value)" class="bg-transparent text-sm font-black text-white w-20 text-right outline-none"></div>
                     </div>
-                    <div class="progress-bar mb-2"><div class="progress-fill bg-rose-400" style="width: ${Math.min((totalPaidSoFar / debt.initialBalance) * 100, 100)}%"></div></div>
-                    <div class="flex justify-between items-center text-[8px] font-black uppercase tracking-widest text-zinc-600"><span>Total Paid: ${formatBDT(totalPaidSoFar)}</span><span>Plan: ${formatBDT(plannedVal)}</span></div>
+                    <div class="progress-bar mb-3"><div class="progress-fill bg-rose-400" style="width: ${Math.min((totalPaidSoFar / debt.initialBalance) * 100, 100)}%"></div></div>
+                    <div class="flex justify-between items-center text-[9px] font-black uppercase tracking-widest text-zinc-600"><span>Paid: ${formatBDT(totalPaidSoFar)}</span><span>Plan: ${formatBDT(plannedVal)}</span></div>
                 </div>
             `;
         }
@@ -588,99 +544,143 @@
             if(!state.budgets[monthKey]) state.budgets[monthKey] = {};
             state.budgets[monthKey][catId] = value;
             saveAll();
-
             const monthBudgets = state.budgets[monthKey];
             const trans = state.transactions.filter(t => new Date(t.date).getMonth() === m && new Date(t.date).getFullYear() === y);
             const cat = state.categories.find(c => c.id === catId) || state.debts.find(d => d.id === catId);
-            
             if(cat) {
                 const isIncome = cat.type === 'income';
                 const actual = trans.filter(t => t.category === cat.name).reduce((s, t) => s + (parseFloat(t.amount) || 0), 0);
                 const plannedVal = parseFloat(value) || 0;
                 const remaining = plannedVal - actual;
                 const progress = plannedVal > 0 ? Math.min((actual / plannedVal) * 100, 100) : 0;
-                
                 const remEl = document.getElementById(`rem-val-${catId}`);
                 const progEl = document.getElementById(`prog-val-${catId}`);
                 const planEl = document.getElementById(`plan-val-${catId}`);
-
-                const diffLabel = isIncome 
-                    ? (remaining > 0 ? "Left to Receive" : "Over Target") 
-                    : (remaining >= 0 ? "Remaining" : "Overspent");
-
+                const diffLabel = isIncome ? (remaining > 0 ? "Left" : "Surplus") : (remaining >= 0 ? "Left" : "Overspent");
                 if(remEl) remEl.innerText = `${diffLabel}: ${formatBDT(Math.abs(remaining))}`;
                 if(progEl) {
                     progEl.style.width = progress + '%';
-                    if (isIncome) {
-                        progEl.className = `progress-fill ${actual >= plannedVal ? 'bg-emerald-400' : 'bg-zinc-500'}`;
-                    } else {
-                        progEl.className = `progress-fill ${actual > plannedVal ? 'bg-rose-400' : 'bg-white'}`;
-                    }
+                    progEl.className = `progress-fill ${isIncome ? (actual >= plannedVal ? 'bg-emerald-400' : 'bg-zinc-500') : (actual > plannedVal ? 'bg-rose-400' : 'bg-white')}`;
                 }
                 if(planEl) planEl.innerText = `Planned: ${formatBDT(plannedVal)}`;
             }
-
             let totalInc = state.categories.filter(c => c.type === 'income').reduce((s, c) => s + (parseFloat(monthBudgets[c.id]) || 0), 0);
             let totalExp = state.categories.filter(c => c.type === 'expense').reduce((s, c) => s + (parseFloat(monthBudgets[c.id]) || 0), 0);
             let totalDebt = state.debts.reduce((s, d) => s + (parseFloat(monthBudgets[d.id]) || 0), 0);
             const remaining = totalInc - totalExp - totalDebt;
-
             const summaryVal = document.getElementById('budget-summary-val');
-            const summaryHint = document.getElementById('budget-summary-hint');
             if(summaryVal) {
                 summaryVal.innerText = formatBDT(remaining);
-                summaryVal.className = `text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter ${remaining === 0 ? 'text-emerald-400' : 'text-white'}`;
+                summaryVal.className = `text-5xl lg:text-6xl font-black tracking-tighter ${remaining === 0 ? 'text-emerald-400' : 'text-white'}`;
             }
-            if(summaryHint) summaryHint.innerText = remaining === 0 ? "Perfectly Budgeted!" : "Give every Taka a job.";
         }
 
         function renderGroupedList(list) {
             const groups = {}; list.forEach(t => { if(!groups[t.date]) groups[t.date] = []; groups[t.date].push(t); });
             const sortedDates = Object.keys(groups).sort((a,b) => new Date(b) - new Date(a));
-            if(!sortedDates.length) return `<div class="col-span-full py-20 text-center opacity-30 text-white"><p class="text-sm font-black uppercase tracking-widest text-center">No entries found</p></div>`;
+            if(!sortedDates.length) return `<div class="py-20 text-center opacity-30 text-white"><p class="text-sm font-black uppercase tracking-widest">Empty History</p></div>`;
             return sortedDates.map(date => {
                 const daySum = groups[date].reduce((s, t) => s + (t.type === 'income' ? parseFloat(t.amount) : -parseFloat(t.amount)), 0);
-                return `<div class="space-y-4 animate-slide-up md:col-span-full"><div class="flex justify-between items-center px-2 text-white"><span class="text-xs font-black text-zinc-600 uppercase tracking-widest">${new Date(date).toLocaleDateString(undefined, {day:'numeric', month:'short', weekday:'short'})}</span><span class="text-xs font-black ${daySum >= 0 ? 'text-emerald-500' : 'text-rose-500'}">${daySum >= 0 ? '+' : ''}${formatBDT(daySum)}</span></div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">${groups[date].map(t => `<div onclick="editTransaction(${t.id})" class="glass p-6 rounded-[2rem] flex items-center justify-between group active:scale-[0.98] transition-all cursor-pointer"><div class="flex items-center gap-4 md:gap-5"><div class="w-12 h-12 rounded-2xl bg-zinc-900 border border-white/5 flex items-center justify-center"><i data-lucide="${t.type === 'income' ? 'plus-circle' : 'minus-circle'}" class="w-6 h-6 ${t.type === 'income' ? 'text-emerald-500' : 'text-rose-500'}"></i></div><div><p class="text-sm font-black uppercase tracking-wider text-white">${t.category}</p><p class="text-xs text-zinc-500 font-bold mt-1">${t.account}</p></div></div><div class="text-right"><p class="text-lg font-black ${t.type === 'income' ? 'text-emerald-400' : 'text-rose-400'}">${t.type === 'income' ? '+' : '-'}${Number(t.amount).toLocaleString()}</p></div></div>`).join('')}</div></div>`;
+                return `<div class="space-y-4 animate-slide-up text-white"><div class="flex justify-between items-center px-2"><span class="text-xs font-black text-zinc-600 uppercase tracking-widest">${new Date(date).toLocaleDateString(undefined, {day:'numeric', month:'short', weekday:'short'})}</span><span class="text-xs font-black ${daySum >= 0 ? 'text-emerald-500' : 'text-rose-500'}">${daySum >= 0 ? '+' : ''}${formatBDT(daySum)}</span></div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">${groups[date].map(t => `<div onclick="editTransaction(${t.id})" class="glass p-7 rounded-[2.5rem] flex items-center justify-between group active:scale-[0.98] transition-all cursor-pointer"><div class="flex items-center gap-5"><div class="w-12 h-12 rounded-2xl bg-zinc-900 border border-white/5 flex items-center justify-center"><i data-lucide="${t.type === 'income' ? 'plus-circle' : 'minus-circle'}" class="w-6 h-6 ${t.type === 'income' ? 'text-emerald-500' : 'text-rose-500'}"></i></div><div><p class="text-sm font-black uppercase tracking-widest">${t.category}</p><p class="text-xs text-zinc-500 font-bold mt-1">${t.account}</p></div></div><div class="text-right"><p class="text-lg font-black ${t.type === 'income' ? 'text-emerald-400' : 'text-rose-400'}">${t.type === 'income' ? '+' : '-'}${Number(t.amount).toLocaleString()}</p></div></div>`).join('')}</div></div>`;
             }).join('');
         }
 
         function renderStats(el) {
             const m = state.viewDate.getMonth(), y = state.viewDate.getFullYear();
             const filtered = state.transactions.filter(t => state.statFilter === 'all' || (new Date(t.date).getMonth() === m && new Date(t.date).getFullYear() === y));
+            
+            // Metrics Logic
             const currExp = filtered.filter(t => t.type === 'expense').reduce((s,t) => s + parseFloat(t.amount), 0);
             const currInc = filtered.filter(t => t.type === 'income').reduce((s,t) => s + parseFloat(t.amount), 0);
+            const savingsRate = currInc > 0 ? ((currInc - currExp)/currInc * 100).toFixed(1) : 0;
+            const avgDaily = currExp / 30;
+
             const expData = {}; filtered.filter(t => t.type === 'expense').forEach(t => { expData[t.category] = (expData[t.category] || 0) + parseFloat(t.amount); });
             const sortedExp = Object.entries(expData).sort((a,b) => b[1]-a[1]);
-            el.innerHTML = `<div class="space-y-10 animate-slide-up pb-20 text-white"><div class="flex justify-between items-center px-1"><h2 class="text-3xl font-black tracking-tighter">Analytics</h2><div class="flex bg-zinc-900 p-1.5 rounded-2xl border border-white/5"><button onclick="setStatFilter('monthly')" class="px-8 py-2.5 rounded-xl text-xs font-black uppercase ${state.statFilter === 'monthly' ? 'bg-zinc-800 text-white shadow-lg' : 'text-zinc-600'}">Month</button><button onclick="setStatFilter('all')" class="px-8 py-2.5 rounded-xl text-xs font-black uppercase ${state.statFilter === 'all' ? 'bg-zinc-800 text-white shadow-lg' : 'text-zinc-600'}">All</button></div></div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-10"><div class="glass p-10 rounded-[3rem] text-center flex items-center justify-center"><div class="h-80 w-full"><canvas id="mainChart"></canvas></div></div><div class="glass p-10 rounded-[3rem]"><p class="text-xs font-black text-zinc-500 uppercase tracking-widest mb-10 text-center md:text-left">Inflow vs Outflow</p><div class="h-80"><canvas id="barChart"></canvas></div></div></div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">${sortedExp.map(([cat, val], idx) => `<div class="glass p-6 rounded-[2rem] flex items-center justify-between"><div class="flex items-center gap-4"><div class="w-2 h-2 rounded-full" style="background: ${getPalette(idx)}"></div><span class="text-sm font-black uppercase tracking-widest text-zinc-400">${cat}</span></div><span class="text-base font-black">${formatBDT(val)}</span></div>`).join('')}</div></div>`;
+            const accData = {}; state.transactions.forEach(t => {
+                const val = parseFloat(t.amount);
+                accData[t.account] = (accData[t.account] || 0) + (t.type === 'income' ? val : -val);
+            });
+
+            el.innerHTML = `
+                <div class="space-y-12 animate-slide-up pb-28 text-white">
+                    <div class="flex justify-between items-center px-1"><h2 class="text-3xl font-black tracking-tighter">Insights Hub</h2>
+                        <div class="flex bg-zinc-900 p-1.5 rounded-2xl border border-white/5">
+                            <button onclick="setStatFilter('monthly')" class="px-8 py-2.5 rounded-xl text-xs font-black uppercase ${state.statFilter === 'monthly' ? 'bg-zinc-800 text-white shadow-lg' : 'text-zinc-600'}">Month</button>
+                            <button onclick="setStatFilter('all')" class="px-8 py-2.5 rounded-xl text-xs font-black uppercase ${state.statFilter === 'all' ? 'bg-zinc-800 text-white shadow-lg' : 'text-zinc-600'}">All</button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="glass p-8 rounded-[2.5rem] text-center"><p class="text-[10px] font-black text-zinc-600 uppercase mb-2 tracking-widest">Savings Rate</p><p class="text-3xl font-black text-emerald-400">${savingsRate}%</p></div>
+                        <div class="glass p-8 rounded-[2.5rem] text-center"><p class="text-[10px] font-black text-zinc-600 uppercase mb-2 tracking-widest">Avg Daily Spend</p><p class="text-3xl font-black">৳${Math.round(avgDaily)}</p></div>
+                        <div class="glass p-8 rounded-[2.5rem] text-center"><p class="text-[10px] font-black text-zinc-600 uppercase mb-2 tracking-widest">Active Categories</p><p class="text-3xl font-black">${sortedExp.length}</p></div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                        <div class="glass p-10 rounded-[3rem] text-center flex flex-col"><p class="text-xs font-black text-zinc-500 uppercase tracking-widest mb-10 text-left">Spending Trend</p><div class="h-80 w-full"><canvas id="trendChart"></canvas></div></div>
+                        <div class="glass p-10 rounded-[3rem] text-center flex flex-col"><p class="text-xs font-black text-zinc-500 uppercase tracking-widest mb-10 text-left">Category Split</p><div class="h-80 w-full"><canvas id="mainChart"></canvas></div></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                        <div class="glass p-10 rounded-[3rem] text-center flex flex-col"><p class="text-xs font-black text-zinc-500 uppercase tracking-widest mb-10 text-left">Account Liquidity</p><div class="h-80 w-full"><canvas id="accChart"></canvas></div></div>
+                        <div class="glass p-10 rounded-[3rem]"><p class="text-xs font-black text-zinc-500 uppercase tracking-widest mb-10 text-left">Inflow vs Outflow</p><div class="h-80"><canvas id="barChart"></canvas></div></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        ${sortedExp.map(([cat, val], idx) => `<div class="glass p-7 rounded-[2rem] flex items-center justify-between"><div class="flex items-center gap-4"><div class="w-2.5 h-2.5 rounded-full" style="background: ${getPalette(idx)}"></div><span class="text-sm font-black uppercase tracking-widest text-zinc-400">${cat}</span></div><span class="text-base font-black">${formatBDT(val)}</span></div>`).join('')}
+                    </div>
+                </div>`;
+
             setTimeout(() => {
-                if(sortedExp.length) new Chart(document.getElementById('mainChart').getContext('2d'), { type: 'doughnut', data: { labels: Object.keys(expData), datasets: [{ data: Object.values(expData), backgroundColor: Object.keys(expData).map((_, i) => getPalette(i)), borderWidth: 0, hoverOffset: 15 }] }, options: { cutout: '85%', plugins: { legend: { display: false } }, maintainAspectRatio: false } });
-                new Chart(document.getElementById('barChart').getContext('2d'), { type: 'bar', data: { labels: ['Inflow', 'Outflow'], datasets: [{ data: [currInc, currExp], backgroundColor: ['#34d399', '#fb7185'], borderRadius: 15 }] }, options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false }, ticks: { color: '#525252', font: { size: 12, weight: '800' } } } } } });
+                const ctxMain = document.getElementById('mainChart').getContext('2d');
+                new Chart(ctxMain, { type: 'doughnut', data: { labels: Object.keys(expData), datasets: [{ data: Object.values(expData), backgroundColor: Object.keys(expData).map((_, i) => getPalette(i)), borderWidth: 0, hoverOffset: 20 }] }, options: { cutout: '80%', plugins: { legend: { display: false } }, maintainAspectRatio: false } });
+                
+                const ctxBar = document.getElementById('barChart').getContext('2d');
+                new Chart(ctxBar, { type: 'bar', data: { labels: ['Inflow', 'Outflow'], datasets: [{ data: [currInc, currExp], backgroundColor: ['#34d399', '#fb7185'], borderRadius: 15, barThickness: 60 }] }, options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false }, ticks: { color: '#71717a', font: { size: 12, weight: '800' } } } } } });
+
+                const ctxAcc = document.getElementById('accChart').getContext('2d');
+                new Chart(ctxAcc, { type: 'polarArea', data: { labels: Object.keys(accData), datasets: [{ data: Object.values(accData), backgroundColor: Object.keys(accData).map((_, i) => getPalette(i+3)), borderWidth: 0 }] }, options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { display: false } } } } });
+
+                const ctxTrend = document.getElementById('trendChart').getContext('2d');
+                const trend = calculateDetailedTrend(filtered);
+                new Chart(ctxTrend, { type: 'line', data: { labels: trend.labels, datasets: [{ data: trend.values, borderColor: '#ffffff', borderWidth: 3, tension: 0.4, pointRadius: 0, fill: true, backgroundColor: 'rgba(255,255,255,0.02)' }] }, options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false }, ticks: { color: '#71717a', font: { size: 10 } } } } } });
             }, 100);
         }
 
+        function calculateDetailedTrend(filtered) {
+            if(state.statFilter === 'monthly') {
+                const days = Array.from({length: 31}, (_, i) => i + 1);
+                const values = days.map(d => filtered.filter(t => new Date(t.date).getDate() === d && t.type === 'expense').reduce((s,t) => s+t.amount, 0));
+                return { labels: days, values };
+            } else {
+                const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                const values = months.map((m, i) => state.transactions.filter(t => new Date(t.date).getMonth() === i && t.type === 'expense').reduce((s,t) => s+t.amount, 0));
+                return { labels: months, values };
+            }
+        }
+
         function renderNotes(el) {
-            el.innerHTML = `<div class="space-y-8 text-white pb-20"><div class="flex justify-between items-center px-1"><h2 class="text-3xl font-black tracking-tighter text-white text-center md:text-left">Memos</h2><button onclick="addNote()" class="p-4 glass rounded-2xl text-emerald-400 hover:scale-105 transition-all"><i data-lucide="plus-square" class="w-8 h-8"></i></button></div><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">${state.notes.length ? state.notes.map(n => `<div class="glass p-8 rounded-[2.5rem] relative group"><textarea onchange="updateNote('${n.id}', this.value)" class="w-full bg-transparent text-base text-zinc-300 font-medium resize-none min-h-[150px] border-none noscroll" placeholder="Write a reminder...">${n.text}</textarea><div class="flex justify-between items-center mt-6 pt-6 border-t border-white/5"><span class="text-[10px] font-black text-zinc-600 uppercase tracking-widest text-center">${n.date}</span><button onclick="deleteNote('${n.id}')" class="text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity p-2"><i data-lucide="trash-2" class="w-5 h-5"></i></button></div></div>`).join('') : '<div class="col-span-full py-20 text-center opacity-30 text-white"><p class="text-sm font-black uppercase tracking-[0.2em] text-center">Your memo board is empty</p></div>'}</div></div>`;
+            el.innerHTML = `<div class="space-y-8 text-white pb-28 animate-slide-up"><div class="flex justify-between items-center px-1"><h2 class="text-3xl font-black tracking-tighter">Memos</h2><button onclick="addNote()" class="p-4 glass rounded-2xl text-emerald-400 hover:scale-105 transition-all"><i data-lucide="plus-square" class="w-8 h-8"></i></button></div><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">${state.notes.length ? state.notes.map(n => `<div class="glass p-8 rounded-[2.5rem] relative group"><textarea onchange="updateNote('${n.id}', this.value)" class="w-full bg-transparent text-lg text-zinc-300 font-medium resize-none min-h-[180px] border-none noscroll" placeholder="Write something...">${n.text}</textarea><div class="flex justify-between items-center mt-8 pt-6 border-t border-white/5"><span class="text-xs font-black text-zinc-600 uppercase tracking-widest">${n.date}</span><button onclick="deleteNote('${n.id}')" class="text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity p-2"><i data-lucide="trash-2" class="w-5 h-5"></i></button></div></div>`).join('') : '<div class="col-span-full py-20 text-center opacity-30"><p class="text-sm font-black uppercase tracking-[0.2em]">Memo board is empty</p></div>'}</div></div>`;
             lucide.createIcons();
         }
 
         function renderSettings(el) {
             el.innerHTML = `
-                <div class="space-y-10 pb-28 text-white animate-slide-up">
+                <div class="space-y-12 pb-28 text-white animate-slide-up">
                     <div class="flex justify-between items-center px-1"><h2 class="text-3xl font-black tracking-tighter">Setup</h2><button onclick="toggleModal('entity-modal', true)" class="bg-zinc-800 px-8 py-3 rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl">+ New Item</button></div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div class="space-y-5">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        <div class="space-y-6">
                             ${renderFolder('Expense Categories', state.categories.filter(c => c.type === 'expense'), 'cat')}
                             ${renderFolder('Income Categories', state.categories.filter(c => c.type === 'income'), 'cat')}
                             ${renderFolder('My Debts', state.debts, 'debt')}
                             ${renderFolder('System Accounts', state.accounts, 'acc')}
                         </div>
-                        <div class="space-y-8">
-                            <section class="grid grid-cols-2 gap-5"><button onclick="exportCSV()" class="glass p-10 rounded-[2.5rem] flex flex-col items-center gap-4 hover:bg-white/5"><i data-lucide="download-cloud" class="w-8 h-8 text-emerald-500 text-center"></i><span class="text-xs font-black uppercase tracking-widest text-center">Backup</span></button><button onclick="document.getElementById('csv-upload-field').click()" class="glass p-10 rounded-[2.5rem] flex flex-col items-center gap-4 hover:bg-white/5"><i data-lucide="upload-cloud" class="w-8 h-8 text-blue-500 text-center"></i><span class="text-xs font-black uppercase tracking-widest text-center">Restore</span></button></section>
-                            <button onclick="switchTab('calculator')" class="w-full glass py-10 rounded-[2.5rem] text-xs font-black uppercase tracking-[0.2em] text-zinc-400 flex items-center justify-center gap-4 hover:bg-white/5"><i data-lucide="calculator" class="w-6 h-6 text-center"></i> Open Calculator Tool</button>
-                            <button onclick="toggleModal('purge-modal', true)" class="w-full bg-rose-600/10 border border-rose-500/10 py-8 rounded-[2.5rem] text-rose-500 text-xs font-black uppercase tracking-[0.3em] hover:bg-rose-600 hover:text-white transition-all text-center">Purge Application Data</button>
+                        <div class="space-y-10">
+                            <section class="grid grid-cols-2 gap-6"><button onclick="exportCSV()" class="glass p-12 rounded-[3rem] flex flex-col items-center gap-5 hover:bg-white/5 transition-all"><i data-lucide="download-cloud" class="w-10 h-10 text-emerald-500"></i><span class="text-xs font-black uppercase tracking-widest text-white">Backup</span></button><button onclick="document.getElementById('csv-upload-field').click()" class="glass p-12 rounded-[3rem] flex flex-col items-center gap-5 hover:bg-white/5 transition-all"><i data-lucide="upload-cloud" class="w-10 h-10 text-blue-500"></i><span class="text-xs font-black uppercase tracking-widest text-white">Restore</span></button></section>
+                            <button onclick="switchTab('calculator')" class="w-full glass py-12 rounded-[3rem] text-sm font-black uppercase tracking-[0.2em] text-zinc-400 flex items-center justify-center gap-5 hover:bg-white/5 transition-all"><i data-lucide="calculator" class="w-8 h-8"></i> Open Calculator Utility</button>
+                            <button onclick="toggleModal('purge-modal', true)" class="w-full bg-rose-600/10 border border-rose-500/10 py-10 rounded-[3rem] text-rose-500 text-xs font-black uppercase tracking-[0.4em] hover:bg-rose-600 hover:text-white transition-all">Purge All Application Data</button>
                         </div>
                     </div>
                 </div>
@@ -689,17 +689,12 @@
         }
 
         function renderFolder(title, items, type) {
-            return `<div class="glass rounded-[2rem] overflow-hidden" id="folder-${title.replace(/\s+/g, '')}"><button onclick="toggleFolder('${title.replace(/\s+/g, '')}')" class="w-full flex items-center justify-between p-8 hover:bg-white/5 transition-colors"><div class="flex items-center gap-5"><i data-lucide="folder" class="w-6 h-6 text-zinc-500"></i><div class="text-left"><p class="text-base font-black uppercase tracking-wider">${title}</p><p class="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">${items.length} Items</p></div></div><i data-lucide="chevron-down" class="w-5 h-5 text-zinc-700 folder-chevron"></i></button><div class="folder-content"><div class="px-8 pb-8 space-y-3">${items.map(item => `<div class="bg-zinc-900/50 border border-white/5 p-5 rounded-2xl flex justify-between items-center group"><span class="text-sm font-bold text-zinc-400 uppercase tracking-widest">${item.name}</span><button onclick="deleteEntity('${type}', '${item.id}')" class="opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-rose-500/10 rounded-lg"><i data-lucide="trash-2" class="w-5 h-5 text-rose-500"></i></button></div>`).join('') || '<p class="text-xs text-center text-zinc-700 py-6 uppercase font-black tracking-widest text-center">Empty</p>'}</div></div></div>`;
+            return `<div class="glass rounded-[2.5rem] overflow-hidden" id="folder-${title.replace(/\s+/g, '')}"><button onclick="toggleFolder('${title.replace(/\s+/g, '')}')" class="w-full flex items-center justify-between p-10 hover:bg-white/5 transition-colors"><div class="flex items-center gap-6"><i data-lucide="folder" class="w-6 h-6 text-zinc-500"></i><div class="text-left"><p class="text-lg font-black uppercase tracking-wider">${title}</p><p class="text-xs text-zinc-600 font-bold uppercase tracking-widest">${items.length} Items</p></div></div><i data-lucide="chevron-down" class="w-6 h-6 text-zinc-700 folder-chevron"></i></button><div class="folder-content"><div class="px-10 pb-10 space-y-4">${items.map(item => `<div class="bg-zinc-900/50 border border-white/5 p-6 rounded-3xl flex justify-between items-center group"><span class="text-sm font-bold text-zinc-400 uppercase tracking-widest">${item.name}</span><button onclick="deleteEntity('${type}', '${item.id}')" class="opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-rose-500/10 rounded-lg"><i data-lucide="trash-2" class="w-5 h-5 text-rose-500"></i></button></div>`).join('') || '<p class="text-xs text-center text-zinc-700 py-8 uppercase font-black tracking-widest">Empty</p>'}</div></div></div>`;
         }
 
         // --- CORE ACTIONS ---
         function toggleFolder(id) { document.getElementById(`folder-${id}`).classList.toggle('folder-open'); }
-        function toggleModal(id, show) { 
-            const el = document.getElementById(id);
-            if(el) el.classList.toggle('hidden', !show); 
-            if(id === 'transaction-modal' && show) populateSelects(); 
-            if(id === 'entity-modal' && show) populateDebtAccountSelect();
-        }
+        function toggleModal(id, show) { const el = document.getElementById(id); if(el) el.classList.toggle('hidden', !show); if(id === 'transaction-modal' && show) populateSelects(); if(id === 'entity-modal' && show) populateDebtAccountSelect(); }
         function setTransType(type) { state.transType = type; document.getElementById('btn-exp').className = `flex-1 py-3.5 rounded-xl text-xs font-black uppercase tracking-widest ${type==='expense'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; document.getElementById('btn-inc').className = `flex-1 py-3.5 rounded-xl text-xs font-black uppercase tracking-widest ${type==='income'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; populateSelects(); }
         function populateSelects() { const cats = [...state.categories.filter(c => c.type === state.transType), ...state.debts.map(d => ({ name: d.name }))]; document.getElementById('t-cat').innerHTML = cats.map(c => `<option value="${c.name}">${c.name}</option>`).join(''); document.getElementById('t-acc').innerHTML = state.accounts.map(a => `<option value="${a.name}">${a.name}</option>`).join(''); }
         function populateDebtAccountSelect() { const sel = document.getElementById('setup-debt-account'); if(sel) sel.innerHTML = state.accounts.map(a => `<option value="${a.name}">${a.name}</option>`).join(''); }
@@ -721,10 +716,10 @@
         function finalizeEntitySetup() { const name = document.getElementById('setup-name').value.trim(); if(!name) return; if(state.setupContext === 'cat') state.categories.push({ id: Date.now().toString(), name, type: state.setupBehavior }); else if(state.setupContext === 'debt') { const bal = parseFloat(document.getElementById('setup-initial-balance').value) || 0; const acc = document.getElementById('setup-debt-account').value; state.debts.push({ id: Date.now().toString(), name, initialBalance: bal }); if(bal > 0) state.transactions.unshift({ id: Date.now() + 1, amount: bal, type: 'income', category: name, account: acc, date: new Date().toISOString().split('T')[0], note: `Loan: ${name}` }); } else state.accounts.push({ id: Date.now().toString(), name }); saveAll(); toggleModal('entity-modal', false); document.getElementById('setup-name').value = ''; renderView(); }
         function setSetupType(ctx) { state.setupContext = ctx; document.getElementById('setup-cat-btn').className = `flex-1 py-3 rounded-xl text-[10px] md:text-xs font-black uppercase tracking-widest ${ctx==='cat'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; document.getElementById('setup-acc-btn').className = `flex-1 py-3 rounded-xl text-[10px] md:text-xs font-black uppercase tracking-widest ${ctx==='acc'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; document.getElementById('setup-debt-btn').className = `flex-1 py-3 rounded-xl text-[10px] md:text-xs font-black uppercase tracking-widest ${ctx==='debt'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; document.getElementById('cat-type-select').classList.toggle('hidden', ctx !== 'cat'); document.getElementById('debt-fields').classList.toggle('hidden', ctx !== 'debt'); }
         function setSetupBehavior(type) { state.setupBehavior = type; document.getElementById('setup-exp-btn').className = `flex-1 py-3 rounded-xl text-[10px] md:text-xs font-black uppercase tracking-widest ${type==='expense'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; document.getElementById('setup-inc-btn').className = `flex-1 py-3 rounded-xl text-[10px] md:text-xs font-black uppercase tracking-widest ${type==='income'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; }
-        function renderCalculator(el) { el.innerHTML = `<div class="glass rounded-[3rem] p-10 shadow-2xl animate-slide-up"><div class="bg-black/40 p-10 rounded-[2.5rem] mb-10 text-right border border-white/5 h-40 flex flex-col justify-end"><div id="full-calc-display" class="text-6xl font-black font-mono tracking-tighter text-white">${state.fullCalcValue}</div></div><div class="grid grid-cols-4 gap-4 text-white"><button class="calc-btn bg-zinc-800/50" onclick="fCalc('AC')">AC</button><button class="calc-btn bg-zinc-800/50" onclick="fCalc('DEL')">DEL</button><button class="calc-btn bg-zinc-800/50" onclick="fCalc('%')">%</button><button class="calc-btn calc-btn-op" onclick="fCalc('/')">÷</button><button class="calc-btn" onclick="fCalc('7')">7</button><button class="calc-btn" onclick="fCalc('8')">8</button><button class="calc-btn" onclick="fCalc('9')">9</button><button class="calc-btn calc-btn-op" onclick="fCalc('*')">×</button><button class="calc-btn" onclick="fCalc('4')">4</button><button class="calc-btn" onclick="fCalc('5')">5</button><button class="calc-btn" onclick="fCalc('6')">6</button><button class="calc-btn calc-btn-op" onclick="fCalc('-')">-</button><button class="calc-btn" onclick="fCalc('1')">1</button><button class="calc-btn" onclick="fCalc('2')">2</button><button class="calc-btn" onclick="fCalc('3')">3</button><button class="calc-btn calc-btn-op" onclick="fCalc('+')">+</button><button class="calc-btn col-span-2" onclick="fCalc('0')">0</button><button class="calc-btn" onclick="fCalc('.')">.</button><button class="calc-btn bg-white text-black" onclick="fCalc('=')">=</button></div></div>`; }
+        function renderCalculator(el) { el.innerHTML = `<div class="glass rounded-[3rem] p-10 shadow-2xl animate-slide-up max-w-2xl mx-auto"><div class="bg-black/40 p-10 rounded-[2.5rem] mb-10 text-right border border-white/5 h-40 flex flex-col justify-end"><div id="full-calc-display" class="text-6xl font-black font-mono tracking-tighter text-white">${state.fullCalcValue}</div></div><div class="grid grid-cols-4 gap-4 text-white"><button class="calc-btn bg-zinc-800/50" onclick="fCalc('AC')">AC</button><button class="calc-btn bg-zinc-800/50" onclick="fCalc('DEL')">DEL</button><button class="calc-btn bg-zinc-800/50" onclick="fCalc('%')">%</button><button class="calc-btn calc-btn-op" onclick="fCalc('/')">÷</button><button class="calc-btn" onclick="fCalc('7')">7</button><button class="calc-btn" onclick="fCalc('8')">8</button><button class="calc-btn" onclick="fCalc('9')">9</button><button class="calc-btn calc-btn-op" onclick="fCalc('*')">×</button><button class="calc-btn" onclick="fCalc('4')">4</button><button class="calc-btn" onclick="fCalc('5')">5</button><button class="calc-btn" onclick="fCalc('6')">6</button><button class="calc-btn calc-btn-op" onclick="fCalc('-')">-</button><button class="calc-btn" onclick="fCalc('1')">1</button><button class="calc-btn" onclick="fCalc('2')">2</button><button class="calc-btn" onclick="fCalc('3')">3</button><button class="calc-btn calc-btn-op" onclick="fCalc('+')">+</button><button class="calc-btn col-span-2" onclick="fCalc('0')">0</button><button class="calc-btn" onclick="fCalc('.')">.</button><button class="calc-btn bg-white text-black" onclick="fCalc('=')">=</button></div></div>`; }
         function fCalc(val) { if(val === 'AC') state.fullCalcValue = '0'; else if(val === 'DEL') state.fullCalcValue = state.fullCalcValue.length > 1 ? state.fullCalcValue.slice(0, -1) : '0'; else if(val === '=') { try { state.fullCalcValue = eval(state.fullCalcValue.replace('×', '*').replace('÷', '/')).toString(); } catch(e) { state.fullCalcValue = 'Error'; } } else { if(state.fullCalcValue === '0' && !isNaN(val)) state.fullCalcValue = val; else state.fullCalcValue += val; } document.getElementById('full-calc-display').innerText = state.fullCalcValue; }
         function handleCSVSelect(e) { const file = e.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = (evt) => { const lines = evt.target.result.split('\n').filter(l => l.trim()); if(lines.length < 2) return; state.csvHeaders = lines[0].split(',').map(h => h.trim().replace(/"/g, '')); state.csvData = lines.slice(1).map(l => l.split(',')); showMappingModal(); }; reader.readAsText(file); }
-        function showMappingModal() { const fields = [{ id: 'map-date', label: 'Date' }, { id: 'map-amt', label: 'Amount' }, { id: 'map-cat', label: 'Category' }, { id: 'map-acc', label: 'Account' }, { id: 'map-type', label: 'Type' }, { id: 'map-note', label: 'Memo' }]; const container = document.getElementById('mapping-fields'); container.innerHTML = fields.map(f => `<div><label class="text-xs font-black uppercase text-zinc-500 mb-2 block">${f.label}</label><select id="${f.id}" class="w-full bg-zinc-900 border border-white/5 p-3.5 rounded-2xl text-[11px] font-bold text-white"><option value="">-- Ignore --</option>${state.csvHeaders.map((h, i) => `<option value="${i}">${h}</option>`).join('')}</select></div>`).join(''); toggleModal('mapping-modal', true); }
+        function showMappingModal() { const fields = [{ id: 'map-date', label: 'Date' }, { id: 'map-amt', label: 'Amount' }, { id: 'map-cat', label: 'Category' }, { id: 'map-acc', label: 'Account' }, { id: 'map-type', label: 'Type' }, { id: 'map-note', label: 'Memo' }]; const container = document.getElementById('mapping-fields'); container.innerHTML = fields.map(f => `<div><label class="text-xs font-black uppercase text-zinc-500 mb-2 block">${f.label}</label><select id="${f.id}" class="w-full bg-zinc-900 border border-white/5 p-4 rounded-2xl text-sm font-bold text-white"><option value="">-- Ignore --</option>${state.csvHeaders.map((h, i) => `<option value="${i}">${h}</option>`).join('')}</select></div>`).join(''); toggleModal('mapping-modal', true); }
         function finalizeMappingImport() {
             const map = { date: document.getElementById('map-date').value, amt: document.getElementById('map-amt').value, cat: document.getElementById('map-cat').value, acc: document.getElementById('map-acc').value, type: document.getElementById('map-type').value, note: document.getElementById('map-note').value };
             const imported = state.csvData.map(row => {
