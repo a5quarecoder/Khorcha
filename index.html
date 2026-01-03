@@ -146,7 +146,7 @@
             </div>
         </aside>
 
-        <!-- MAIN CONTENT (DYNAMIC WIDTH) -->
+        <!-- MAIN CONTENT -->
         <div class="flex-1 overflow-y-auto noscroll pb-32 md:pb-12">
             <div class="max-w-5xl mx-auto px-4 md:px-10 pt-8 md:pt-16">
                 <!-- Mobile Only Top Header -->
@@ -164,7 +164,7 @@
             </div>
         </div>
 
-        <!-- MOBILE NAVIGATION (BOTTOM BAR) -->
+        <!-- MOBILE NAVIGATION -->
         <nav class="flex md:hidden mobile-nav fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-lg glass rounded-[2.5rem] p-1.5 justify-between items-center z-50 shadow-2xl border-white/10">
             <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item active flex-1 py-3 rounded-2xl flex flex-col items-center gap-1 transition-all text-zinc-500">
                 <i data-lucide="layout-grid" class="w-4 h-4"></i>
@@ -190,7 +190,6 @@
         </nav>
     </div>
 
-    <!-- MODALS AND OVERLAYS -->
     <!-- TRANSACTION MODAL -->
     <div id="transaction-modal" class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[60] flex items-end md:items-center justify-center hidden p-0 md:p-4">
         <div class="w-full max-w-lg rounded-t-[2.5rem] md:rounded-[3rem] p-6 md:p-8 animate-slide-up bg-[#0A0A0A] border-t md:border border-white/5">
@@ -240,9 +239,9 @@
         </div>
     </div>
 
-    <!-- ENTITY MODAL -->
+    <!-- ENTITY SETUP MODAL -->
     <div id="entity-modal" class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[70] flex items-center justify-center hidden p-6">
-        <div class="glass w-full max-sm rounded-[2.5rem] p-8 animate-slide-up text-white">
+        <div class="glass w-full max-w-sm rounded-[2.5rem] p-8 animate-slide-up text-white">
             <h3 id="entity-modal-title" class="text-xl font-bold mb-6 text-center">Create New</h3>
             <div class="space-y-6">
                 <div>
@@ -250,8 +249,11 @@
                     <div class="flex bg-zinc-900 p-1.5 rounded-2xl border border-white/5">
                         <button onclick="setSetupType('cat')" id="setup-cat-btn" class="flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase bg-zinc-800 text-white shadow-lg">Category</button>
                         <button onclick="setSetupType('acc')" id="setup-acc-btn" class="flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase text-zinc-500">Account</button>
+                        <button onclick="setSetupType('debt')" id="setup-debt-btn" class="flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase text-zinc-500">Debt</button>
                     </div>
                 </div>
+                
+                <!-- Category behavior (hidden for accounts/debts) -->
                 <div id="cat-type-select">
                     <label class="text-[9px] font-black uppercase text-zinc-500 mb-2 block">Behavior</label>
                     <div class="flex bg-zinc-900 p-1.5 rounded-2xl border border-white/5">
@@ -259,10 +261,18 @@
                         <button onclick="setSetupBehavior('income')" id="setup-inc-btn" class="flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase text-zinc-500">Income</button>
                     </div>
                 </div>
+
+                <!-- Debt specific initial balance (hidden by default) -->
+                <div id="debt-balance-select" class="hidden">
+                    <label class="text-[9px] font-black uppercase text-zinc-500 mb-2 block">Total Debt Amount (Starting)</label>
+                    <input type="number" id="setup-initial-balance" placeholder="e.g. 50000" class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 text-xs font-bold text-white">
+                </div>
+
                 <div>
                     <label class="text-[9px] font-black uppercase text-zinc-500 mb-2 block">Display Name</label>
-                    <input type="text" id="setup-name" placeholder="Name..." class="w-full bg-zinc-900 border border-white/5 rounded-xl p-4 text-xs font-bold text-white">
+                    <input type="text" id="setup-name" placeholder="Name..." class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 text-xs font-bold text-white">
                 </div>
+                
                 <div class="flex gap-3 pt-4">
                     <button onclick="toggleModal('entity-modal', false)" class="flex-1 py-4 text-[9px] font-black uppercase tracking-widest text-zinc-500">Cancel</button>
                     <button onclick="finalizeEntitySetup()" class="flex-1 bg-white text-black rounded-2xl py-4 text-[9px] font-black uppercase tracking-widest">Create</button>
@@ -301,18 +311,19 @@
 
     <script>
         let state = {
-            transactions: JSON.parse(localStorage.getItem('k_v8_trans')) || [],
-            categories: JSON.parse(localStorage.getItem('k_v8_cats')) || [
+            transactions: JSON.parse(localStorage.getItem('k_v9_trans')) || [],
+            categories: JSON.parse(localStorage.getItem('k_v9_cats')) || [
                 { id: '1', name: 'Food', type: 'expense' },
                 { id: '2', name: 'Transport', type: 'expense' },
                 { id: '3', name: 'Salary', type: 'income' }
             ],
-            accounts: JSON.parse(localStorage.getItem('k_v8_accs')) || [
+            accounts: JSON.parse(localStorage.getItem('k_v9_accs')) || [
                 { id: '1', name: 'Cash' },
                 { id: '2', name: 'Bank' }
             ],
-            budgets: JSON.parse(localStorage.getItem('k_v8_budgets')) || {}, 
-            notes: JSON.parse(localStorage.getItem('k_v8_notes')) || [],
+            debts: JSON.parse(localStorage.getItem('k_v9_debts')) || [], // { id, name, initialBalance }
+            budgets: JSON.parse(localStorage.getItem('k_v9_budgets')) || {}, 
+            notes: JSON.parse(localStorage.getItem('k_v9_notes')) || [],
             viewDate: new Date(),
             dashboardMode: 'monthly',
             currentTab: 'dashboard',
@@ -344,12 +355,9 @@
         function switchTab(tab) {
             state.currentTab = tab;
             renderView();
-            // Update Mobile Nav
             document.querySelectorAll('.mobile-nav .nav-item').forEach(el => el.classList.remove('active', 'text-white'));
             const activeMobileNav = document.getElementById(`nav-${tab}`);
             if(activeMobileNav) activeMobileNav.classList.add('active', 'text-white');
-            
-            // Update PC Sidebar
             document.querySelectorAll('.sidebar .nav-item').forEach(el => el.classList.remove('active', 'text-white'));
             const activePcNav = document.getElementById(`pc-nav-${tab}`);
             if(activePcNav) activePcNav.classList.add('active', 'text-white');
@@ -407,32 +415,46 @@
             const monthKey = `${m}-${y}`;
             const monthBudgets = state.budgets[monthKey] || {};
             const monthName = state.viewDate.toLocaleString('default', { month: 'long', year: 'numeric' });
+            
             const currentMonthTrans = state.transactions.filter(t => new Date(t.date).getMonth() === m && new Date(t.date).getFullYear() === y);
             const incomeCats = state.categories.filter(c => c.type === 'income');
             const expenseCats = state.categories.filter(c => c.type === 'expense');
+            const debtCats = state.debts;
+
             let totalPlannedIncome = incomeCats.reduce((s, c) => s + (parseFloat(monthBudgets[c.id]) || 0), 0);
             let totalPlannedExpense = expenseCats.reduce((s, c) => s + (parseFloat(monthBudgets[c.id]) || 0), 0);
-            const remainingToBudget = totalPlannedIncome - totalPlannedExpense;
+            let totalPlannedDebt = debtCats.reduce((s, c) => s + (parseFloat(monthBudgets[c.id]) || 0), 0);
+            
+            const remainingToBudget = totalPlannedIncome - totalPlannedExpense - totalPlannedDebt;
 
             el.innerHTML = `
                 <div class="space-y-8 animate-slide-up pb-20">
                     <div class="glass rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10">
                         <div class="flex justify-between items-center mb-8">
-                            <h2 class="text-xl md:text-2xl font-black tracking-tighter text-white">Monthly Budget</h2>
+                            <h2 class="text-xl md:text-2xl font-black tracking-tighter text-white">Budget Planner</h2>
                             <div class="flex items-center gap-3"><button onclick="changeMonth(-1)" class="p-1 text-white"><i data-lucide="chevron-left" class="w-4 h-4"></i></button><span class="text-[9px] font-black uppercase text-white">${monthName}</span><button onclick="changeMonth(1)" class="p-1 text-white"><i data-lucide="chevron-right" class="w-4 h-4"></i></button></div>
                         </div>
                         <div class="text-center">
                             <p class="text-zinc-500 text-[9px] font-black uppercase tracking-[0.2em] mb-2">Remaining to Budget</p>
                             <h2 id="budget-summary-val" class="text-4xl font-black tracking-tighter ${remainingToBudget === 0 ? 'text-emerald-400' : 'text-white'}">${formatBDT(remainingToBudget)}</h2>
-                            <p id="budget-summary-hint" class="text-[8px] text-zinc-500 uppercase mt-2 font-bold tracking-widest">${remainingToBudget === 0 ? "Perfectly Budgeted!" : "Give every Taka a job."}</p>
+                            <p id="budget-summary-hint" class="text-[8px] text-zinc-500 uppercase mt-2 font-bold tracking-widest">${remainingToBudget === 0 ? "It's an EveryDollar Budget!" : "Budget every Taka to zero."}</p>
                         </div>
                     </div>
+
                     <div class="space-y-4 md:space-y-6">
                         <h3 class="text-[10px] font-black uppercase tracking-widest text-zinc-500 px-1">Planned Income</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                             ${incomeCats.map(c => renderBudgetItem(c, monthBudgets[c.id], currentMonthTrans)).join('')}
                         </div>
                     </div>
+
+                    <div class="space-y-4 md:space-y-6">
+                        <h3 class="text-[10px] font-black uppercase tracking-widest text-zinc-500 px-1">Debt Repayment</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                            ${debtCats.map(d => renderDebtBudgetItem(d, monthBudgets[d.id], state.transactions)).join('')}
+                        </div>
+                    </div>
+
                     <div class="space-y-4 md:space-y-6">
                         <h3 class="text-[10px] font-black uppercase tracking-widest text-zinc-500 px-1">Planned Expenses</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
@@ -470,6 +492,30 @@
             `;
         }
 
+        function renderDebtBudgetItem(debt, planned, allTrans) {
+            const totalPaidSoFar = allTrans.filter(t => t.category === debt.name && t.type === 'expense').reduce((s, t) => s + parseFloat(t.amount), 0);
+            const remainingDebt = Math.max(0, parseFloat(debt.initialBalance) - totalPaidSoFar);
+            const plannedVal = parseFloat(planned) || 0;
+            
+            return `
+                <div class="glass p-5 md:p-6 rounded-[2rem]">
+                    <div class="flex justify-between items-start mb-4">
+                        <div><p class="text-xs font-black uppercase tracking-wider text-white">${debt.name}</p><p class="text-[9px] text-rose-400/60 font-bold uppercase mt-1">Owed: ${formatBDT(remainingDebt)}</p></div>
+                        <div class="bg-black/40 px-3 py-1.5 rounded-xl border border-white/5">
+                            <input type="number" value="${planned || ''}" placeholder="0" 
+                                oninput="updateBudget('${debt.id}', this.value)" 
+                                class="bg-transparent text-xs font-black text-white w-16 md:w-20 text-right outline-none">
+                        </div>
+                    </div>
+                    <div class="progress-bar mb-2"><div class="progress-fill bg-rose-400" style="width: ${Math.min((totalPaidSoFar / debt.initialBalance) * 100, 100)}%"></div></div>
+                    <div class="flex justify-between items-center text-[8px] font-black uppercase tracking-widest text-zinc-600">
+                        <span>Total Paid: ${formatBDT(totalPaidSoFar)}</span>
+                        <span>Plan to Pay: ${formatBDT(plannedVal)}</span>
+                    </div>
+                </div>
+            `;
+        }
+
         function updateBudget(catId, value) {
             const m = state.viewDate.getMonth(), y = state.viewDate.getFullYear();
             const monthKey = `${m}-${y}`;
@@ -477,41 +523,18 @@
             state.budgets[monthKey][catId] = value;
             saveAll();
 
-            // Perform targeted DOM updates to avoid re-rendering inputs
+            // Simple summary update
             const monthBudgets = state.budgets[monthKey];
-            const trans = state.transactions.filter(t => new Date(t.date).getMonth() === m && new Date(t.date).getFullYear() === y);
-            
-            // Update Item UI
-            const cat = state.categories.find(c => c.id === catId);
-            if(cat) {
-                const spent = trans.filter(t => t.category === cat.name).reduce((s, t) => s + (parseFloat(t.amount) || 0), 0);
-                const plannedVal = parseFloat(value) || 0;
-                const remaining = plannedVal - spent;
-                const progress = plannedVal > 0 ? Math.min((spent / plannedVal) * 100, 100) : 0;
-                
-                const remEl = document.getElementById(`rem-val-${catId}`);
-                const progEl = document.getElementById(`prog-val-${catId}`);
-                const planEl = document.getElementById(`plan-val-${catId}`);
-                
-                if(remEl) remEl.innerText = `Remaining: ${formatBDT(remaining)}`;
-                if(progEl) progEl.style.width = progress + '%';
-                if(planEl) planEl.innerText = `Planned: ${formatBDT(plannedVal)}`;
-            }
-
-            // Update Summary UI
-            const incomeCats = state.categories.filter(c => c.type === 'income');
-            const expenseCats = state.categories.filter(c => c.type === 'expense');
-            let totalPlannedIncome = incomeCats.reduce((s, c) => s + (parseFloat(monthBudgets[c.id]) || 0), 0);
-            let totalPlannedExpense = expenseCats.reduce((s, c) => s + (parseFloat(monthBudgets[c.id]) || 0), 0);
-            const remainingToBudget = totalPlannedIncome - totalPlannedExpense;
+            let totalInc = state.categories.filter(c => c.type === 'income').reduce((s, c) => s + (parseFloat(monthBudgets[c.id]) || 0), 0);
+            let totalExp = state.categories.filter(c => c.type === 'expense').reduce((s, c) => s + (parseFloat(monthBudgets[c.id]) || 0), 0);
+            let totalDebt = state.debts.reduce((s, c) => s + (parseFloat(monthBudgets[c.id]) || 0), 0);
+            const remaining = totalInc - totalExp - totalDebt;
 
             const summaryVal = document.getElementById('budget-summary-val');
-            const summaryHint = document.getElementById('budget-summary-hint');
             if(summaryVal) {
-                summaryVal.innerText = formatBDT(remainingToBudget);
-                summaryVal.className = `text-4xl font-black tracking-tighter ${remainingToBudget === 0 ? 'text-emerald-400' : 'text-white'}`;
+                summaryVal.innerText = formatBDT(remaining);
+                summaryVal.className = `text-4xl font-black tracking-tighter ${remaining === 0 ? 'text-emerald-400' : 'text-white'}`;
             }
-            if(summaryHint) summaryHint.innerText = remainingToBudget === 0 ? "Perfectly Budgeted!" : "Give every Taka a job.";
         }
 
         function renderGroupedList(list) {
@@ -545,9 +568,6 @@
                         <div class="glass p-8 rounded-[2.5rem] flex items-center justify-center"><div class="h-64 w-full"><canvas id="mainChart"></canvas></div></div>
                         <div class="glass p-8 rounded-[2.5rem]"><p class="text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-6">Inflow vs Outflow</p><div class="h-64"><canvas id="barChart"></canvas></div></div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-white">
-                        ${sortedExp.map(([cat, val], idx) => `<div class="glass p-5 rounded-3xl flex items-center justify-between"><div class="flex items-center gap-3"><div class="w-1.5 h-1.5 rounded-full" style="background: ${getPalette(idx)}"></div><span class="text-[11px] font-black uppercase tracking-wider text-zinc-400">${cat}</span></div><span class="text-xs font-black">${formatBDT(val)}</span></div>`).join('')}
-                    </div>
                 </div>`;
 
             setTimeout(() => {
@@ -560,7 +580,7 @@
             el.innerHTML = `
                 <div class="space-y-6">
                     <div class="flex justify-between items-center px-1">
-                        <h2 class="text-2xl font-black tracking-tighter text-white">Financial Memos</h2>
+                        <h2 class="text-2xl font-black tracking-tighter text-white">Memos</h2>
                         <button onclick="addNote()" class="p-3 glass rounded-2xl text-emerald-400 hover:scale-105 transition-all"><i data-lucide="plus-square" class="w-6 h-6"></i></button>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
@@ -580,13 +600,14 @@
             el.innerHTML = `
                 <div class="space-y-8 pb-20">
                     <div class="flex justify-between items-center px-1">
-                        <h2 class="text-2xl font-black tracking-tighter text-white">Setup & Tools</h2>
+                        <h2 class="text-2xl font-black tracking-tighter text-white">Setup</h2>
                         <button onclick="toggleModal('entity-modal', true)" class="bg-zinc-800 px-5 md:px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-white shadow-xl">+ New Item</button>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="space-y-4">
                             ${renderFolder('Expense Categories', state.categories.filter(c => c.type === 'expense'), 'cat')}
                             ${renderFolder('Income Categories', state.categories.filter(c => c.type === 'income'), 'cat')}
+                            ${renderFolder('My Debts', state.debts, 'debt')}
                             ${renderFolder('System Accounts', state.accounts, 'acc')}
                         </div>
                         <div class="space-y-4 md:space-y-6">
@@ -618,16 +639,23 @@
             `;
         }
 
+        // --- STATE ACTIONS ---
         function toggleFolder(id) { document.getElementById(`folder-${id}`).classList.toggle('folder-open'); }
         function toggleModal(id, show) { document.getElementById(id).classList.toggle('hidden', !show); if(id === 'transaction-modal' && show) populateSelects(); }
         function setTransType(type) { state.transType = type; document.getElementById('btn-exp').className = `flex-1 py-3 rounded-xl text-xs font-black ${type==='expense'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; document.getElementById('btn-inc').className = `flex-1 py-3 rounded-xl text-xs font-black ${type==='income'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; populateSelects(); }
-        function populateSelects() { document.getElementById('t-cat').innerHTML = state.categories.filter(c => c.type === state.transType).map(c => `<option value="${c.name}">${c.name}</option>`).join(''); document.getElementById('t-acc').innerHTML = state.accounts.map(a => `<option value="${a.name}">${a.name}</option>`).join(''); }
+        
+        function populateSelects() { 
+            const categories = [...state.categories.filter(c => c.type === state.transType), ...state.debts.map(d => ({ name: d.name }))];
+            document.getElementById('t-cat').innerHTML = categories.map(c => `<option value="${c.name}">${c.name}</option>`).join(''); 
+            document.getElementById('t-acc').innerHTML = state.accounts.map(a => `<option value="${a.name}">${a.name}</option>`).join(''); 
+        }
+
         function qCalc(val) { if(state.qCalcValue === '0' && !isNaN(val)) state.qCalcValue = val; else state.qCalcValue += val; document.getElementById('quick-calc-display').innerText = state.qCalcValue; }
         function qClear() { state.qCalcValue = '0'; document.getElementById('quick-calc-display').innerText = '0'; }
         function openTransactionModal() { state.editingId = null; qClear(); document.getElementById('modal-title').innerText = "Record Entry"; document.getElementById('t-note').value = ''; toggleModal('transaction-modal', true); setTransType('expense'); }
         function editTransaction(id) { const t = state.transactions.find(x => x.id === id); if(!t) return; state.editingId = id; state.qCalcValue = t.amount.toString(); state.transType = t.type; toggleModal('transaction-modal', true); document.getElementById('modal-title').innerText = "Edit Record"; document.getElementById('quick-calc-display').innerText = t.amount; document.getElementById('t-date').value = t.date; document.getElementById('t-note').value = t.note; setTransType(t.type); document.getElementById('t-cat').value = t.category; document.getElementById('t-acc').value = t.account; }
         function saveTransaction() { let amt = 0; try { amt = eval(state.qCalcValue.replace(/[^-+*/.0-9]/g, '')); } catch(e) { return; } if(amt <= 0) return; const entry = { id: state.editingId || Date.now(), amount: Math.abs(parseFloat(amt)), type: state.transType, category: document.getElementById('t-cat').value, account: document.getElementById('t-acc').value, date: document.getElementById('t-date').value, note: document.getElementById('t-note').value }; if(state.editingId) state.transactions = state.transactions.map(x => x.id === state.editingId ? entry : x); else state.transactions.unshift(entry); saveAll(); toggleModal('transaction-modal', false); renderView(); }
-        function saveAll() { localStorage.setItem('k_v8_trans', JSON.stringify(state.transactions)); localStorage.setItem('k_v8_cats', JSON.stringify(state.categories)); localStorage.setItem('k_v8_accs', JSON.stringify(state.accounts)); localStorage.setItem('k_v8_notes', JSON.stringify(state.notes)); localStorage.setItem('k_v8_budgets', JSON.stringify(state.budgets)); }
+        function saveAll() { localStorage.setItem('k_v9_trans', JSON.stringify(state.transactions)); localStorage.setItem('k_v9_cats', JSON.stringify(state.categories)); localStorage.setItem('k_v9_accs', JSON.stringify(state.accounts)); localStorage.setItem('k_v9_notes', JSON.stringify(state.notes)); localStorage.setItem('k_v9_budgets', JSON.stringify(state.budgets)); localStorage.setItem('k_v9_debts', JSON.stringify(state.debts)); }
         function addNote() { state.notes.unshift({ id: Date.now().toString(), text: '', date: new Date().toLocaleDateString() }); saveAll(); renderView(); }
         function updateNote(id, val) { const n = state.notes.find(n => n.id === id); if(n) n.text = val; saveAll(); }
         function deleteNote(id) { state.notes = state.notes.filter(n => n.id !== id); saveAll(); renderView(); }
@@ -636,9 +664,31 @@
         function setStatFilter(mode) { state.statFilter = mode; renderView(); }
         function changeMonth(dir) { state.viewDate.setMonth(state.viewDate.getMonth() + dir); renderView(); }
         function getPalette(i) { return ['#fb7185', '#34d399', '#60a5fa', '#fbbf24', '#a78bfa', '#2dd4bf', '#f472b6'][i % 7]; }
-        function deleteEntity(type, id) { if(type === 'cat') state.categories = state.categories.filter(c => c.id !== id); else state.accounts = state.accounts.filter(a => a.id !== id); saveAll(); renderView(); }
-        function finalizeEntitySetup() { const name = document.getElementById('setup-name').value.trim(); if(!name) return; if(state.setupContext === 'cat') state.categories.push({ id: Date.now().toString(), name, type: state.setupBehavior }); else state.accounts.push({ id: Date.now().toString(), name }); saveAll(); toggleModal('entity-modal', false); document.getElementById('setup-name').value = ''; renderView(); }
-        function setSetupType(ctx) { state.setupContext = ctx; document.getElementById('setup-cat-btn').className = `flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase ${ctx==='cat'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; document.getElementById('setup-acc-btn').className = `flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase ${ctx==='acc'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; document.getElementById('cat-type-select').classList.toggle('hidden', ctx === 'acc'); }
+        
+        function deleteEntity(type, id) { 
+            if(type === 'cat') state.categories = state.categories.filter(c => c.id !== id); 
+            else if(type === 'debt') state.debts = state.debts.filter(d => d.id !== id);
+            else state.accounts = state.accounts.filter(a => a.id !== id); 
+            saveAll(); renderView(); 
+        }
+
+        function finalizeEntitySetup() { 
+            const name = document.getElementById('setup-name').value.trim(); if(!name) return; 
+            if(state.setupContext === 'cat') state.categories.push({ id: Date.now().toString(), name, type: state.setupBehavior }); 
+            else if(state.setupContext === 'debt') state.debts.push({ id: Date.now().toString(), name, initialBalance: parseFloat(document.getElementById('setup-initial-balance').value) || 0 });
+            else state.accounts.push({ id: Date.now().toString(), name }); 
+            saveAll(); toggleModal('entity-modal', false); document.getElementById('setup-name').value = ''; renderView(); 
+        }
+
+        function setSetupType(ctx) { 
+            state.setupContext = ctx; 
+            document.getElementById('setup-cat-btn').className = `flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase ${ctx==='cat'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; 
+            document.getElementById('setup-acc-btn').className = `flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase ${ctx==='acc'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; 
+            document.getElementById('setup-debt-btn').className = `flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase ${ctx==='debt'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; 
+            document.getElementById('cat-type-select').classList.toggle('hidden', ctx !== 'cat'); 
+            document.getElementById('debt-balance-select').classList.toggle('hidden', ctx !== 'debt'); 
+        }
+
         function setSetupBehavior(type) { state.setupBehavior = type; document.getElementById('setup-exp-btn').className = `flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase ${type==='expense'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; document.getElementById('setup-inc-btn').className = `flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase ${type==='income'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; }
         function renderCalculator(el) { el.innerHTML = `<div class="glass rounded-[3rem] p-8 shadow-2xl animate-slide-up"><div class="bg-black/40 p-8 rounded-[2rem] mb-8 text-right border border-white/5 h-36 flex flex-col justify-end"><div id="full-calc-display" class="text-5xl font-black font-mono tracking-tighter text-white">${state.fullCalcValue}</div></div><div class="grid grid-cols-4 gap-4 text-white"><button class="calc-btn bg-zinc-800/50" onclick="fCalc('AC')">AC</button><button class="calc-btn bg-zinc-800/50" onclick="fCalc('DEL')">DEL</button><button class="calc-btn bg-zinc-800/50" onclick="fCalc('%')">%</button><button class="calc-btn calc-btn-op" onclick="fCalc('/')">÷</button><button class="calc-btn" onclick="fCalc('7')">7</button><button class="calc-btn" onclick="fCalc('8')">8</button><button class="calc-btn" onclick="fCalc('9')">9</button><button class="calc-btn calc-btn-op" onclick="fCalc('*')">×</button><button class="calc-btn" onclick="fCalc('4')">4</button><button class="calc-btn" onclick="fCalc('5')">5</button><button class="calc-btn" onclick="fCalc('6')">6</button><button class="calc-btn calc-btn-op" onclick="fCalc('-')">-</button><button class="calc-btn" onclick="fCalc('1')">1</button><button class="calc-btn" onclick="fCalc('2')">2</button><button class="calc-btn" onclick="fCalc('3')">3</button><button class="calc-btn calc-btn-op" onclick="fCalc('+')">+</button><button class="calc-btn col-span-2" onclick="fCalc('0')">0</button><button class="calc-btn" onclick="fCalc('.')">.</button><button class="calc-btn bg-white text-black" onclick="fCalc('=')">=</button></div></div>`; }
         function fCalc(val) { if(val === 'AC') state.fullCalcValue = '0'; else if(val === 'DEL') state.fullCalcValue = state.fullCalcValue.length > 1 ? state.fullCalcValue.slice(0, -1) : '0'; else if(val === '=') { try { state.fullCalcValue = eval(state.fullCalcValue.replace('×', '*').replace('÷', '/')).toString(); } catch(e) { state.fullCalcValue = 'Error'; } } else { if(state.fullCalcValue === '0' && !isNaN(val)) state.fullCalcValue = val; else state.fullCalcValue += val; } document.getElementById('full-calc-display').innerText = state.fullCalcValue; }
