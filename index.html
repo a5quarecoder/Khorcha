@@ -32,10 +32,34 @@
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
+        /* Responsive Navigation Logic */
         .nav-item.active {
             color: white;
             background: rgba(255, 255, 255, 0.08);
             box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        /* Sidebar for PC */
+        @media (min-width: 768px) {
+            .app-grid {
+                display: grid;
+                grid-template-columns: 280px 1fr;
+                min-height: 100vh;
+            }
+            .sidebar {
+                position: sticky;
+                top: 0;
+                height: 100vh;
+                border-right: 1px solid rgba(255, 255, 255, 0.05);
+            }
+            .mobile-nav { display: none; }
+        }
+
+        /* Bottom Nav for Mobile */
+        @media (max-width: 767px) {
+            .app-grid { display: block; }
+            .sidebar { display: none; }
+            .mobile-nav { display: flex; }
         }
 
         .calc-btn {
@@ -58,7 +82,6 @@
         .animate-slide-up { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         canvas { max-width: 100% !important; }
 
-        /* Folder Toggle Animation */
         .folder-content {
             transition: all 0.3s ease-in-out;
             max-height: 0;
@@ -78,24 +101,76 @@
         }
     </style>
 </head>
-<body class="min-h-screen pb-28">
+<body class="min-h-screen">
 
-    <div id="app" class="max-w-xl mx-auto px-5 pt-10">
-        <header class="flex justify-between items-center mb-8">
+    <div id="app" class="app-grid">
+        
+        <!-- SIDEBAR (PC) -->
+        <aside class="sidebar glass p-8 flex flex-col justify-between">
             <div>
-                <h1 class="text-2xl font-extrabold tracking-tight text-white">Khorcha</h1>
-                <p id="header-date" class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest"></p>
+                <div class="mb-12">
+                    <h1 class="text-3xl font-extrabold tracking-tighter text-white">Khorcha</h1>
+                    <p id="pc-header-date" class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-1"></p>
+                </div>
+                
+                <nav class="space-y-3">
+                    <button onclick="switchTab('dashboard')" id="pc-nav-dashboard" class="nav-item active w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-zinc-500 hover:text-white transition-all">
+                        <i data-lucide="layout-grid" class="w-5 h-5"></i>
+                        <span class="text-sm font-bold">Dashboard</span>
+                    </button>
+                    <button onclick="switchTab('stats')" id="pc-nav-stats" class="nav-item w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-zinc-500 hover:text-white transition-all">
+                        <i data-lucide="bar-chart-big" class="w-5 h-5"></i>
+                        <span class="text-sm font-bold">Analytics</span>
+                    </button>
+                    <button onclick="switchTab('notes')" id="pc-nav-notes" class="nav-item w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-zinc-500 hover:text-white transition-all">
+                        <i data-lucide="sticky-note" class="w-5 h-5"></i>
+                        <span class="text-sm font-bold">Memos</span>
+                    </button>
+                    <button onclick="switchTab('settings')" id="pc-nav-settings" class="nav-item w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-zinc-500 hover:text-white transition-all">
+                        <i data-lucide="settings" class="w-5 h-5"></i>
+                        <span class="text-sm font-bold">Setup</span>
+                    </button>
+                </nav>
             </div>
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-zinc-800 to-zinc-900 border border-zinc-700 flex items-center justify-center overflow-hidden">
-                    <i data-lucide="user" class="w-5 h-5 text-zinc-500"></i>
+
+            <div class="space-y-4">
+                <button onclick="openTransactionModal()" class="w-full bg-white text-black font-black py-5 rounded-2xl shadow-xl hover:scale-[1.02] transition-transform flex items-center justify-center gap-3">
+                    <i data-lucide="plus" class="w-5 h-5"></i>
+                    <span class="uppercase tracking-widest text-[10px]">New Entry</span>
+                </button>
+                
+                <div class="flex items-center gap-4 p-4 glass rounded-2xl">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center">
+                        <i data-lucide="user" class="w-5 h-5 text-zinc-500"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-white">Local User</p>
+                        <p class="text-[9px] text-zinc-500 uppercase font-black">Offline Mode</p>
+                    </div>
                 </div>
             </div>
-        </header>
+        </aside>
 
-        <main id="main-content" class="pb-10"></main>
+        <!-- MAIN CONTENT AREA -->
+        <div class="flex-1 max-h-screen overflow-y-auto noscroll pb-32 md:pb-12">
+            <div class="max-w-5xl mx-auto px-6 pt-10 md:pt-16">
+                <!-- Mobile Only Header -->
+                <header class="flex md:hidden justify-between items-center mb-8">
+                    <div>
+                        <h1 class="text-2xl font-extrabold tracking-tight text-white">Khorcha</h1>
+                        <p id="header-date" class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest"></p>
+                    </div>
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-zinc-800 to-zinc-900 border border-zinc-700 flex items-center justify-center">
+                        <i data-lucide="user" class="w-5 h-5 text-zinc-500"></i>
+                    </div>
+                </header>
 
-        <nav class="fixed bottom-8 left-1/2 -translate-x-1/2 w-[95%] max-w-lg glass rounded-[2.5rem] p-2 flex justify-between items-center z-50 shadow-2xl border-white/10">
+                <main id="main-content" class="animate-slide-up"></main>
+            </div>
+        </div>
+
+        <!-- MOBILE NAVIGATION (FIXED BOTTOM) -->
+        <nav class="mobile-nav fixed bottom-8 left-1/2 -translate-x-1/2 w-[95%] max-w-lg glass rounded-[2.5rem] p-2 justify-between items-center z-50 shadow-2xl border-white/10">
             <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item active flex-1 py-3 rounded-2xl flex flex-col items-center gap-1 transition-all text-zinc-500">
                 <i data-lucide="layout-grid" class="w-4 h-4"></i>
                 <span class="text-[7px] font-black uppercase">Home</span>
@@ -104,13 +179,11 @@
                 <i data-lucide="bar-chart-big" class="w-4 h-4"></i>
                 <span class="text-[7px] font-black uppercase">Stats</span>
             </button>
-            
             <button onclick="openTransactionModal()" class="flex-1 flex justify-center -translate-y-6">
-                <div class="w-12 h-12 bg-white text-black rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform ring-4 ring-black">
+                <div class="w-12 h-12 bg-white text-black rounded-full flex items-center justify-center shadow-xl ring-4 ring-black">
                     <i data-lucide="plus" class="w-7 h-7"></i>
                 </div>
             </button>
-
             <button onclick="switchTab('notes')" id="nav-notes" class="nav-item flex-1 py-3 rounded-2xl flex flex-col items-center gap-1 transition-all text-zinc-500">
                 <i data-lucide="sticky-note" class="w-4 h-4"></i>
                 <span class="text-[7px] font-black uppercase">Notes</span>
@@ -123,16 +196,16 @@
     </div>
 
     <!-- TRANSACTION MODAL -->
-    <div id="transaction-modal" class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[60] flex items-end md:items-center justify-center hidden">
-        <div class="w-full max-w-lg rounded-t-[3rem] md:rounded-[3rem] p-8 animate-slide-up bg-[#0A0A0A] border-t border-white/5">
+    <div id="transaction-modal" class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[60] flex items-end md:items-center justify-center hidden p-4">
+        <div class="w-full max-w-lg rounded-[2.5rem] md:rounded-[3rem] p-8 animate-slide-up bg-[#0A0A0A] border border-white/5">
             <div class="flex justify-between items-center mb-8">
                 <h3 id="modal-title" class="text-xl font-bold tracking-tight text-white">Record Entry</h3>
                 <button onclick="toggleModal('transaction-modal', false)" class="p-3 bg-zinc-900 rounded-2xl text-zinc-400"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div class="space-y-6">
                 <div class="flex bg-zinc-900 p-1.5 rounded-2xl">
-                    <button onclick="setTransType('expense')" id="btn-exp" class="flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest bg-zinc-800 text-white shadow-lg">Expense</button>
-                    <button onclick="setTransType('income')" id="btn-inc" class="flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest text-zinc-500">Income</button>
+                    <button onclick="setTransType('expense')" id="btn-exp" class="flex-1 py-3 rounded-xl text-xs font-black uppercase bg-zinc-800 text-white shadow-lg">Expense</button>
+                    <button onclick="setTransType('income')" id="btn-inc" class="flex-1 py-3 rounded-xl text-xs font-black uppercase text-zinc-500">Income</button>
                 </div>
                 <div class="text-center py-10 bg-gradient-to-b from-white/5 to-transparent rounded-[2.5rem] border border-white/5 shadow-inner">
                     <div class="flex items-center justify-center gap-3">
@@ -158,20 +231,20 @@
                     <button class="calc-btn bg-rose-500/10 text-rose-500" onclick="qClear()">C</button>
                     <button class="calc-btn calc-btn-op" onclick="qCalc('+')">+</button>
                 </div>
-                <div class="grid grid-cols-2 gap-3 text-white">
-                    <select id="t-cat" class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 text-xs font-bold"></select>
-                    <select id="t-acc" class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 text-xs font-bold"></select>
+                <div class="grid grid-cols-2 gap-3">
+                    <select id="t-cat" class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 text-xs font-bold text-white"></select>
+                    <select id="t-acc" class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 text-xs font-bold text-white"></select>
                 </div>
-                <div class="grid grid-cols-2 gap-3 text-white">
-                    <input type="date" id="t-date" class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 text-xs font-bold">
-                    <input type="text" id="t-note" placeholder="Memo..." class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 text-xs font-bold">
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="date" id="t-date" class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 text-xs font-bold text-white">
+                    <input type="text" id="t-note" placeholder="Memo..." class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 text-xs font-bold text-white">
                 </div>
-                <button onclick="saveTransaction()" class="w-full bg-white text-black font-black py-5 rounded-[2rem] shadow-2xl hover:bg-zinc-200 transition-all uppercase tracking-[0.2em] text-xs mt-4">Confirm Record</button>
+                <button onclick="saveTransaction()" class="w-full bg-white text-black font-black py-5 rounded-[2rem] shadow-2xl hover:bg-zinc-200 transition-all uppercase tracking-widest text-xs mt-4">Confirm Record</button>
             </div>
         </div>
     </div>
 
-    <!-- ENTITY SETUP MODAL -->
+    <!-- ENTITY MODAL -->
     <div id="entity-modal" class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[70] flex items-center justify-center hidden p-6">
         <div class="glass w-full max-w-sm rounded-[3rem] p-8 animate-slide-up text-white">
             <h3 id="entity-modal-title" class="text-xl font-bold mb-6 text-center">Create New</h3>
@@ -192,7 +265,7 @@
                 </div>
                 <div>
                     <label class="text-[9px] font-black uppercase text-zinc-500 mb-2 block">Display Name</label>
-                    <input type="text" id="setup-name" placeholder="e.g. Health, Freelance, Savings" class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 text-xs font-bold text-white">
+                    <input type="text" id="setup-name" placeholder="Name..." class="w-full bg-zinc-900 border border-white/5 rounded-2xl p-4 text-xs font-bold text-white">
                 </div>
                 <div class="flex gap-3 pt-4">
                     <button onclick="toggleModal('entity-modal', false)" class="flex-1 py-4 text-[9px] font-black uppercase tracking-widest text-zinc-500">Cancel</button>
@@ -206,7 +279,7 @@
     <div id="mapping-modal" class="fixed inset-0 bg-black/98 backdrop-blur-xl z-[80] flex items-center justify-center hidden p-6">
         <div class="glass w-full max-w-md rounded-[3rem] p-8 animate-slide-up">
             <h3 class="text-xl font-bold mb-2 text-white">CSV Field Mapping</h3>
-            <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mb-6">Match your file columns to Khorcha fields</p>
+            <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mb-6">Match your file columns</p>
             <div id="mapping-fields" class="space-y-4 mb-8 text-white"></div>
             <div class="flex gap-3">
                 <button onclick="toggleModal('mapping-modal', false)" class="flex-1 py-4 text-[9px] font-black uppercase text-zinc-500">Cancel</button>
@@ -220,9 +293,9 @@
         <div class="glass w-full max-w-xs rounded-[3rem] p-10 text-center text-white">
             <div class="w-20 h-20 bg-rose-500/10 rounded-full flex items-center justify-center mx-auto mb-6"><i data-lucide="alert-triangle" class="w-10 h-10 text-rose-500"></i></div>
             <h3 class="text-xl font-bold mb-3">Wipe All Data?</h3>
-            <p class="text-[10px] text-zinc-500 uppercase leading-relaxed font-bold tracking-widest">Everything will be permanently deleted.</p>
+            <p class="text-[10px] text-zinc-500 uppercase leading-relaxed font-bold tracking-widest">Permanent deletion.</p>
             <div class="mt-10 flex flex-col gap-3">
-                <button onclick="toggleModal('purge-modal', false)" class="w-full py-4 text-[10px] font-black uppercase tracking-widest">Cancel</button>
+                <button onclick="toggleModal('purge-modal', false)" class="w-full py-4 text-[10px] font-black uppercase tracking-widest text-white">Cancel</button>
                 <button onclick="finalizePurge()" class="w-full bg-rose-600 text-white rounded-2xl py-4 text-[10px] font-black uppercase tracking-widest">Delete Everything</button>
             </div>
         </div>
@@ -256,17 +329,33 @@
             csvData: []
         };
 
-        window.onload = () => { renderView(); updateHeaderDate(); lucide.createIcons(); document.getElementById('t-date').valueAsDate = new Date(); };
+        window.onload = () => { 
+            renderView(); 
+            updateHeaderDates(); 
+            lucide.createIcons(); 
+            document.getElementById('t-date').valueAsDate = new Date(); 
+        };
 
-        function updateHeaderDate() { document.getElementById('header-date').innerText = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); }
+        function updateHeaderDates() { 
+            const dateStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            if(document.getElementById('header-date')) document.getElementById('header-date').innerText = dateStr; 
+            if(document.getElementById('pc-header-date')) document.getElementById('pc-header-date').innerText = dateStr; 
+        }
+
         function formatBDT(num) { return '৳' + Number(Math.round(num)).toLocaleString('en-IN', { minimumFractionDigits: 0 }); }
 
         function switchTab(tab) {
             state.currentTab = tab;
             renderView();
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active', 'text-white'));
-            const activeNav = document.getElementById(`nav-${tab}`);
-            if(activeNav) activeNav.classList.add('active', 'text-white');
+            // Update Mobile Nav
+            document.querySelectorAll('.mobile-nav .nav-item').forEach(el => el.classList.remove('active', 'text-white'));
+            const activeMobileNav = document.getElementById(`nav-${tab}`);
+            if(activeMobileNav) activeMobileNav.classList.add('active', 'text-white');
+            
+            // Update PC Sidebar
+            document.querySelectorAll('.sidebar .nav-item').forEach(el => el.classList.remove('active', 'text-white'));
+            const activePcNav = document.getElementById(`pc-nav-${tab}`);
+            if(activePcNav) activePcNav.classList.add('active', 'text-white');
         }
 
         function renderView() {
@@ -282,7 +371,6 @@
             lucide.createIcons();
         }
 
-        // --- DASHBOARD ---
         function renderDashboard(el) {
             const m = state.viewDate.getMonth(), y = state.viewDate.getFullYear();
             const filtered = state.transactions.filter(t => state.dashboardMode === 'all' || (new Date(t.date).getMonth() === m && new Date(t.date).getFullYear() === y));
@@ -294,25 +382,25 @@
             }, 0);
 
             el.innerHTML = `
-                <div class="glass rounded-[2.5rem] p-8 mb-8 animate-slide-up">
+                <div class="glass rounded-[2.5rem] p-8 mb-8">
                     <div class="flex justify-between items-center mb-10">
                          <div class="flex bg-black/40 p-1 rounded-full border border-white/5">
                             <button onclick="toggleDashboard('monthly')" class="px-4 py-1.5 rounded-full text-[8px] font-black uppercase ${state.dashboardMode === 'monthly' ? 'bg-white text-black' : 'text-zinc-500'}">Monthly</button>
                             <button onclick="toggleDashboard('all')" class="px-4 py-1.5 rounded-full text-[8px] font-black uppercase ${state.dashboardMode === 'all' ? 'bg-white text-black' : 'text-zinc-500'}">All</button>
                         </div>
-                        ${state.dashboardMode === 'monthly' ? `<div class="flex items-center gap-4"><button onclick="changeMonth(-1)" class="p-1.5"><i data-lucide="chevron-left" class="w-4 h-4 text-white"></i></button><span class="text-[9px] font-black uppercase text-white">${state.viewDate.toLocaleString('default', { month: 'short', year: 'numeric' })}</span><button onclick="changeMonth(1)" class="p-1.5"><i data-lucide="chevron-right" class="w-4 h-4 text-white"></i></button></div>` : ''}
+                        ${state.dashboardMode === 'monthly' ? `<div class="flex items-center gap-4"><button onclick="changeMonth(-1)" class="p-1.5 text-white"><i data-lucide="chevron-left" class="w-4 h-4"></i></button><span class="text-[9px] font-black uppercase text-white">${state.viewDate.toLocaleString('default', { month: 'short', year: 'numeric' })}</span><button onclick="changeMonth(1)" class="p-1.5 text-white"><i data-lucide="chevron-right" class="w-4 h-4"></i></button></div>` : ''}
                     </div>
                     <div class="text-center mb-10">
                         <p class="text-zinc-500 text-[9px] font-black uppercase tracking-[0.2em] mb-2">Net Cashflow</p>
                         <h2 class="text-5xl font-black tracking-tighter text-white">${formatBDT(periodInc - periodExp)}</h2>
-                        <div class="mt-2 text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Total Balance: ${formatBDT(totalBalance)}</div>
+                        <div class="mt-2 text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Actual Balance: ${formatBDT(totalBalance)}</div>
                     </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-emerald-500/5 p-5 rounded-3xl border border-emerald-500/10"><p class="text-[8px] text-emerald-500/60 font-black mb-1.5 uppercase">Inflow</p><p class="text-emerald-400 font-black text-lg">+${formatBDT(periodInc)}</p></div>
-                        <div class="bg-rose-500/5 p-5 rounded-3xl border border-rose-500/10"><p class="text-[8px] text-rose-500/60 font-black mb-1.5 uppercase">Outflow</p><p class="text-rose-400 font-black text-lg">-${formatBDT(periodExp)}</p></div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-emerald-500/5 p-6 rounded-3xl border border-emerald-500/10"><p class="text-[8px] text-emerald-500/60 font-black mb-1.5 uppercase">Inflow</p><p class="text-emerald-400 font-black text-xl">+${formatBDT(periodInc)}</p></div>
+                        <div class="bg-rose-500/5 p-6 rounded-3xl border border-rose-500/10"><p class="text-[8px] text-rose-500/60 font-black mb-1.5 uppercase">Outflow</p><p class="text-rose-400 font-black text-xl">-${formatBDT(periodExp)}</p></div>
                     </div>
                 </div>
-                <div class="space-y-8">${renderGroupedList(filtered)}</div>
+                <div class="grid grid-cols-1 gap-8">${renderGroupedList(filtered)}</div>
             `;
         }
 
@@ -322,12 +410,11 @@
             if(!sortedDates.length) return `<div class="py-20 text-center opacity-30 text-white"><p class="text-[10px] font-black uppercase tracking-widest">No entries found</p></div>`;
             return sortedDates.map(date => {
                 const daySum = groups[date].reduce((s, t) => s + (t.type === 'income' ? parseFloat(t.amount) : -parseFloat(t.amount)), 0);
-                return `<div class="space-y-3 animate-slide-up"><div class="flex justify-between items-center px-1"><span class="text-[10px] font-black text-zinc-600 uppercase tracking-widest">${new Date(date).toLocaleDateString(undefined, {day:'numeric', month:'short', weekday:'short'})}</span><span class="text-[10px] font-black ${daySum >= 0 ? 'text-emerald-500' : 'text-rose-500'}">${daySum >= 0 ? '+' : ''}${formatBDT(daySum)}</span></div>
-                    <div class="space-y-2">${groups[date].map(t => `<div onclick="editTransaction(${t.id})" class="glass p-5 rounded-3xl flex items-center justify-between group active:scale-[0.98] transition-all cursor-pointer"><div class="flex items-center gap-4"><div class="w-11 h-11 rounded-2xl bg-zinc-900 border border-white/5 flex items-center justify-center"><i data-lucide="${t.type === 'income' ? 'plus-circle' : 'minus-circle'}" class="w-5 h-5 ${t.type === 'income' ? 'text-emerald-500' : 'text-rose-500'}"></i></div><div><p class="text-[11px] font-black uppercase tracking-wider text-white">${t.category}</p><p class="text-[9px] text-zinc-500 font-bold mt-0.5">${t.account} · ${t.note || 'No memo'}</p></div></div><div class="text-right"><p class="text-sm font-black ${t.type === 'income' ? 'text-emerald-400' : 'text-rose-400'}">${t.type === 'income' ? '+' : '-'}${Number(t.amount).toLocaleString()}</p></div></div>`).join('')}</div></div>`;
+                return `<div class="space-y-4"><div class="flex justify-between items-center px-1"><span class="text-[10px] font-black text-zinc-600 uppercase tracking-widest">${new Date(date).toLocaleDateString(undefined, {day:'numeric', month:'short', weekday:'short'})}</span><span class="text-[10px] font-black ${daySum >= 0 ? 'text-emerald-500' : 'text-rose-500'}">${daySum >= 0 ? '+' : ''}${formatBDT(daySum)}</span></div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${groups[date].map(t => `<div onclick="editTransaction(${t.id})" class="glass p-5 rounded-3xl flex items-center justify-between group active:scale-[0.98] transition-all cursor-pointer"><div class="flex items-center gap-4"><div class="w-11 h-11 rounded-2xl bg-zinc-900 border border-white/5 flex items-center justify-center"><i data-lucide="${t.type === 'income' ? 'plus-circle' : 'minus-circle'}" class="w-5 h-5 ${t.type === 'income' ? 'text-emerald-500' : 'text-rose-500'}"></i></div><div><p class="text-[11px] font-black uppercase tracking-wider text-white">${t.category}</p><p class="text-[9px] text-zinc-500 font-bold mt-0.5">${t.account} · ${t.note || 'No memo'}</p></div></div><div class="text-right"><p class="text-sm font-black ${t.type === 'income' ? 'text-emerald-400' : 'text-rose-400'}">${t.type === 'income' ? '+' : '-'}${Number(t.amount).toLocaleString()}</p></div></div>`).join('')}</div></div>`;
             }).join('');
         }
 
-        // --- STATS ---
         function renderStats(el) {
             const m = state.viewDate.getMonth(), y = state.viewDate.getFullYear();
             const filtered = state.transactions.filter(t => state.statFilter === 'all' || (new Date(t.date).getMonth() === m && new Date(t.date).getFullYear() === y));
@@ -337,16 +424,22 @@
             const sortedExp = Object.entries(expData).sort((a,b) => b[1]-a[1]);
 
             el.innerHTML = `
-                <div class="space-y-6 animate-slide-up pb-10">
+                <div class="space-y-8 pb-10">
                     <div class="flex justify-between items-center px-1"><h2 class="text-2xl font-black tracking-tighter text-white">Insights</h2>
                         <div class="flex bg-zinc-900 p-1 rounded-2xl border border-white/5">
-                            <button onclick="setStatFilter('monthly')" class="px-4 py-1.5 rounded-xl text-[8px] font-black uppercase ${state.statFilter === 'monthly' ? 'bg-zinc-800 text-white shadow-lg' : 'text-zinc-600'}">Month</button>
-                            <button onclick="setStatFilter('all')" class="px-4 py-1.5 rounded-xl text-[8px] font-black uppercase ${state.statFilter === 'all' ? 'bg-zinc-800 text-white shadow-lg' : 'text-zinc-600'}">All</button>
+                            <button onclick="setStatFilter('monthly')" class="px-6 py-2 rounded-xl text-[8px] font-black uppercase ${state.statFilter === 'monthly' ? 'bg-zinc-800 text-white shadow-lg' : 'text-zinc-600'}">Month</button>
+                            <button onclick="setStatFilter('all')" class="px-6 py-2 rounded-xl text-[8px] font-black uppercase ${state.statFilter === 'all' ? 'bg-zinc-800 text-white shadow-lg' : 'text-zinc-600'}">All</button>
                         </div>
                     </div>
-                    <div class="glass p-8 rounded-[3rem] text-center"><div class="h-56 mb-8"><canvas id="mainChart"></canvas></div></div>
-                    <div class="glass p-8 rounded-[3rem]"><p class="text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-6">Cashflow Distribution</p><div class="h-40"><canvas id="barChart"></canvas></div></div>
-                    <div class="space-y-3 mt-4 text-white">${sortedExp.map(([cat, val], idx) => `<div class="glass p-5 rounded-3xl flex items-center justify-between"><div class="flex items-center gap-3"><div class="w-1.5 h-1.5 rounded-full" style="background: ${getPalette(idx)}"></div><span class="text-[11px] font-black uppercase tracking-wider text-zinc-400">${cat}</span></div><span class="text-xs font-black">${formatBDT(val)}</span></div>`).join('')}</div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="glass p-8 rounded-[3rem] text-center flex items-center justify-center"><div class="h-64 w-full"><canvas id="mainChart"></canvas></div></div>
+                        <div class="glass p-8 rounded-[3rem]"><p class="text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-6">Cashflow Distribution</p><div class="h-64"><canvas id="barChart"></canvas></div></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-white">
+                        ${sortedExp.map(([cat, val], idx) => `<div class="glass p-5 rounded-3xl flex items-center justify-between"><div class="flex items-center gap-3"><div class="w-1.5 h-1.5 rounded-full" style="background: ${getPalette(idx)}"></div><span class="text-[11px] font-black uppercase tracking-wider text-zinc-400">${cat}</span></div><span class="text-xs font-black">${formatBDT(val)}</span></div>`).join('')}
+                    </div>
                 </div>`;
 
             setTimeout(() => {
@@ -355,22 +448,21 @@
             }, 100);
         }
 
-        // --- NOTES VIEW ---
         function renderNotes(el) {
             el.innerHTML = `
-                <div class="space-y-6 animate-slide-up">
+                <div class="space-y-6">
                     <div class="flex justify-between items-center px-1">
-                        <h2 class="text-2xl font-black tracking-tighter text-white">Financial Notes</h2>
+                        <h2 class="text-2xl font-black tracking-tighter text-white">Financial Memos</h2>
                         <button onclick="addNote()" class="p-3 glass rounded-2xl text-emerald-400 hover:scale-105 transition-all">
                             <i data-lucide="plus-square" class="w-6 h-6"></i>
                         </button>
                     </div>
-                    <div class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         ${state.notes.length ? state.notes.map(n => `
                             <div class="glass p-6 rounded-[2rem] relative group">
                                 <textarea onchange="updateNote('${n.id}', this.value)" 
-                                    class="w-full bg-transparent text-sm text-zinc-300 font-medium resize-none min-h-[100px] border-none" 
-                                    placeholder="Write a reminder or goal...">${n.text}</textarea>
+                                    class="w-full bg-transparent text-sm text-zinc-300 font-medium resize-none min-h-[120px] border-none noscroll" 
+                                    placeholder="Write a reminder...">${n.text}</textarea>
                                 <div class="flex justify-between items-center mt-4 pt-4 border-t border-white/5">
                                     <span class="text-[8px] font-black text-zinc-600 uppercase tracking-widest">${n.date}</span>
                                     <button onclick="deleteNote('${n.id}')" class="text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity p-2">
@@ -378,78 +470,60 @@
                                     </button>
                                 </div>
                             </div>
-                        `).join('') : '<div class="py-20 text-center opacity-30 text-white"><i data-lucide="edit-3" class="w-12 h-12 mx-auto mb-4 opacity-10"></i><p class="text-[10px] font-black uppercase tracking-widest">Your memo board is empty</p></div>'}
+                        `).join('') : '<div class="col-span-full py-20 text-center opacity-30 text-white"><p class="text-[10px] font-black uppercase tracking-widest">Memo board is empty</p></div>'}
                     </div>
                 </div>
             `;
             lucide.createIcons();
         }
 
-        function addNote() {
-            state.notes.unshift({ id: Date.now().toString(), text: '', date: new Date().toLocaleDateString() });
-            saveAll();
-            renderView();
-        }
-
-        function updateNote(id, val) {
-            const n = state.notes.find(n => n.id === id);
-            if(n) n.text = val;
-            saveAll();
-        }
-
-        function deleteNote(id) {
-            state.notes = state.notes.filter(n => n.id !== id);
-            saveAll();
-            renderView();
-        }
-
-        // --- SETTINGS (FOLDER LIST VERSION) ---
         function renderSettings(el) {
             el.innerHTML = `
-                <div class="space-y-8 animate-slide-up pb-10">
-                    <!-- Management Header -->
+                <div class="space-y-8 pb-20">
                     <div class="flex justify-between items-center px-1">
-                        <h2 class="text-2xl font-black tracking-tighter text-white">Management</h2>
-                        <button onclick="toggleModal('entity-modal', true)" class="bg-zinc-800 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest text-white shadow-xl">+ Create New</button>
+                        <h2 class="text-2xl font-black tracking-tighter text-white">Setup & Tools</h2>
+                        <button onclick="toggleModal('entity-modal', true)" class="bg-zinc-800 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-white shadow-xl">+ New Item</button>
                     </div>
 
-                    <!-- Folders Section -->
-                    <div class="space-y-4">
-                        ${renderFolder('Expense Categories', state.categories.filter(c => c.type === 'expense'), 'cat')}
-                        ${renderFolder('Income Categories', state.categories.filter(c => c.type === 'income'), 'cat')}
-                        ${renderFolder('My Accounts', state.accounts, 'acc')}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            ${renderFolder('Expense Categories', state.categories.filter(c => c.type === 'expense'), 'cat')}
+                            ${renderFolder('Income Categories', state.categories.filter(c => c.type === 'income'), 'cat')}
+                            ${renderFolder('System Accounts', state.accounts, 'acc')}
+                        </div>
+                        
+                        <div class="space-y-6">
+                            <section class="grid grid-cols-2 gap-4">
+                                <button onclick="exportCSV()" class="glass p-8 rounded-[2.5rem] flex flex-col items-center gap-3">
+                                    <i data-lucide="download-cloud" class="w-6 h-6 text-emerald-500"></i>
+                                    <span class="text-[10px] font-black uppercase text-white">Backup</span>
+                                </button>
+                                <button onclick="document.getElementById('csv-upload-field').click()" class="glass p-8 rounded-[2.5rem] flex flex-col items-center gap-3">
+                                    <i data-lucide="upload-cloud" class="w-6 h-6 text-blue-500"></i>
+                                    <span class="text-[10px] font-black uppercase text-white">Restore</span>
+                                </button>
+                            </section>
+                            <button onclick="switchTab('calculator')" class="w-full glass py-8 rounded-[2.5rem] text-[10px] font-black uppercase text-zinc-400 flex items-center justify-center gap-3">
+                                <i data-lucide="calculator" class="w-5 h-5"></i> Open Tool
+                            </button>
+                            <button onclick="toggleModal('purge-modal', true)" class="w-full bg-rose-600/10 border border-rose-500/10 py-6 rounded-[2.5rem] text-rose-500 text-[10px] font-black uppercase">Purge All Data</button>
+                        </div>
                     </div>
-
-                    <!-- Backup & Tools -->
-                    <section class="grid grid-cols-2 gap-4">
-                        <button onclick="exportCSV()" class="glass p-8 rounded-[2.5rem] flex flex-col items-center gap-3">
-                            <i data-lucide="download-cloud" class="w-6 h-6 text-zinc-500"></i>
-                            <span class="text-[9px] font-black uppercase text-white">Backup CSV</span>
-                        </button>
-                        <button onclick="document.getElementById('csv-upload-field').click()" class="glass p-8 rounded-[2.5rem] flex flex-col items-center gap-3">
-                            <i data-lucide="upload-cloud" class="w-6 h-6 text-zinc-500"></i>
-                            <span class="text-[9px] font-black uppercase text-white">Restore CSV</span>
-                        </button>
-                    </section>
-
-                    <button onclick="switchTab('calculator')" class="w-full glass py-6 rounded-[2.5rem] text-[9px] font-black uppercase text-zinc-400">Launch Calculator Utility</button>
-                    <button onclick="toggleModal('purge-modal', true)" class="w-full bg-rose-600/10 border border-rose-500/10 py-6 rounded-[2.5rem] text-rose-500 text-[10px] font-black uppercase">Danger: Purge Application Data</button>
                 </div>
             `;
             lucide.createIcons();
         }
 
         function renderFolder(title, items, type) {
-            const count = items.length;
             return `
                 <div class="glass rounded-[2rem] overflow-hidden" id="folder-${title.replace(/\s+/g, '')}">
                     <button onclick="toggleFolder('${title.replace(/\s+/g, '')}')" 
-                        class="w-full flex items-center justify-between p-6 hover:bg-white/5 transition-colors">
+                        class="w-full flex items-center justify-between p-7 hover:bg-white/5 transition-colors">
                         <div class="flex items-center gap-4">
                             <i data-lucide="folder" class="w-5 h-5 text-zinc-500"></i>
                             <div class="text-left">
                                 <p class="text-[11px] font-black uppercase tracking-wider text-white">${title}</p>
-                                <p class="text-[8px] text-zinc-600 font-bold uppercase">${count} Items</p>
+                                <p class="text-[8px] text-zinc-600 font-bold uppercase">${items.length} Items</p>
                             </div>
                         </div>
                         <i data-lucide="chevron-down" class="w-4 h-4 text-zinc-700 folder-chevron"></i>
@@ -457,47 +531,22 @@
                     <div class="folder-content">
                         <div class="px-6 pb-6 space-y-2">
                             ${items.map(item => `
-                                <div class="bg-zinc-900/50 border border-white/5 p-3.5 rounded-2xl flex justify-between items-center group">
-                                    <span class="text-[10px] font-bold text-zinc-400">${item.name}</span>
-                                    <button onclick="deleteEntity('${type}', '${item.id}')" 
-                                        class="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 hover:bg-rose-500/10 rounded-lg">
+                                <div class="bg-zinc-900/50 border border-white/5 p-4 rounded-2xl flex justify-between items-center group">
+                                    <span class="text-[10px] font-bold text-zinc-400 uppercase">${item.name}</span>
+                                    <button onclick="deleteEntity('${type}', '${item.id}')" class="opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-rose-500/10 rounded-lg">
                                         <i data-lucide="trash-2" class="w-3 h-3 text-rose-500"></i>
                                     </button>
                                 </div>
-                            `).join('') || '<p class="text-[9px] text-center text-zinc-700 py-2 uppercase font-black">Empty Folder</p>'}
+                            `).join('') || '<p class="text-[9px] text-center text-zinc-700 py-4 uppercase font-black">Empty</p>'}
                         </div>
                     </div>
                 </div>
             `;
         }
 
-        function toggleFolder(id) {
-            const folder = document.getElementById(`folder-${id}`);
-            folder.classList.toggle('folder-open');
-        }
+        function toggleFolder(id) { document.getElementById(`folder-${id}`).classList.toggle('folder-open'); }
 
-        // --- CALCULATOR ---
-        function renderCalculator(el) {
-            el.innerHTML = `<div class="glass rounded-[3rem] p-8 shadow-2xl animate-slide-up">
-                <div class="bg-black/40 p-8 rounded-[2rem] mb-8 text-right border border-white/5 h-36 flex flex-col justify-end"><div id="full-calc-display" class="text-5xl font-black font-mono tracking-tighter text-white">${state.fullCalcValue}</div></div>
-                <div class="grid grid-cols-4 gap-4 text-white">
-                    <button class="calc-btn bg-zinc-800/50" onclick="fCalc('AC')">AC</button><button class="calc-btn bg-zinc-800/50" onclick="fCalc('DEL')">DEL</button><button class="calc-btn bg-zinc-800/50" onclick="fCalc('%')">%</button><button class="calc-btn calc-btn-op" onclick="fCalc('/')">÷</button>
-                    <button class="calc-btn" onclick="fCalc('7')">7</button><button class="calc-btn" onclick="fCalc('8')">8</button><button class="calc-btn" onclick="fCalc('9')">9</button><button class="calc-btn calc-btn-op" onclick="fCalc('*')">×</button>
-                    <button class="calc-btn" onclick="fCalc('4')">4</button><button class="calc-btn" onclick="fCalc('5')">5</button><button class="calc-btn" onclick="fCalc('6')">6</button><button class="calc-btn calc-btn-op" onclick="fCalc('-')">-</button>
-                    <button class="calc-btn" onclick="fCalc('1')">1</button><button class="calc-btn" onclick="fCalc('2')">2</button><button class="calc-btn" onclick="fCalc('3')">3</button><button class="calc-btn calc-btn-op" onclick="fCalc('+')">+</button>
-                    <button class="calc-btn col-span-2" onclick="fCalc('0')">0</button><button class="calc-btn" onclick="fCalc('.')">.</button><button class="calc-btn bg-white text-black" onclick="fCalc('=')">=</button>
-                </div></div>`;
-        }
-
-        function fCalc(val) {
-            if(val === 'AC') state.fullCalcValue = '0';
-            else if(val === 'DEL') state.fullCalcValue = state.fullCalcValue.length > 1 ? state.fullCalcValue.slice(0, -1) : '0';
-            else if(val === '=') { try { state.fullCalcValue = eval(state.fullCalcValue.replace('×', '*').replace('÷', '/')).toString(); } catch(e) { state.fullCalcValue = 'Error'; } }
-            else { if(state.fullCalcValue === '0' && !isNaN(val)) state.fullCalcValue = val; else state.fullCalcValue += val; }
-            document.getElementById('full-calc-display').innerText = state.fullCalcValue;
-        }
-
-        // --- CORE LOGIC ---
+        // --- CORE FUNCTIONS (RESTORED FROM PREVIOUS VERSION) ---
         function toggleModal(id, show) { document.getElementById(id).classList.toggle('hidden', !show); if(id === 'transaction-modal' && show) populateSelects(); }
         function setTransType(type) { state.transType = type; document.getElementById('btn-exp').className = `flex-1 py-3 rounded-xl text-xs font-black ${type==='expense'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; document.getElementById('btn-inc').className = `flex-1 py-3 rounded-xl text-xs font-black ${type==='income'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; populateSelects(); }
         function populateSelects() { document.getElementById('t-cat').innerHTML = state.categories.filter(c => c.type === state.transType).map(c => `<option value="${c.name}">${c.name}</option>`).join(''); document.getElementById('t-acc').innerHTML = state.accounts.map(a => `<option value="${a.name}">${a.name}</option>`).join(''); }
@@ -507,19 +556,31 @@
         function editTransaction(id) { const t = state.transactions.find(x => x.id === id); if(!t) return; state.editingId = id; state.qCalcValue = t.amount.toString(); state.transType = t.type; toggleModal('transaction-modal', true); document.getElementById('modal-title').innerText = "Edit Record"; document.getElementById('quick-calc-display').innerText = t.amount; document.getElementById('t-date').value = t.date; document.getElementById('t-note').value = t.note; setTransType(t.type); document.getElementById('t-cat').value = t.category; document.getElementById('t-acc').value = t.account; }
         function saveTransaction() { let amt = 0; try { amt = eval(state.qCalcValue.replace(/[^-+*/.0-9]/g, '')); } catch(e) { return; } if(amt <= 0) return; const entry = { id: state.editingId || Date.now(), amount: Math.abs(parseFloat(amt)), type: state.transType, category: document.getElementById('t-cat').value, account: document.getElementById('t-acc').value, date: document.getElementById('t-date').value, note: document.getElementById('t-note').value }; if(state.editingId) state.transactions = state.transactions.map(x => x.id === state.editingId ? entry : x); else state.transactions.unshift(entry); saveAll(); toggleModal('transaction-modal', false); renderView(); }
         function saveAll() { localStorage.setItem('k_v8_trans', JSON.stringify(state.transactions)); localStorage.setItem('k_v8_cats', JSON.stringify(state.categories)); localStorage.setItem('k_v8_accs', JSON.stringify(state.accounts)); localStorage.setItem('k_v8_notes', JSON.stringify(state.notes)); }
-
-        function setSetupType(ctx) { state.setupContext = ctx; document.getElementById('setup-cat-btn').className = `flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase ${ctx==='cat'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; document.getElementById('setup-acc-btn').className = `flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase ${ctx==='acc'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; document.getElementById('cat-type-select').classList.toggle('hidden', ctx === 'acc'); }
-        function setSetupBehavior(type) { state.setupBehavior = type; document.getElementById('setup-exp-btn').className = `flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase ${type==='expense'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; document.getElementById('setup-inc-btn').className = `flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase ${type==='income'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; }
-        function finalizeEntitySetup() { const name = document.getElementById('setup-name').value.trim(); if(!name) return; if(state.setupContext === 'cat') state.categories.push({ id: Date.now().toString(), name, type: state.setupBehavior }); else state.accounts.push({ id: Date.now().toString(), name }); saveAll(); toggleModal('entity-modal', false); document.getElementById('setup-name').value = ''; renderView(); }
-        function deleteEntity(type, id) { if(type === 'cat') state.categories = state.categories.filter(c => c.id !== id); else state.accounts = state.accounts.filter(a => a.id !== id); saveAll(); renderView(); }
+        function addNote() { state.notes.unshift({ id: Date.now().toString(), text: '', date: new Date().toLocaleDateString() }); saveAll(); renderView(); }
+        function updateNote(id, val) { const n = state.notes.find(n => n.id === id); if(n) n.text = val; saveAll(); }
+        function deleteNote(id) { state.notes = state.notes.filter(n => n.id !== id); saveAll(); renderView(); }
         function finalizePurge() { localStorage.clear(); location.reload(); }
         function toggleDashboard(mode) { state.dashboardMode = mode; renderView(); }
         function setStatFilter(mode) { state.statFilter = mode; renderView(); }
         function changeMonth(dir) { state.viewDate.setMonth(state.viewDate.getMonth() + dir); renderView(); }
         function getPalette(i) { return ['#fb7185', '#34d399', '#60a5fa', '#fbbf24', '#a78bfa', '#2dd4bf', '#f472b6'][i % 7]; }
+        function deleteEntity(type, id) { if(type === 'cat') state.categories = state.categories.filter(c => c.id !== id); else state.accounts = state.accounts.filter(a => a.id !== id); saveAll(); renderView(); }
+        
+        function finalizeEntitySetup() { 
+            const name = document.getElementById('setup-name').value.trim(); if(!name) return; 
+            if(state.setupContext === 'cat') state.categories.push({ id: Date.now().toString(), name, type: state.setupBehavior }); 
+            else state.accounts.push({ id: Date.now().toString(), name }); 
+            saveAll(); toggleModal('entity-modal', false); document.getElementById('setup-name').value = ''; renderView(); 
+        }
 
+        function setSetupType(ctx) { state.setupContext = ctx; document.getElementById('setup-cat-btn').className = `flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase ${ctx==='cat'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; document.getElementById('setup-acc-btn').className = `flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase ${ctx==='acc'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; document.getElementById('cat-type-select').classList.toggle('hidden', ctx === 'acc'); }
+        function setSetupBehavior(type) { state.setupBehavior = type; document.getElementById('setup-exp-btn').className = `flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase ${type==='expense'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; document.getElementById('setup-inc-btn').className = `flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase ${type==='income'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; }
+
+        function renderCalculator(el) { el.innerHTML = `<div class="glass rounded-[3rem] p-8 shadow-2xl animate-slide-up"><div class="bg-black/40 p-8 rounded-[2rem] mb-8 text-right border border-white/5 h-36 flex flex-col justify-end"><div id="full-calc-display" class="text-5xl font-black font-mono tracking-tighter text-white">${state.fullCalcValue}</div></div><div class="grid grid-cols-4 gap-4 text-white"><button class="calc-btn bg-zinc-800/50" onclick="fCalc('AC')">AC</button><button class="calc-btn bg-zinc-800/50" onclick="fCalc('DEL')">DEL</button><button class="calc-btn bg-zinc-800/50" onclick="fCalc('%')">%</button><button class="calc-btn calc-btn-op" onclick="fCalc('/')">÷</button><button class="calc-btn" onclick="fCalc('7')">7</button><button class="calc-btn" onclick="fCalc('8')">8</button><button class="calc-btn" onclick="fCalc('9')">9</button><button class="calc-btn calc-btn-op" onclick="fCalc('*')">×</button><button class="calc-btn" onclick="fCalc('4')">4</button><button class="calc-btn" onclick="fCalc('5')">5</button><button class="calc-btn" onclick="fCalc('6')">6</button><button class="calc-btn calc-btn-op" onclick="fCalc('-')">-</button><button class="calc-btn" onclick="fCalc('1')">1</button><button class="calc-btn" onclick="fCalc('2')">2</button><button class="calc-btn" onclick="fCalc('3')">3</button><button class="calc-btn calc-btn-op" onclick="fCalc('+')">+</button><button class="calc-btn col-span-2" onclick="fCalc('0')">0</button><button class="calc-btn" onclick="fCalc('.')">.</button><button class="calc-btn bg-white text-black" onclick="fCalc('=')">=</button></div></div>`; }
+        function fCalc(val) { if(val === 'AC') state.fullCalcValue = '0'; else if(val === 'DEL') state.fullCalcValue = state.fullCalcValue.length > 1 ? state.fullCalcValue.slice(0, -1) : '0'; else if(val === '=') { try { state.fullCalcValue = eval(state.fullCalcValue.replace('×', '*').replace('÷', '/')).toString(); } catch(e) { state.fullCalcValue = 'Error'; } } else { if(state.fullCalcValue === '0' && !isNaN(val)) state.fullCalcValue = val; else state.fullCalcValue += val; } document.getElementById('full-calc-display').innerText = state.fullCalcValue; }
+        
         function handleCSVSelect(e) { const file = e.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = (evt) => { const lines = evt.target.result.split('\n').filter(l => l.trim()); if(lines.length < 2) return; state.csvHeaders = lines[0].split(',').map(h => h.trim().replace(/"/g, '')); state.csvData = lines.slice(1).map(l => l.split(',')); showMappingModal(); }; reader.readAsText(file); }
-        function showMappingModal() { const fields = [{ id: 'map-date', label: 'Date' }, { id: 'map-amt', label: 'Amount' }, { id: 'map-cat', label: 'Category' }, { id: 'map-acc', label: 'Account' }, { id: 'map-type', label: 'Type' }, { id: 'map-note', label: 'Memo' }]; const container = document.getElementById('mapping-fields'); container.innerHTML = fields.map(f => `<div><label class="text-[9px] font-black uppercase text-zinc-500 mb-1.5 block">${f.label}</label><select id="${f.id}" class="w-full bg-zinc-900 border border-white/5 p-3.5 rounded-2xl text-[11px] font-bold"><option value="">-- Ignore --</option>${state.csvHeaders.map((h, i) => `<option value="${i}">${h}</option>`).join('')}</select></div>`).join(''); toggleModal('mapping-modal', true); }
+        function showMappingModal() { const fields = [{ id: 'map-date', label: 'Date' }, { id: 'map-amt', label: 'Amount' }, { id: 'map-cat', label: 'Category' }, { id: 'map-acc', label: 'Account' }, { id: 'map-type', label: 'Type' }, { id: 'map-note', label: 'Memo' }]; const container = document.getElementById('mapping-fields'); container.innerHTML = fields.map(f => `<div><label class="text-[9px] font-black uppercase text-zinc-500 mb-1.5 block">${f.label}</label><select id="${f.id}" class="w-full bg-zinc-900 border border-white/5 p-3.5 rounded-2xl text-[11px] font-bold text-white"><option value="">-- Ignore --</option>${state.csvHeaders.map((h, i) => `<option value="${i}">${h}</option>`).join('')}</select></div>`).join(''); toggleModal('mapping-modal', true); }
         function finalizeMappingImport() {
             const map = { date: document.getElementById('map-date').value, amt: document.getElementById('map-amt').value, cat: document.getElementById('map-cat').value, acc: document.getElementById('map-acc').value, type: document.getElementById('map-type').value, note: document.getElementById('map-note').value };
             const imported = state.csvData.map(row => {
