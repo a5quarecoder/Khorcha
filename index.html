@@ -23,7 +23,7 @@
             --primary: #ffffff;
         }
 
-        /* Fallback rules to prevent unstyled layout flashes */
+        /* Fallback rules to prevent unstyled layout flashes when offline */
         .hidden { display: none !important; }
         
         @media (max-width: 767px) {
@@ -37,36 +37,35 @@
         }
 
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: var(--bg-color);
             color: #fafafa;
             -webkit-tap-highlight-color: transparent;
             overflow-x: hidden;
+            margin: 0;
+            padding: 0;
         }
 
-        /* Glassmorphism & Depth Tokens */
+        /* Full offline styling safety net */
         .premium-glass {
-            background: rgba(24, 24, 27, 0.6);
+            background: rgba(24, 24, 27, 0.75) !important;
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
         }
 
         .premium-card {
-            background: var(--surface);
-            border: 1px solid var(--surface-accent);
+            background: var(--surface) !important;
+            border: 1px solid var(--surface-accent) !important;
+            border-radius: 1.75rem;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .premium-card:hover {
-            border-color: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
         }
 
         .app-shell {
             min-height: 100vh;
             min-height: 100dvh;
+            background-color: var(--bg-color);
         }
 
         @media (min-width: 768px) {
@@ -82,13 +81,18 @@
             }
         }
 
+        .nav-link {
+            border: none;
+            cursor: pointer;
+        }
+
         .nav-link.active {
-            background: white;
-            color: black;
+            background: white !important;
+            color: black !important;
             box-shadow: 0 10px 20px rgba(255, 255, 255, 0.1);
         }
 
-        /* Fluid Calculator Keypad */
+        /* Offline-resilient Keypad */
         .calc-key {
             display: flex;
             align-items: center;
@@ -99,20 +103,22 @@
             user-select: none;
             height: clamp(2.75rem, 5vh, 3.75rem);
             font-size: clamp(1rem, 2.5vh, 1.25rem);
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            cursor: pointer;
         }
         .calc-key:active { transform: scale(0.92); }
 
         .calc-key-op {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.12);
             color: var(--emerald);
         }
 
         .progress-bar {
             height: 6px;
             border-radius: 3px;
-            background: rgba(255,255,255,0.05);
+            background: rgba(255,255,255,0.08);
             overflow: hidden;
         }
         .progress-fill {
@@ -141,6 +147,13 @@
         }
 
         .noscroll::-webkit-scrollbar { display: none; }
+
+        /* General form input fixes for offline mode */
+        input, select, textarea {
+            background-color: #18181b !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
     </style>
 </head>
 <body class="h-full bg-[#09090b]">
