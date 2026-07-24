@@ -413,51 +413,15 @@
 
         function registerOfflineServiceWorker() {
             if ('serviceWorker' in navigator) {
-                const swCode = `
-                    const CACHE_NAME = 'khorcha-offline-cache-v1';
-                    const ASSETS = [
-                        'https://cdn.tailwindcss.com',
-                        'https://unpkg.com/lucide@latest',
-                        'https://cdn.jsdelivr.net/npm/chart.js',
-                        'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap'
-                    ];
-
-                    self.addEventListener('install', (e) => {
-                        e.waitUntil(
-                            caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)).then(() => self.skipWaiting())
-                        );
-                    });
-
-                    self.addEventListener('activate', (e) => {
-                        e.waitUntil(self.clients.claim());
-                    });
-
-                    self.addEventListener('fetch', (e) => {
-                        e.respondWith(
-                            caches.match(e.request).then((cachedResponse) => {
-                                if (cachedResponse) return cachedResponse;
-                                return fetch(e.request).then((networkResponse) => {
-                                    if (e.request.url.startsWith('http')) {
-                                        const clone = networkResponse.clone();
-                                        caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone));
-                                    }
-                                    return networkResponse;
-                                }).catch(() => cachedResponse);
-                            })
-                        );
-                    });
-                `;
-
-                try {
-                    const blob = new Blob([swCode], { type: 'application/javascript' });
-                    const swUrl = URL.createObjectURL(blob);
-                    navigator.serviceWorker.register(swUrl).then(() => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then((reg) => {
+                        console.log('Service Worker registered with scope:', reg.scope);
                         document.getElementById('offline-badge-pc')?.classList.remove('hidden');
                         document.getElementById('offline-badge-mobile')?.classList.remove('hidden');
-                    }).catch(err => console.log('SW Registration Note:', err));
-                } catch(e) {
-                    console.log('Blob SW not permitted in this frame environment.');
-                }
+                    })
+                    .catch((err) => {
+                        console.log('Service Worker registration failed:', err);
+                    });
             }
         }
 
