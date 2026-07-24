@@ -23,17 +23,37 @@
             --primary: #ffffff;
         }
 
-        /* Fallback rules to prevent unstyled layout flashes when offline */
-        .hidden { display: none !important; }
-        
+        /* Responsive Layout Grid Safety Rules */
         @media (max-width: 767px) {
-            aside { display: none !important; }
+            .app-shell {
+                display: flex;
+                flex-direction: column;
+                min-height: 100vh;
+                min-height: 100dvh;
+            }
+            #app-sidebar { display: none !important; }
             .mobile-nav { display: flex !important; }
         }
 
         @media (min-width: 768px) {
-            aside { display: flex !important; }
+            .app-shell {
+                display: grid;
+                grid-template-columns: 280px 1fr;
+                min-height: 100vh;
+                min-height: 100dvh;
+            }
+            #app-sidebar { display: flex !important; }
             .mobile-nav { display: none !important; }
+            .main-scrollable {
+                overflow-y: auto;
+                scrollbar-width: none;
+            }
+        }
+
+        @media (min-width: 1280px) {
+            .app-shell {
+                grid-template-columns: 320px 1fr;
+            }
         }
 
         body {
@@ -60,25 +80,6 @@
             border: 1px solid var(--surface-accent) !important;
             border-radius: 1.75rem;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .app-shell {
-            min-height: 100vh;
-            min-height: 100dvh;
-            background-color: var(--bg-color);
-        }
-
-        @media (min-width: 768px) {
-            .app-shell {
-                display: grid;
-                grid-template-columns: clamp(240px, 20vw, 320px) 1fr;
-                height: 100vh;
-                height: 100dvh;
-            }
-            .main-scrollable {
-                overflow-y: auto;
-                scrollbar-width: none;
-            }
         }
 
         .nav-link {
@@ -161,7 +162,7 @@
     <div id="app" class="app-shell">
         
         <!-- SIDEBAR (DESKTOP / TABLET LANDSCAPE) -->
-        <aside class="hidden md:flex flex-col justify-between p-6 lg:p-8 border-r border-white/5 bg-[#09090b] sticky top-0 h-screen z-40">
+        <aside id="app-sidebar" class="flex flex-col justify-between p-6 lg:p-8 border-r border-white/5 bg-[#09090b] sticky top-0 h-screen z-40">
             <div class="space-y-8 lg:space-y-10">
                 <div class="px-2">
                     <div class="flex items-center justify-between gap-2">
