@@ -400,6 +400,9 @@
             editingId: null
         };
 
+        // Track chart instances to prevent canvas reuse errors
+        let chartInstances = {};
+
         window.onload = () => { 
             registerOfflineServiceWorker();
             renderView(); 
@@ -490,7 +493,6 @@
             lucide.createIcons();
         }
 
-        // --- STREAMING_CHUNK:Rendering View Components (Dashboard, Budget, Insights, Memos)... ---
         function renderDashboard(el) {
             const m = state.viewDate.getMonth(), y = state.viewDate.getFullYear();
             const filtered = state.transactions.filter(t => state.dashboardMode === 'all' || (new Date(t.date).getMonth() === m && new Date(t.date).getFullYear() === y));
@@ -598,6 +600,35 @@
             `;
         }
 
+        function updateBudget(catId, val) {
+            const m = state.viewDate.getMonth(), y = state.viewDate.getFullYear();
+            const monthKey = `${m}-${y}`;
+            if (!state.budgets[monthKey]) state.budgets[monthKey] = {};
+            state.budgets[monthKey][catId] = val;
+            saveAll();
+
+            // Perform targeted calculations to update top summary header live
+            const monthBudgets = state.budgets[monthKey];
+            const incomeCats = state.categories.filter(c => c.type === 'income');
+            const expenseCats = state.categories.filter(c => c.type === 'expense');
+            const debtCats = state.debts;
+
+            let totalPlInc = incomeCats.reduce((s, c) => s + (parseFloat(monthBudgets[c.id]) || 0), 0);
+            let totalPlExp = expenseCats.reduce((s, c) => s + (parseFloat(monthBudgets[c.id]) || 0), 0);
+            let totalPlDebt = debtCats.reduce((s, c) => s + (parseFloat(monthBudgets[c.id]) || 0), 0);
+            const rem = totalPlInc - totalPlExp - totalPlDebt;
+
+            const summaryEl = document.getElementById('budget-summary-val');
+            const hintEl = document.getElementById('budget-summary-hint');
+            if (summaryEl) {
+                summaryEl.innerText = formatBDT(rem);
+                summaryEl.className = `text-6xl font-black tracking-tighter ${rem === 0 ? 'text-emerald-400' : 'text-white'}`;
+            }
+            if (hintEl) {
+                hintEl.innerText = rem === 0 ? "Every Taka has a job!" : "Goal: Bring this to zero.";
+            }
+        }
+
         function renderDebtBudgetItem(debt, planned, allTrans) {
             const totalPaid = allTrans.filter(t => t.category === debt.name && t.type === 'expense').reduce((s, t) => s + parseFloat(t.amount), 0);
             const remaining = Math.max(0, parseFloat(debt.initialBalance) - totalPaid);
@@ -658,10 +689,15 @@
                 </div>`;
 
             setTimeout(() => {
+                // Destroy existing chart instances to avoid Canvas reuse errors
+                if (chartInstances.mainChart) chartInstances.mainChart.destroy();
+                if (chartInstances.barChart) chartInstances.barChart.destroy();
+
                 const ctxD = document.getElementById('mainChart').getContext('2d');
-                new Chart(ctxD, { type: 'doughnut', data: { labels: Object.keys(expData), datasets: [{ data: Object.values(expData), backgroundColor: Object.keys(expData).map((_, i) => getPalette(i)), borderWidth: 0, hoverOffset: 30 }] }, options: { cutout: '85%', plugins: { legend: { display: false } }, maintainAspectRatio: false } });
+                chartInstances.mainChart = new Chart(ctxD, { type: 'doughnut', data: { labels: Object.keys(expData), datasets: [{ data: Object.values(expData), backgroundColor: Object.keys(expData).map((_, i) => getPalette(i)), borderWidth: 0, hoverOffset: 30 }] }, options: { cutout: '85%', plugins: { legend: { display: false } }, maintainAspectRatio: false } });
+                
                 const ctxB = document.getElementById('barChart').getContext('2d');
-                new Chart(ctxB, { type: 'bar', data: { labels: ['Income', 'Expense'], datasets: [{ data: [currInc, currExp], backgroundColor: ['#10b981', '#f43f5e'], borderRadius: 20, barThickness: 80 }] }, options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false }, ticks: { color: '#71717a', font: { size: 14, weight: '800' } } } } } });
+                chartInstances.barChart = new Chart(ctxB, { type: 'bar', data: { labels: ['Income', 'Expense'], datasets: [{ data: [currInc, currExp], backgroundColor: ['#10b981', '#f43f5e'], borderRadius: 20, barThickness: 80 }] }, options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false }, ticks: { color: '#71717a', font: { size: 14, weight: '800' } } } } } });
             }, 100);
         }
 
@@ -696,7 +732,6 @@
             return `<div class="premium-glass rounded-[2.5rem] overflow-hidden" id="folder-${title.replace(/\s+/g, '')}"><button onclick="toggleFolder('${title.replace(/\s+/g, '')}')" class="w-full flex items-center justify-between p-10 hover:bg-white/5 transition-colors"><div class="flex items-center gap-8"><i data-lucide="folder" class="w-7 h-7 text-zinc-600"></i><div class="text-left"><p class="text-xl font-black uppercase tracking-wider text-white">${title}</p><p class="text-xs text-zinc-600 font-bold uppercase tracking-widest">${items.length} Tracked</p></div></div><i data-lucide="chevron-down" class="w-6 h-6 text-zinc-800 folder-chevron"></i></button><div class="folder-content"><div class="px-10 pb-10 space-y-4">${items.map(item => `<div class="bg-zinc-900 border border-white/5 p-6 rounded-3xl flex justify-between items-center group"><span class="text-sm font-bold text-zinc-400 uppercase tracking-widest">${item.name}</span><button onclick="deleteEntity('${type}', '${item.id}')" class="opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-rose-500/10 rounded-lg"><i data-lucide="trash-2" class="w-6 h-6 text-rose-500"></i></button></div>`).join('') || '<p class="text-xs text-center text-zinc-800 py-12 uppercase font-black">Empty Folder</p>'}</div></div></div>`;
         }
 
-        // --- STREAMING_CHUNK:Executing Transaction Engine and Handlers... ---
         function toggleFolder(id) { document.getElementById(`folder-${id}`).classList.toggle('folder-open'); }
         function toggleModal(id, show) { const el = document.getElementById(id); if(el) el.classList.toggle('hidden', !show); if(id === 'transaction-modal') { document.getElementById('btn-delete-trans').classList.toggle('hidden', !state.editingId); if(show) populateSelects(); } if(id === 'entity-modal' && show) populateDebtAccountSelect(); }
         function setTransType(type) { state.transType = type; document.getElementById('btn-exp').className = `flex-1 py-4 rounded-xl text-xs font-black uppercase tracking-widest ${type==='expense'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; document.getElementById('btn-inc').className = `flex-1 py-4 rounded-xl text-xs font-black uppercase tracking-widest ${type==='income'?'bg-zinc-800 text-white shadow-lg':'text-zinc-500'}`; populateSelects(); }
@@ -706,7 +741,16 @@
         function qClear() { state.qCalcValue = '0'; document.getElementById('quick-calc-display').innerText = '0'; }
         function openTransactionModal() { state.editingId = null; qClear(); document.getElementById('modal-title').innerText = "New Record"; document.getElementById('t-note').value = ''; toggleModal('transaction-modal', true); setTransType('expense'); }
         function editTransaction(id) { const t = state.transactions.find(x => x.id === id); if(!t) return; state.editingId = id; state.qCalcValue = t.amount.toString(); state.transType = t.type; toggleModal('transaction-modal', true); document.getElementById('modal-title').innerText = "Edit Record"; document.getElementById('quick-calc-display').innerText = t.amount; document.getElementById('t-date').value = t.date; document.getElementById('t-note').value = t.note || ''; setTransType(t.type); document.getElementById('t-cat').value = t.category; document.getElementById('t-acc').value = t.account; }
-        function deleteTrans(id) { if(!confirm("Remove this entry?")) return; state.transactions = state.transactions.filter(t => t.id !== id); saveAll(); toggleModal('transaction-modal', false); renderView(); }
+        
+        // Modal-friendly direct deletion (replacing browser confirm)
+        function deleteTrans(id) { 
+            if (!id) return;
+            state.transactions = state.transactions.filter(t => t.id !== id); 
+            saveAll(); 
+            toggleModal('transaction-modal', false); 
+            renderView(); 
+        }
+
         function saveTransaction() { let amt = 0; try { amt = eval(state.qCalcValue.replace(/[^-+*/.0-9]/g, '')); } catch(e) { return; } if(amt <= 0) return; const entry = { id: state.editingId || Date.now(), amount: Math.abs(parseFloat(amt)), type: state.transType, category: document.getElementById('t-cat').value, account: document.getElementById('t-acc').value, date: document.getElementById('t-date').value, note: document.getElementById('t-note').value }; if(state.editingId) state.transactions = state.transactions.map(x => x.id === state.editingId ? entry : x); else state.transactions.unshift(entry); saveAll(); toggleModal('transaction-modal', false); renderView(); }
         function saveAll() { localStorage.setItem(DB_KEYS.transactions, JSON.stringify(state.transactions)); localStorage.setItem(DB_KEYS.categories, JSON.stringify(state.categories)); localStorage.setItem(DB_KEYS.accounts, JSON.stringify(state.accounts)); localStorage.setItem(DB_KEYS.notes, JSON.stringify(state.notes)); localStorage.setItem(DB_KEYS.budgets, JSON.stringify(state.budgets)); localStorage.setItem(DB_KEYS.debts, JSON.stringify(state.debts)); }
         function addNote() { state.notes.unshift({ id: Date.now().toString(), text: '', date: new Date().toLocaleDateString() }); saveAll(); renderView(); }
