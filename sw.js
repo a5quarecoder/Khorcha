@@ -1,5 +1,9 @@
-const CACHE_NAME = 'khorcha-pwa-v1';
+const CACHE_NAME = 'khorcha-pwa-v4';
+
+// Assets to pre-cache during installation
 const ASSETS_TO_CACHE = [
+  '/',
+  '/index.html',
   './',
   './index.html',
   'https://cdn.tailwindcss.com',
@@ -8,16 +12,22 @@ const ASSETS_TO_CACHE = [
   'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap'
 ];
 
-// Install Event - Caches essential files
+// Install Event: Cache each asset individually so 1 CDN failure doesn't break the entire SW
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
+    caches.open(CACHE_NAME).then(async (cache) => {
+      for (const asset of ASSETS_TO_CACHE) {
+        try {
+          await cache.add(new Request(asset, { cache: 'reload' }));
+        } catch (err) {
+          console.warn('Asset caching warning:', asset, err);
+        }
+      }
     }).then(() => self.skipWaiting())
   );
 });
 
-// Activate Event - Takes control immediately
+// Activate Event: Claim clients immediately and clean up old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
@@ -32,20 +42,50 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch Event - Serves from cache when offline
+// Fetch Event: Handle Page Navigation and Static Assets
 self.addEventListener('fetch', (event) => {
+  const req = event.request;
+
+  // Handle HTML Page Navigation (Opening the app URL while offline)
+  if (req.mode === 'navigate') {
+    event.respondWith(
+      fetch(req)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const copy = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
+          }
+          return networkResponse;
+        })
+        .catch(async () => {
+          const cachedPage = await caches.match(req);
+          if (cachedPage) return cachedPage;
+          const cachedIndex = await caches.match('/index.html') || await caches.match('./index.html') || await caches.match('/');
+          return cachedIndex;
+        })
+    );
+    return;
+  }
+
+  // Handle Scripts, Styles, and Fonts (Cache First, Network Fallback)
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
+    caches.match(req).then((cachedResponse) => {
       if (cachedResponse) {
+        fetch(req).then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200 && req.url.startsWith('http')) {
+            caches.open(CACHE_NAME).then((cache) => cache.put(req, networkResponse));
+          }
+        }).catch(() => {});
         return cachedResponse;
       }
-      return fetch(event.request).then((networkResponse) => {
-        if (event.request.url.startsWith('http')) {
+
+      return fetch(req).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200 && req.url.startsWith('http')) {
           const responseClone = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+          caches.open(CACHE_NAME).then((cache) => cache.put(req, responseClone));
         }
         return networkResponse;
-      }).catch(() => cachedResponse);
+      });
     })
   );
 });
