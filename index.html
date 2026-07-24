@@ -412,16 +412,38 @@
         };
 
         function registerOfflineServiceWorker() {
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js')
+            // Ensure we only attempt registration under valid HTTPS / Localhost origins and not Blob URLs
+            const isSupportedProtocol = (window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+            const isBlobUrl = window.location.href.startsWith('blob:');
+
+            if ('serviceWorker' in navigator && isSupportedProtocol && !isBlobUrl) {
+                navigator.serviceWorker.register('./sw.js', { scope: './' })
                     .then((reg) => {
                         console.log('Service Worker registered with scope:', reg.scope);
-                        document.getElementById('offline-badge-pc')?.classList.remove('hidden');
-                        document.getElementById('offline-badge-mobile')?.classList.remove('hidden');
+                        
+                        const showBadges = () => {
+                            document.getElementById('offline-badge-pc')?.classList.remove('hidden');
+                            document.getElementById('offline-badge-mobile')?.classList.remove('hidden');
+                        };
+
+                        if (reg.active) {
+                            showBadges();
+                        }
+
+                        reg.onupdatefound = () => {
+                            const installingWorker = reg.installing;
+                            installingWorker.onstatechange = () => {
+                                if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    showBadges();
+                                }
+                            };
+                        };
                     })
                     .catch((err) => {
-                        console.log('Service Worker registration failed:', err);
+                        console.warn('Service Worker registration skipped or failed:', err);
                     });
+            } else {
+                console.log('Service Worker registration skipped: Running in preview or non-standard environment.');
             }
         }
 
