@@ -1,6 +1,6 @@
-const CACHE_NAME = 'khorcha-pwa-v4';
+const CACHE_NAME = 'khorcha-pwa-v5';
 
-// Assets to pre-cache during installation
+// Pre-cache core shell & assets
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -12,7 +12,6 @@ const ASSETS_TO_CACHE = [
   'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap'
 ];
 
-// Install Event: Cache each asset individually so 1 CDN failure doesn't break the entire SW
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
@@ -20,14 +19,13 @@ self.addEventListener('install', (event) => {
         try {
           await cache.add(new Request(asset, { cache: 'reload' }));
         } catch (err) {
-          console.warn('Asset caching warning:', asset, err);
+          console.warn('Caching warning for:', asset, err);
         }
       }
     }).then(() => self.skipWaiting())
   );
 });
 
-// Activate Event: Claim clients immediately and clean up old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
@@ -42,11 +40,9 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch Event: Handle Page Navigation and Static Assets
 self.addEventListener('fetch', (event) => {
   const req = event.request;
 
-  // Handle HTML Page Navigation (Opening the app URL while offline)
   if (req.mode === 'navigate') {
     event.respondWith(
       fetch(req)
@@ -60,17 +56,16 @@ self.addEventListener('fetch', (event) => {
         .catch(async () => {
           const cachedPage = await caches.match(req);
           if (cachedPage) return cachedPage;
-          const cachedIndex = await caches.match('/index.html') || await caches.match('./index.html') || await caches.match('/');
-          return cachedIndex;
+          return await caches.match('/index.html') || await caches.match('./index.html') || await caches.match('/');
         })
     );
     return;
   }
 
-  // Handle Scripts, Styles, and Fonts (Cache First, Network Fallback)
   event.respondWith(
     caches.match(req).then((cachedResponse) => {
       if (cachedResponse) {
+        // Stale-while-revalidate in background if online
         fetch(req).then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200 && req.url.startsWith('http')) {
             caches.open(CACHE_NAME).then((cache) => cache.put(req, networkResponse));
@@ -85,6 +80,8 @@ self.addEventListener('fetch', (event) => {
           caches.open(CACHE_NAME).then((cache) => cache.put(req, responseClone));
         }
         return networkResponse;
+      }).catch(() => {
+        return new Response('', { status: 503, statusText: 'Offline' });
       });
     })
   );
