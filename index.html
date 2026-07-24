@@ -23,6 +23,19 @@
             --primary: #ffffff;
         }
 
+        /* HARD FALLBACK CSS FOR BREAKPOINTS & MODALS (Prevents unstyled stacking) */
+        .hidden { display: none !important; }
+        
+        @media (max-width: 767px) {
+            aside { display: none !important; }
+            .mobile-nav { display: flex !important; }
+        }
+
+        @media (min-width: 768px) {
+            aside { display: flex !important; }
+            .mobile-nav { display: none !important; }
+        }
+
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: var(--bg-color);
@@ -32,7 +45,6 @@
             font-size: 16px;
         }
 
-        /* Glassmorphism & Depth */
         .premium-glass {
             background: rgba(24, 24, 27, 0.6);
             backdrop-filter: blur(24px);
@@ -51,7 +63,6 @@
             transform: translateY(-2px);
         }
 
-        /* Responsive Sidebar/Grid */
         @media (min-width: 768px) {
             .app-shell {
                 display: grid;
@@ -70,12 +81,21 @@
             box-shadow: 0 10px 20px rgba(255, 255, 255, 0.1);
         }
 
-        /* Standardized Calculator UI */
+        /* Valid Native CSS for Calculator Keys */
         .calc-key {
-            @apply flex items-center justify-center rounded-2xl text-xl font-bold transition-all active:scale-90 select-none aspect-square md:aspect-auto h-14 md:h-16;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 1rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            transition: all 0.15s ease;
+            user-select: none;
+            height: 3.5rem;
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
+        .calc-key:active { transform: scale(0.92); }
 
         .calc-key-op {
             background: rgba(255, 255, 255, 0.1);
@@ -194,7 +214,7 @@
         </main>
 
         <!-- MOBILE NAV -->
-        <nav class="flex md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-lg premium-glass rounded-[2.5rem] p-2 justify-between items-center z-50">
+        <nav class="mobile-nav flex md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-lg premium-glass rounded-[2.5rem] p-2 justify-between items-center z-50">
             <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-link active flex-1 py-4 rounded-2xl flex flex-col items-center gap-1">
                 <i data-lucide="layout-grid" class="w-5 h-5"></i>
                 <span class="text-[8px] font-black uppercase">Home</span>
@@ -374,6 +394,34 @@
             notes: 'khorcha_app_v11_notes'
         };
 
+        // AUTOMATIC DATA MIGRATION: Scans and recovers data from ALL previous key versions
+        function restoreAndMigrateAllData() {
+            const mappings = [
+                { target: DB_KEYS.transactions, legacy: ['khorcha_app_v11_trans', 'khorcha_app_v10_trans', 'k_v9_trans', 'k_v8_trans', 'k_v7_trans', 'khorcha_trans'] },
+                { target: DB_KEYS.categories, legacy: ['khorcha_app_v11_cats', 'khorcha_app_v10_cats', 'k_v8_cats', 'k_v7_cats', 'khorcha_cats'] },
+                { target: DB_KEYS.accounts, legacy: ['khorcha_app_v11_accs', 'khorcha_app_v10_accs', 'k_v8_accs', 'k_v7_accs', 'khorcha_accs'] },
+                { target: DB_KEYS.debts, legacy: ['khorcha_app_v11_debts', 'khorcha_app_v10_debts', 'k_v9_debts', 'khorcha_debts'] },
+                { target: DB_KEYS.budgets, legacy: ['khorcha_app_v11_budgets', 'khorcha_app_v10_budgets', 'k_v9_budgets', 'k_v8_budgets', 'khorcha_budgets'] },
+                { target: DB_KEYS.notes, legacy: ['khorcha_app_v11_notes', 'khorcha_app_v10_notes', 'k_v9_notes', 'k_v8_notes', 'khorcha_notes'] }
+            ];
+
+            mappings.forEach(m => {
+                const currentVal = localStorage.getItem(m.target);
+                if (!currentVal || currentVal === '[]' || currentVal === '{}') {
+                    for (let oldKey of m.legacy) {
+                        const oldVal = localStorage.getItem(oldKey);
+                        if (oldVal && oldVal !== '[]' && oldVal !== '{}') {
+                            localStorage.setItem(m.target, oldVal);
+                            break;
+                        }
+                    }
+                }
+            });
+        }
+
+        // Run recovery before state initialization
+        restoreAndMigrateAllData();
+
         let state = {
             transactions: JSON.parse(localStorage.getItem(DB_KEYS.transactions)) || [],
             categories: JSON.parse(localStorage.getItem(DB_KEYS.categories)) || [
@@ -400,7 +448,7 @@
             editingId: null
         };
 
-        // Track chart instances to prevent canvas reuse errors
+        // Chart tracking to prevent canvas reuse errors
         let chartInstances = {};
 
         window.onload = () => { 
@@ -412,24 +460,17 @@
         };
 
         function registerOfflineServiceWorker() {
-            // Ensure we only attempt registration under valid HTTPS / Localhost origins and not Blob URLs
             const isSupportedProtocol = (window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
             const isBlobUrl = window.location.href.startsWith('blob:');
 
             if ('serviceWorker' in navigator && isSupportedProtocol && !isBlobUrl) {
                 navigator.serviceWorker.register('./sw.js', { scope: './' })
                     .then((reg) => {
-                        console.log('Service Worker registered with scope:', reg.scope);
-                        
                         const showBadges = () => {
                             document.getElementById('offline-badge-pc')?.classList.remove('hidden');
                             document.getElementById('offline-badge-mobile')?.classList.remove('hidden');
                         };
-
-                        if (reg.active) {
-                            showBadges();
-                        }
-
+                        if (reg.active) showBadges();
                         reg.onupdatefound = () => {
                             const installingWorker = reg.installing;
                             installingWorker.onstatechange = () => {
@@ -439,11 +480,7 @@
                             };
                         };
                     })
-                    .catch((err) => {
-                        console.warn('Service Worker registration skipped or failed:', err);
-                    });
-            } else {
-                console.log('Service Worker registration skipped: Running in preview or non-standard environment.');
+                    .catch((err) => console.warn('Service Worker registration skipped:', err));
             }
         }
 
@@ -593,7 +630,6 @@
             state.budgets[monthKey][catId] = val;
             saveAll();
 
-            // Perform targeted calculations to update top summary header live
             const monthBudgets = state.budgets[monthKey];
             const incomeCats = state.categories.filter(c => c.type === 'income');
             const expenseCats = state.categories.filter(c => c.type === 'expense');
@@ -675,7 +711,6 @@
                 </div>`;
 
             setTimeout(() => {
-                // Destroy existing chart instances to avoid Canvas reuse errors
                 if (chartInstances.mainChart) chartInstances.mainChart.destroy();
                 if (chartInstances.barChart) chartInstances.barChart.destroy();
 
@@ -728,7 +763,6 @@
         function openTransactionModal() { state.editingId = null; qClear(); document.getElementById('modal-title').innerText = "New Record"; document.getElementById('t-note').value = ''; toggleModal('transaction-modal', true); setTransType('expense'); }
         function editTransaction(id) { const t = state.transactions.find(x => x.id === id); if(!t) return; state.editingId = id; state.qCalcValue = t.amount.toString(); state.transType = t.type; toggleModal('transaction-modal', true); document.getElementById('modal-title').innerText = "Edit Record"; document.getElementById('quick-calc-display').innerText = t.amount; document.getElementById('t-date').value = t.date; document.getElementById('t-note').value = t.note || ''; setTransType(t.type); document.getElementById('t-cat').value = t.category; document.getElementById('t-acc').value = t.account; }
         
-        // Modal-friendly direct deletion (replacing browser confirm)
         function deleteTrans(id) { 
             if (!id) return;
             state.transactions = state.transactions.filter(t => t.id !== id); 
